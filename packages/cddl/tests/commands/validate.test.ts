@@ -4,8 +4,8 @@ import { describe, it, vi, expect, beforeEach, afterAll } from 'vitest'
 import { builder, handler } from '../../src/cli/commands/validate.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-const validCDDL = path.join(__dirname, '..', '__fixtures__', 'arrays.cddl')
-const buggyCDDL = path.join(__dirname, '..', '__fixtures__', 'buggy.cddl')
+const validCDDL = path.join(__dirname, '..', '..', '..', '..', 'examples', 'webdriver', 'local.cddl')
+const buggyCDDL = path.join(__dirname, '..', '..', '..', '..', 'examples', 'commons', 'buggy.cddl')
 
 describe('validate command', () => {
     it('builder', () => {
@@ -24,7 +24,8 @@ describe('validate command', () => {
         const processExitOrig = process.exit.bind(process)
 
         beforeEach(() => {
-            process.exit = vi.fn(() => { throw new Error('process.exit called') })
+            // @ts-expect-error
+            process.exit = vi.fn()
             console.log = vi.fn()
             console.error = vi.fn()
         })

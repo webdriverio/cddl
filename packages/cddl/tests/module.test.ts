@@ -5,8 +5,8 @@ import { describe, it, expect } from 'vitest'
 import CDDL from '../src/index.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-const validCDDL = path.join(__dirname, '__fixtures__', 'arrays.cddl')
-const buggyCDDL = path.join(__dirname, '__fixtures__', 'buggy.cddl')
+const validCDDL = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'arrays.cddl')
+const buggyCDDL = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'buggy.cddl')
 
 describe('validate', () => {
     it('should return a json in success case', () => {

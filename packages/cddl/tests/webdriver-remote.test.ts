@@ -8,7 +8,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 describe('webdriver remote cddl', () => {
     it('can parse remote.cddl', () => {
-        const filePath = path.join(__dirname, '../examples/webdriver/remote.cddl')
+        const filePath = path.join(__dirname, '..', '..', '..', 'examples', 'webdriver', 'remote.cddl')
         const p = new Parser(filePath)
         expect(p.parse()).toMatchSnapshot()
     })

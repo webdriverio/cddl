@@ -26,10 +26,7 @@
     "release:ci": "npm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
     "release:patch": "npm run release -- patch",
     "release:minor": "npm run release -- minor",
-    "release:major": "npm run release -- major",
-    "test": "vitest run",
-    "checks:all": "npm run compile && npm run test",
-    "watch": "tsc --watch"
+    "release:major": "npm run release -- major"
   },
   "devDependencies": {
     "@types/node": "^24.12.0",

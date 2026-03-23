@@ -23,7 +23,7 @@ describe('parser', () => {
 
     for (const { name, fixture } of testCases) {
         it(name, async () => {
-            const p = new Parser(path.join(__dirname, '__fixtures__', fixture))
+            const p = new Parser(path.join(__dirname, '..', '..', '..', 'examples', 'commons', fixture))
             expect(p.parse()).toMatchSnapshot()
         })
     }

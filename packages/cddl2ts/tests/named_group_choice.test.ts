@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import cli from '../src/cli.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-const cddlFile = path.join(__dirname, '__fixtures__', 'named_group_choice.cddl')
+const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'named_group_choice.cddl')
 
 vi.mock('../src/constants', () => ({
     pkg: {
@@ -36,9 +36,9 @@ describe('named group choice', () => {
 
         expect(process.exit).not.toHaveBeenCalledWith(1)
         expect(console.error).not.toHaveBeenCalled()
-        
+
         const output = vi.mocked(console.log).mock.calls.flat().join('\n')
-        
+
         // The export keyword is separated from the type definition by comments
         expect(output).toMatch(/export\s+(\/\/.*\n)+\s*type Choice = OptionA \| OptionB/)
         expect(output).toContain('export interface OptionA {')

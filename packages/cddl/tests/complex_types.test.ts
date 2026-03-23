@@ -8,7 +8,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 describe('complex types', () => {
     it('can parse complex types correctly', () => {
-        const p = new Parser(path.join(__dirname, '__fixtures__', 'complex_types.cddl'))
+        const p = new Parser(path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'complex_types.cddl'))
         const ast = p.parse()
         const localValue = ast.find((item: any) => item.Name === 'LocalValue')
 

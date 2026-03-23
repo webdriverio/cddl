@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import cli from '../src/cli.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-const groupChoiceCDDL = path.join(__dirname, '__fixtures__', 'group_choice.cddl')
+const groupChoiceCDDL = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'group_choice.cddl')
 
 vi.mock('../src/constants', () => ({
     pkg: {

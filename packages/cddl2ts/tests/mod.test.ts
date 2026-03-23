@@ -18,7 +18,8 @@ describe('cddl2ts', () => {
     const logOrig = console.log.bind(console)
     const errorOrig = console.error.bind(console)
     beforeEach(() => {
-        process.exit = vi.fn(() => {throw new Error('process.exit called')})
+        // @ts-expect-error
+        process.exit = vi.fn(() => {})
         console.log = vi.fn()
         console.error = vi.fn()
     })
@@ -59,7 +60,7 @@ describe('cddl2ts', () => {
     })
 
     it('should generate correct types for test.cddl', async () => {
-        await cli([path.join(__dirname, '__fixtures__', 'test.cddl')])
+        await cli([path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'test.cddl')])
 
         expect(vi.mocked(console.log).mock.calls).toMatchSnapshot()
         expect(process.exit).toHaveBeenCalledTimes(0)

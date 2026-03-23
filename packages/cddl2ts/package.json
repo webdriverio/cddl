@@ -29,10 +29,7 @@
     "release:major": "npm run release -- major",
     "generate:local": "npm run compile && node ./bin/cddl2ts.js ./examples/webdriver/local.cddl --unknown-as-any > ./examples/webdriver/local.ts && tsc -p ./examples/webdriver/tsconfig.json",
     "generate:remote": "npm run compile && node ./bin/cddl2ts.js ./examples/webdriver/remote.cddl --unknown-as-any > ./examples/webdriver/remote.ts && tsc -p ./examples/webdriver/tsconfig.json",
-    "generate:examples": "npm run generate:local && npm run generate:remote",
-    "test": "vitest run",
-    "watch": "tsc --watch",
-    "checks:all": "npm run compile && npm run test && npm run generate:examples"
+    "generate:examples": "npm run generate:local && npm run generate:remote"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.35",
