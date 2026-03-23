@@ -1,12 +1,9 @@
-CDDL to TypeScript [![Test](https://github.com/webdriverio/cddl2ts/actions/workflows/test.yml/badge.svg)](https://github.com/webdriverio/cddl2ts/actions/workflows/test.yml)
+CDDL to TypeScript
 ==================
 
 > A Node.js package that can generate a TypeScript definition based on a CDDL file
 
-CDDL expresses Concise Binary Object Representation (CBOR) data structures ([RFC 7049](https://tools.ietf.org/html/rfc7049)). Its main goal is to provide an easy and unambiguous way to express structures for protocol messages and data formats that use CBOR or JSON. This package allows you to transform a CDDL file into a TypeScript interface that you can use for other TypeScript project.
-
-Related projects:
-- [webdriverio/cddl](https://github.com/webdriverio/cddl): parses CDDL into an AST
+CDDL expresses Concise Binary Object Representation (CBOR) data structures ([RFC 7049](https://tools.ietf.org/html/rfc7049)). Its main goal is to provide an easy and unambiguous way to express structures for protocol messages and data formats that use CBOR or JSON. This package allows you to transform a CDDL file into a TypeScript interface that you can use for other TypeScript projects.
 
 ## Install
 
@@ -28,7 +25,7 @@ npx cddl2ts ./path/to/interface.cddl &> ./path/to/interface.ts
 
 ### Programmatic Interface
 
-The module exports a `transform` method that takes an CDDL AST object and returns a TypeScript definition as `string`, e.g.:
+The module exports a `transform` method that takes a CDDL AST object and returns a TypeScript definition as `string`, e.g.:
 
 ```js
 import { parse } from 'cddl'
@@ -61,4 +58,4 @@ console.log(ts)
 
 ---
 
-If you are interested in this project, please feel free to contribute ideas or code patches. Have a look at our [contributing guidelines](https://github.com/webdriverio/cddl2ts/blob/master/CONTRIBUTING.md) to get started.
+If you are interested in this project, please feel free to contribute ideas or code patches. Have a look at our [contributing guidelines](https://github.com/webdriverio/cddl/blob/master/CONTRIBUTING.md) to get started.

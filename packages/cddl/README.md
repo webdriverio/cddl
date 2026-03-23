@@ -1,4 +1,4 @@
-CDDL [![Test](https://github.com/webdriverio/cddl/actions/workflows/test.yml/badge.svg)](https://github.com/webdriverio/cddl/actions/workflows/test.yml)
+CDDL
 ====
 
 > Concise data definition language ([RFC 8610](https://tools.ietf.org/html/rfc8610)) implementation and JSON validator in Node.js.
@@ -66,7 +66,7 @@ console.log(ast)
  */
 ```
 
-Read the full documentation on this AST in the [`/docs`](/docs/README.md) directory.
+Read the full documentation on this AST in the [`docs`](./docs/README.md) directory.
 
 ---
 

@@ -1,7 +1,7 @@
 CDDL [![Test](https://github.com/webdriverio/cddl/actions/workflows/test.yml/badge.svg)](https://github.com/webdriverio/cddl/actions/workflows/test.yml)
 ====
 
-> Concise data definition language ([RFC 8610](https://tools.ietf.org/html/rfc8610)) implementation and JSON validator in Node.js.
+> Concise data definition language ([RFC 8610](https://tools.ietf.org/html/rfc8610)) implementation for JSON validator & code generator in Node.js
 
 CDDL expresses Concise Binary Object Representation (CBOR) data structures ([RFC 7049](https://tools.ietf.org/html/rfc7049)). Its main goal is to provide an easy and unambiguous way to express structures for protocol messages and data formats that use CBOR or JSON.
 
@@ -16,15 +16,19 @@ __Note:__ this is __work in progress__, feel free to have a look at the code or 
 
 ## Install
 
-To install this package run:
+To install one of the packages run:
 
 ```sh
+# Parser & validator
 $ npm install cddl
+
+# Generate typescript definition
+$ npm install cddl2ts
 ```
 
-## Using this package
+## Using packages
 
-This package exposes a CLI as well as a programmatic interface for parsing and transforming CDDL.
+The packages expose a CLI as well as a programmatic interface for parsing and transforming CDDL.
 
 ### CLI
 
@@ -35,38 +39,17 @@ npx cddl validate ./path/to/interface.cddl
 ✅ Valid CDDL file!
 ```
 
+The `cddl2ts` CLI allows transforming CDDL into TypeScript:
+
+```sh
+npx cddl2ts ./path/to/interface.cddl &> ./path/to/interface.ts
+```
+
 ### Programmatic Interface
 
-You can also use this package to parse a CDDL file into an [abstract syntax tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (AST). For example, given the following CDDL file:
-
-```cddl
-person = {
-    identity,       ; an identity
-    employer: tstr, ; some employer
-}
-```
-
-It parses the content into an AST:
-
-```js
-import { parse } from 'cddl'
-
-const ast = parse('./spec.cddl')
-console.log(ast)
-/**
- * outputs:
- * [
- *   {
- *     Type: 'group',
- *     Name: 'person',
- *     Properties: [ [Object], [Object] ],
- *     IsChoiceAddition: false
- *   }
- * ]
- */
-```
-
-Read the full documentation on this AST in the [`/docs`](/docs/README.md) directory.
+You can import any of the packages into your typescript project for an easy integration
+- [`cddl` example](packages/cddl/README.md#programmatic-interface)
+- [`cddl2ts` example](packages/cddl2ts/README.md#programmatic-interface)
 
 ---
 
