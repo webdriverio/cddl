@@ -24,13 +24,13 @@ $ cd cddl
 Then install the project dependencies:
 
 ```sh
-$ npm install
+$ pnpm install
 ```
 
-Before we start working on the code, let's make sure all tests are passing:
+Before we start working on the code, let's make sure all validations are passing:
 
 ```sh
-$ npm test
+$ pnpm checks:all
 ```
 
 If everything is green, you are good to go 👍
