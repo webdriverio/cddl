@@ -23,13 +23,13 @@
   },
   "scripts": {
     "release": "release-it --github.release",
-    "release:ci": "npm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
-    "release:patch": "npm run release -- patch",
-    "release:minor": "npm run release -- minor",
-    "release:major": "npm run release -- major",
-    "generate:local": "npm run compile && node ./bin/cddl2ts.js ./examples/webdriver/local.cddl --unknown-as-any > ./examples/webdriver/local.ts && tsc -p ./examples/webdriver/tsconfig.json",
-    "generate:remote": "npm run compile && node ./bin/cddl2ts.js ./examples/webdriver/remote.cddl --unknown-as-any > ./examples/webdriver/remote.ts && tsc -p ./examples/webdriver/tsconfig.json",
-    "generate:examples": "npm run generate:local && npm run generate:remote"
+    "release:ci": "pnpm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
+    "release:patch": "pnpm run release -- patch",
+    "release:minor": "pnpm run release -- minor",
+    "release:major": "pnpm run release -- major",
+    "cli-examples": "run-p cli-examples:*",
+    "cli-examples:local": "pnpm run compile && node ./bin/cddl2ts.js ../../examples/webdriver/local.cddl --unknown-as-any > ./cli-examples/local.ts && tsc -p ./cli-examples/tsconfig.json",
+    "cli-examples:remote": "pnpm run compile && node ./bin/cddl2ts.js ../../examples/webdriver/remote.cddl --unknown-as-any > ./cli-examples/remote.ts && tsc -p ./cli-examples/tsconfig.json"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.35",

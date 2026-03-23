@@ -32,10 +32,11 @@
     "release:patch": "pnpm run release -- patch",
     "release:minor": "pnpm run release -- minor",
     "release:major": "pnpm run release -- major",
-    "test": "run-s test:*",
-    "test:unit": "vitest --config vitest.config.ts --run",
+    "test": "run-p test:*",
     "test:typechecks": "tsc -p ./tsconfig.test.json",
-    "checks:all": "pnpm run compile && pnpm run test:typechecks && pnpm run test"
+    "test:unit": "vitest --config vitest.config.ts --run",
+    "cli-examples": "pnpm -r --if-present run cli-examples",
+    "checks:all": "run-s compile test cli-examples"
   },
   "devDependencies": {
     "@types/node": "^24.12.0",
