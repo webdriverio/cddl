@@ -5,7 +5,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import cli from '../src/cli.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-const tsCDDL = path.join(__dirname, '..', '__fixtures__', 'test.cddl')
 
 vi.mock('../src/constants', () => ({
     pkg: {
@@ -19,7 +18,7 @@ describe('cddl2ts', () => {
     const logOrig = console.log.bind(console)
     const errorOrig = console.error.bind(console)
     beforeEach(() => {
-        process.exit = vi.fn()
+        process.exit = vi.fn(() => {throw new Error('process.exit called')})
         console.log = vi.fn()
         console.error = vi.fn()
     })

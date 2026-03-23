@@ -11,7 +11,8 @@ describe('literal transformation direct', () => {
                 Type: 'literal',
                 Value: 9007199254740995n
             } as any,
-            Comments: []
+            Comments: [],
+            IsChoiceAddition: false
         }
 
         const output = transform([assignment])

@@ -22,9 +22,6 @@
     "cddl": "./bin/cddl.js"
   },
   "scripts": {
-    "build": "run-s clean compile",
-    "clean": "rm -rf ./build ./coverage",
-    "compile": "tsc -p ./tsconfig.json",
     "release": "release-it --github.release",
     "release:ci": "npm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
     "release:patch": "npm run release -- patch",

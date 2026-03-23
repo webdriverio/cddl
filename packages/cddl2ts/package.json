@@ -22,9 +22,6 @@
     "cddl2ts": "./bin/cddl2ts.js"
   },
   "scripts": {
-    "build": "run-s clean compile",
-    "clean": "rimraf --glob ./packages/*/build ./packages/*/coverage",
-    "compile": "pnpm run -r compile",
     "release": "release-it --github.release",
     "release:ci": "npm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
     "release:patch": "npm run release -- patch",

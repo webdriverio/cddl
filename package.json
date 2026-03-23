@@ -33,7 +33,8 @@
     "release:minor": "npm run release -- minor",
     "release:major": "npm run release -- major",
     "test": "vitest run",
-    "checks:all": "npm run compile && npm run test",
+    "test:typechecks": "tsc -p ./tsconfig.test.json",
+    "checks:all": "npm run compile && npm run test:typechecks && npm run test",
     "watch": "tsc --watch"
   },
   "devDependencies": {
