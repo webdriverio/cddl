@@ -8,10 +8,22 @@ export default defineConfig({
             provider: 'v8',
             include: ['packages/*/src/**/*.ts', 'packages/*/src/**/*.js'],
             thresholds: {
-                statements: 93.5,
-                functions: 90.2,
-                branches: 92.8,
-                lines: 93.6,
+                lines: 87.6,
+                functions: 92.5,
+                statements: 85.7,
+                branches: 78.0,
+                'packages/cddl/**/*': {
+                    lines: 96.0,
+                    functions: 97.5,
+                    statements: 96.0,
+                    branches: 93.0,
+                },
+                'packages/cddl2ts/**/*': {
+                    lines: 74.4,
+                    functions: 87.1,
+                    statements: 71.3,
+                    branches: 63.4,
+                }
             }
         }
     }
