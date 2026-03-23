@@ -1,0 +1,45 @@
+ip4 = bstr .size 4
+label = bstr .size (1..63)
+nai = tstr .regexp "[A-Za-z0-9]+@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)+"
+rwxbits = uint .bits rwx
+
+foo = ip4 .and nai
+fooWithin = ip4 .within nai
+bar = foo .ne fooWithin
+
+speed = number .ge 0  ; unit: m/s
+speed2 = number .le 10  ; unit: m/s
+speed3 = number .gt 0  ; unit: m/s
+speed4 = number .lt 10  ; unit: m/s
+
+displayed-step = number .default 1
+someGroup = {
+    ?optional: tstr .default "foobar",
+    ?orientation: ("portrait" / "landscape") .default "portrait",
+    ?scale: 0.1..2.0 .default 1.0,
+    ?shrinkToFit: bool .default true,
+    ?shrinkToFitP: (bool) .default true,
+    ?bottom: (float .ge 0.0) .default 1.0,
+}
+
+optional = tstr .default "foobar"
+orientation = ("portrait" / "landscape") .default "portrait"
+
+group1 = {
+    name: tstr
+    value: tstr
+}
+
+group2 = {
+    handle: tstr
+} .and group1
+
+groupedRangeWithOperator = {
+    name: tstr,
+    ? range: (1.0..2.0) .default 1.5,
+    ? nullable: (float .ge 1.0) / null,
+    ? rangeOrNull: (0.0...360.0) / null,
+    ? choiceWithPostFixOperator: float / null .default null,
+    ? anotherChoice: (0.0...360.0) / null .default null,
+    ? yetAnotherChoice: (float .ge 1.0) / null .default null
+}

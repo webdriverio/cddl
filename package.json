@@ -1,0 +1,52 @@
+{
+  "name": "cddl",
+  "private": true,
+  "description": "Tools and libraries for working with CDDL (Concise Data Definition Language) in JavaScript/TypeScript",
+  "author": "Christian Bromann <mail@bromann.dev>",
+  "license": "MIT",
+  "homepage": "https://github.com/webdriverio/cddl#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/webdriverio/cddl.git"
+  },
+  "keywords": [
+    "cddl",
+    "typescript",
+    "javascript"
+  ],
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": "use pnpm",
+    "pnpm": ">=10.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/webdriverio/cddl/issues"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "run-p clean compile",
+    "clean": "rimraf --glob ./packages/*/build ./packages/*/coverage",
+    "compile": "pnpm -r exec tsc -p ./tsconfig.json",
+    "release": "release-it --github.release",
+    "release:ci": "npm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
+    "release:patch": "npm run release -- patch",
+    "release:minor": "npm run release -- minor",
+    "release:major": "npm run release -- major",
+    "test": "vitest run",
+    "checks:all": "npm run compile && npm run test",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.0",
+    "@types/yargs": "^17.0.35",
+    "@vitest/coverage-v8": "^4.1.0",
+    "npm-run-all2": "^8.0.4",
+    "release-it": "^19.2.4",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0",
+    "rimraf": "^6.1.3"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
