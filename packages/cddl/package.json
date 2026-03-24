@@ -22,8 +22,8 @@
     "cddl": "./bin/cddl.js"
   },
   "scripts": {
-    "release": "release-it --github.release --dry-run",
-    "release:ci": "pnpm release --ci --npm.skipChecks --no-git.requireCleanWorkingDir"
+    "release": "release-it --github.release --no-npm.publish",
+    "release:ci": "pnpm release --ci --npm.skipChecks"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
