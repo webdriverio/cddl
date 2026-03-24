@@ -3,19 +3,24 @@ name: NPM Publish
 on:
   workflow_dispatch:
     inputs:
+      package:
+        description: 'Which package to release?'
+        required: true
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - cddl
+          - cddl2ts
       releaseType:
         description: "Release type - major, minor or patch"
         required: true
         type: choice
-        default: "patch"
+        default: 'patch'
         options:
           - patch
           - minor
           - major
-      distTag:
-        description: 'NPM tag (e.g. use "next" to release a test version)'
-        required: true
-        default: 'latest'
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -62,7 +67,8 @@ jobs:
         env:
           NODE_ENV: production
       - name: Release
-        run: pnpm run release:ci -- ${{github.event.inputs.releaseType}}
+        run: |
+          pnpm run release:ci:${{github.event.inputs.package}} -- ${{ github.event.inputs.releaseType }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           NPM_CONFIG_PROVENANCE: true

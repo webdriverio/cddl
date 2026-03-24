@@ -29,11 +29,9 @@
     "compile": "run-s compile:cddl compile:other",
     "compile:cddl": "pnpm --filter=@wdio/cddl exec tsc -p ./tsconfig.json",
     "compile:other": "pnpm -r --filter=!@wdio/cddl --filter=!cddl exec tsc -p ./tsconfig.json",
-    "release": "release-it --github.release",
-    "release:ci": "pnpm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
-    "release:patch": "pnpm run release -- patch",
-    "release:minor": "pnpm run release -- minor",
-    "release:major": "pnpm run release -- major",
+    "release:ci:all": "run-s \"release:ci:cddl -- {@}\" \"release:ci:cddl2ts -- {@}\"",
+    "release:ci:cddl": "pnpm run --filter=@wdio/cddl release:ci",
+    "release:ci:cddl2ts": "pnpm run --filter=@wdio/cddl2ts release:ci",
     "test": "run-p test:*",
     "test:typechecks": "tsc -p ./tsconfig.test.json",
     "test:unit": "vitest --config vitest.config.ts --run",
@@ -41,14 +39,15 @@
     "checks:all": "run-s compile test cli-examples"
   },
   "devDependencies": {
+    "@release-it/bumper": "^7.0.5",
     "@types/node": "^24.12.0",
     "@types/yargs": "^17.0.35",
     "@vitest/coverage-v8": "^4.1.0",
     "npm-run-all2": "^8.0.4",
     "release-it": "^19.2.4",
+    "rimraf": "^6.1.3",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.0",
-    "rimraf": "^6.1.3"
+    "vitest": "^4.1.0"
   },
   "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
 }
