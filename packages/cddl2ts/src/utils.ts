@@ -6,7 +6,7 @@ import {
     NativeTypeWithOperator,
     Group,
     Variable
-} from 'cddl'
+} from '@wdio/cddl'
 import camelcase from 'camelcase'
 
 export function pascalCase(name: string) {

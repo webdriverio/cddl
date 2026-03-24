@@ -2,7 +2,7 @@ import camelcase from 'camelcase'
 import { parse, print, types } from 'recast'
 import typescriptParser from 'recast/parsers/typescript.js'
 
-import type { Assignment, PropertyType, PropertyReference, Property, Array, Operator } from 'cddl'
+import type { Assignment, PropertyType, PropertyReference, Property, Array, Operator } from '@wdio/cddl'
 
 import {
     isCDDLArray,

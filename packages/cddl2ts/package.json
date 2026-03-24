@@ -45,7 +45,7 @@
   "dependencies": {
     "@babel/parser": "^7.29.0",
     "camelcase": "^9.0.0",
-    "cddl": "workspace:*",
+    "@wdio/cddl": "workspace:*",
     "recast": "^0.23.11",
     "yargs": "^18.0.0"
   }

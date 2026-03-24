@@ -9,7 +9,7 @@ There are also CDDL parsers for other languages:
 - Rust: [anweiss/cddl](https://github.com/anweiss/cddl)
 
 The package is currently mostly used to help generate typed interfaces for the WebDriver Bidi specification in the following projects:
-- [WebdriverIO](https://webdriver.io) - via the [`cddl2ts`](https://www.npmjs.com/package/cddl2ts) package and [this script](https://github.com/webdriverio/webdriverio/blob/a2ae35332f9b3fc9490136df1ac3d2e14c1e35b6/scripts/bidi/index.ts)
+- [WebdriverIO](https://webdriver.io) - via the [`cddl2ts`](https://www.npmjs.com/package/@wdio/cddl2ts) package and [this script](https://github.com/webdriverio/webdriverio/blob/a2ae35332f9b3fc9490136df1ac3d2e14c1e35b6/scripts/bidi/index.ts)
 - [Selenium](https://selenium.dev) - via the [`cddl2java`](https://github.com/webdriverio/cddl2java) package
 
 __Note:__ this is __work in progress__, feel free to have a look at the code or contribute but don't use this for anything yet!
@@ -20,10 +20,10 @@ To install one of the packages run:
 
 ```sh
 # Parser & validator
-$ npm install cddl
+$ npm install @wdio/cddl
 
 # Generate typescript definition
-$ npm install cddl2ts
+$ npm install @wdio/cddl2ts
 ```
 
 ## Using packages
@@ -35,14 +35,14 @@ The packages expose a CLI as well as a programmatic interface for parsing and tr
 The `cddl` CLI offers a `validate` command that helps identify invalid CDDL formats, e.g.:
 
 ```sh
-npx cddl validate ./path/to/interface.cddl
+npx @wdio/cddl validate ./path/to/interface.cddl
 ✅ Valid CDDL file!
 ```
 
 The `cddl2ts` CLI allows transforming CDDL into TypeScript:
 
 ```sh
-npx cddl2ts ./path/to/interface.cddl &> ./path/to/interface.ts
+npx @wdio/cddl2ts ./path/to/interface.cddl &> ./path/to/interface.ts
 ```
 
 ### Programmatic Interface

@@ -66,12 +66,12 @@ importers:
       '@babel/parser':
         specifier: ^7.29.0
         version: 7.29.2
+      '@wdio/cddl':
+        specifier: workspace:*
+        version: link:../cddl
       camelcase:
         specifier: ^9.0.0
         version: 9.0.0
-      cddl:
-        specifier: workspace:*
-        version: link:../cddl
       recast:
         specifier: ^0.23.11
         version: 0.23.11

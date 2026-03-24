@@ -10,7 +10,7 @@ CDDL expresses Concise Binary Object Representation (CBOR) data structures ([RFC
 To install this package run:
 
 ```sh
-$ npm install cddl2ts
+$ npm install @wdio/cddl2ts
 ```
 
 ## Using this package
@@ -20,7 +20,7 @@ This package exposes a CLI as well as a programmatic interface for transforming 
 ### CLI
 
 ```sh
-npx cddl2ts ./path/to/interface.cddl &> ./path/to/interface.ts
+npx @wdio/cddl2ts ./path/to/interface.cddl &> ./path/to/interface.ts
 ```
 
 ### Programmatic Interface
@@ -28,8 +28,8 @@ npx cddl2ts ./path/to/interface.cddl &> ./path/to/interface.ts
 The module exports a `transform` method that takes a CDDL AST object and returns a TypeScript definition as `string`, e.g.:
 
 ```js
-import { parse } from 'cddl'
-import { transform } from 'cddl2ts'
+import { parse } from '@wdio/cddl'
+import { transform } from '@wdio/cddl'
 
 /**
  * spec.cddl:
