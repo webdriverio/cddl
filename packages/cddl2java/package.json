@@ -1,0 +1,41 @@
+{
+  "name": "cddl2java",
+  "version": "0.0.0",
+  "description": "A Node.js package that can generates Java classes based on a CDDL file",
+  "author": "Christian Bromann <mail@bromann.dev>",
+  "license": "MIT",
+  "homepage": "https://github.com/webdriverio/cddl/packages/cddl2java#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/webdriverio/cddl.git"
+  },
+  "keywords": [
+    "cddl"
+  ],
+  "type": "module",
+  "exports": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "bin": {
+    "cddl2java": "./bin/cddl2java.js"
+  },
+  "scripts": {
+    "release": "release-it --github.release",
+    "release:ci": "pnpm release --ci --npm.skipChecks"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.35",
+    "@types/node": "^25.5.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "npm-run-all2": "^8.0.4",
+    "release-it": "^19.2.4",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.0"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.29.0",
+    "camelcase": "^9.0.0",
+    "@wdio/cddl": "workspace:*",
+    "recast": "^0.23.11",
+    "yargs": "^18.0.0"
+  }
+}

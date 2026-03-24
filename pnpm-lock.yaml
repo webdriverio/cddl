@@ -55,6 +55,46 @@ importers:
         specifier: ^17.0.35
         version: 17.0.35
 
+  packages/cddl2java:
+    dependencies:
+      '@babel/parser':
+        specifier: ^7.29.0
+        version: 7.29.2
+      '@wdio/cddl':
+        specifier: workspace:*
+        version: link:../cddl
+      camelcase:
+        specifier: ^9.0.0
+        version: 9.0.0
+      recast:
+        specifier: ^0.23.11
+        version: 0.23.11
+      yargs:
+        specifier: ^18.0.0
+        version: 18.0.0
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.5.0
+      '@types/yargs':
+        specifier: ^17.0.35
+        version: 17.0.35
+      '@vitest/coverage-v8':
+        specifier: ^4.1.0
+        version: 4.1.0(vitest@4.1.0(@types/node@25.5.0)(vite@8.0.1(@types/node@25.5.0)(jiti@2.6.1)(yaml@2.8.3)))
+      npm-run-all2:
+        specifier: ^8.0.4
+        version: 8.0.4
+      release-it:
+        specifier: ^19.2.4
+        version: 19.2.4(@types/node@25.5.0)(magicast@0.5.2)
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.2
+      vitest:
+        specifier: ^4.1.0
+        version: 4.1.0(@types/node@25.5.0)(vite@8.0.1(@types/node@25.5.0)(jiti@2.6.1)(yaml@2.8.3))
+
   packages/cddl2ts:
     dependencies:
       '@babel/parser':
