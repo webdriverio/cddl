@@ -1,0 +1,15 @@
+{
+  "plugins": {
+    "@release-it/bumper": {
+      "out": [
+        "package.json"
+      ]
+    }
+  },
+  "git": {
+    "requireCleanWorkingDir": false,
+    "addUntrackedFiles": true,
+    "tagName": "cddl-v${version}",
+    "commitMessage": "chore(cddl): release v${version}"
+  }
+}

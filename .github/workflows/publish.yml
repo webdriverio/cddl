@@ -3,11 +3,19 @@ name: NPM Publish
 on:
   workflow_dispatch:
     inputs:
-      releaseType:
-        description: "Release type - major, minor or patch"
+      package:
+        description: 'Which package to release?'
         required: true
         type: choice
-        default: "patch"
+        options:
+          - all
+          - cddl
+          - cddl2ts
+      increment:
+        description: 'Increment type'
+        required: true
+        type: choice
+        default: 'patch'
         options:
           - patch
           - minor
@@ -62,7 +70,10 @@ jobs:
         env:
           NODE_ENV: production
       - name: Release
-        run: pnpm run release:ci -- ${{github.event.inputs.releaseType}}
+        run: |
+
+          # Execute release-it
+          pnpm run release:ci:${{github.event.inputs.package}} -- ${{ github.event.inputs.increment }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           NPM_CONFIG_PROVENANCE: true
