@@ -1,0 +1,52 @@
+{
+  "name": "@wdio/cddl2ts",
+  "version": "0.1.0",
+  "description": "A Node.js package that can generate a TypeScript definition based on a CDDL file",
+  "author": "Christian Bromann <mail@bromann.dev>",
+  "license": "MIT",
+  "homepage": "https://github.com/webdriverio/cddl2ts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/webdriverio/cddl2ts.git"
+  },
+  "keywords": [
+    "cddl",
+    "typescript",
+    "javascript"
+  ],
+  "bugs": {
+    "url": "https://github.com/webdriverio/cddl2ts/issues"
+  },
+  "type": "module",
+  "exports": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "bin": {
+    "cddl2ts": "./bin/cddl2ts.js"
+  },
+  "scripts": {
+    "release": "release-it --github.release",
+    "release:ci": "pnpm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
+    "release:patch": "pnpm run release -- patch",
+    "release:minor": "pnpm run release -- minor",
+    "release:major": "pnpm run release -- major",
+    "cli-examples": "run-p cli-examples:*",
+    "cli-examples:local": "pnpm run compile && node ./bin/cddl2ts.js ../../examples/webdriver/local.cddl --unknown-as-any > ./cli-examples/local.ts && tsc -p ./cli-examples/tsconfig.json",
+    "cli-examples:remote": "pnpm run compile && node ./bin/cddl2ts.js ../../examples/webdriver/remote.cddl --unknown-as-any > ./cli-examples/remote.ts && tsc -p ./cli-examples/tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.35",
+    "@types/node": "^24.12.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "npm-run-all2": "^8.0.4",
+    "release-it": "^19.2.4",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.29.0",
+    "camelcase": "^9.0.0",
+    "@wdio/cddl": "workspace:*",
+    "recast": "^0.23.11",
+    "yargs": "^18.0.0"
+  }
+}

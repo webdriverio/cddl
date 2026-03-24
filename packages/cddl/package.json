@@ -1,0 +1,44 @@
+{
+  "name": "@wdio/cddl",
+  "version": "0.1.0",
+  "description": "Concise data definition language (RFC 8610) implementation and JSON validator in Node.js",
+  "author": "Christian Bromann <mail@bromann.dev>",
+  "license": "MIT",
+  "homepage": "https://github.com/webdriverio/cddl#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/webdriverio/cddl.git"
+  },
+  "keywords": [
+    "cddl"
+  ],
+  "bugs": {
+    "url": "https://github.com/webdriverio/cddl/issues"
+  },
+  "type": "module",
+  "exports": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "bin": {
+    "cddl": "./bin/cddl.js"
+  },
+  "scripts": {
+    "release": "release-it --github.release",
+    "release:ci": "pnpm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
+    "release:patch": "pnpm run release -- patch",
+    "release:minor": "pnpm run release -- minor",
+    "release:major": "pnpm run release -- major"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.0",
+    "@types/yargs": "^17.0.35",
+    "@vitest/coverage-v8": "^4.1.0",
+    "npm-run-all2": "^8.0.4",
+    "release-it": "^19.2.4",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+
+  },
+  "dependencies": {
+    "yargs": "^18.0.0"
+  }
+}

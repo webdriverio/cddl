@@ -1,0 +1,1 @@
+export const CLI_EPILOGUE = `Copyright 2023 - Christian Bromann`

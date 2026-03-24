@@ -1,0 +1,102 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`cddl2ts > should generate correct types for test.cddl 1`] = `
+[
+  [
+    "export type Message = CommandResponse | ErrorResponse | Event;
+
+export type ErrorResponse = Extensible & {
+  id?: JsUint | null;
+  error: ErrorCode;
+  message: string;
+  stacktrace?: string;
+};
+
+export type ResultData = BrowsingContextResult | EmptyResult | NetworkResult | ScriptResult | SessionResult;
+export type ErrorCode = "invalid argument" | "invalid session id" | "no such alert" | "no such frame" | "no such handle" | "no such node" | "no such script" | "session not created" | "unknown command" | "unknown error" | "unsupported operation";
+export type JsInt = number;
+export type JsUint = number;
+export type Handle = string;
+export type SharedId = string;
+
+export interface UndefinedValue {
+  type: "undefined";
+}
+
+export interface NullValue {
+  type: null;
+}
+
+export interface StringValue {
+  type: "string";
+  value: string;
+}
+
+export type SpecialNumber = "NaN" | "-0" | "Infinity" | "-Infinity";
+
+export interface NumberValue {
+  type: "number";
+  value: Number | SpecialNumber;
+}
+
+export interface SessionCapabilitiesRequest {
+  alwaysMatch?: SessionCapabilityRequest;
+  firstMatch?: SessionCapabilityRequest[];
+  nested: {
+    obj: 123;
+    moreNesting: {
+      id: JsUint | null;
+      like: boolean;
+    };
+  };
+}
+
+export interface SomeGroup {
+  /**
+   * this is the optional leading param
+   * this is not leading
+   *
+   * @default 'foobar'
+   */
+  optional?: string;
+  /**
+   * @default 'portrait'
+   */
+  orientation?: "portrait" | "landscape";
+  /**
+   * @default 1
+   */
+  scale?: number;
+  /**
+   * @default true
+   */
+  shrinkToFit?: boolean;
+  /**
+   * @default true
+   */
+  shrinkToFitP?: boolean;
+  /**
+   * this is the pageRanges param
+   *
+   * @default 1
+   */
+  bottom?: number;
+  pageRanges?: (JsUint | string)[];
+  /**
+   * @default null
+   */
+  foo?: string;
+  /**
+   * @default 'mouse'
+   */
+  pointerType?: InputPointerType;
+}
+
+export type ScriptListLocalValue = ScriptLocalValue[];
+export type ScriptMappingLocalValue = (ScriptLocalValue | ScriptLocalValue)[];
+
+export // some comments here
+type Extensible = Record<string, any>;",
+  ],
+]
+`;

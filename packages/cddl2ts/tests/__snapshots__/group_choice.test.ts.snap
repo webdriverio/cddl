@@ -1,0 +1,72 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`group choice conversion > should generate a union type for multiple group choices 1`] = `
+"export type Extensible = Record<string, unknown>;
+export type ProxyConfiguration = AutodetectProxyConfiguration | DirectProxyConfiguration | ManualProxyConfiguration;
+
+export type AutodetectProxyConfiguration = Extensible & {
+  proxyType: "autodetect";
+};
+
+export type DirectProxyConfiguration = Extensible & {
+  proxyType: "direct";
+};
+
+export // 1. Simple Group Choice
+type ManualProxyConfiguration = Extensible & {
+  proxyType: "manual";
+};
+
+export // 2. Nested Group Choice
+type SimpleGroupChoice = Int | string;
+
+export // 3. Group Choice with Multiple Items (Sequence) - interpreted as tuple
+type NestedGroupChoice = (Int | Tstr);
+
+export // 4. Map Group Choice - interpreted as map (interface) union
+type SequenceGroupChoice = [number, string] | number;
+
+export // 5. Type Choice inside Group - should be value union
+type MapGroupChoice = {
+  a: 1;
+} | {
+  b: 2;
+};
+
+export // 6. Array with Group Choice - should be array of union?
+type TypeChoiceInsideGroup = number | string;
+
+export // 7. Map with nested group (bare and parens) - should be object like
+type ArrayGroupChoice = Int | string[];
+
+export type MapWithBareGroup = number;
+
+export // 8. Group wrapped in map with multiple properties
+type MapWithParensGroup = number;
+
+export // 9. Property type choice without operators
+type MapGroupWrap = ;
+
+export // 10. Nested choice with group reference
+interface PropChoiceNoOp {
+  a: number | number;
+  b: string;
+}
+
+export // 11. Complex type (group) followed by property without comma
+type NestedChoiceRef = number | string;
+
+export // 12. Multi-item group choice (verifies isChoice persistence)
+interface MapNoComma {
+  a: number;
+  b: string;
+}
+
+export type GroupChoiceMulti = {
+  a: number;
+} | {
+  b: string;
+} | {
+  c: number;
+};"
+`;
