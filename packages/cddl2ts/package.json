@@ -24,7 +24,7 @@
     "cddl2ts": "./bin/cddl2ts.js"
   },
   "scripts": {
-    "release": "release-it --github.release --dry-run --no-npm.publish",
+    "release": "release-it --github.release --no-npm.publish",
     "release:ci": "pnpm release --ci --npm.skipChecks",
     "cli-examples": "run-p cli-examples:*",
     "cli-examples:local": "pnpm run compile && node ./bin/cddl2ts.js ../../examples/webdriver/local.cddl --unknown-as-any > ./cli-examples/local.ts && tsc -p ./cli-examples/tsconfig.json",
