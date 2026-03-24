@@ -26,7 +26,7 @@
     "release:ci": "pnpm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir"
   },
   "devDependencies": {
-    "@types/node": "^24.12.0",
+    "@types/node": "^25.5.0",
     "@types/yargs": "^17.0.35",
     "@vitest/coverage-v8": "^4.1.0",
     "npm-run-all2": "^8.0.4",
