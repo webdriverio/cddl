@@ -28,7 +28,7 @@
     "clean": "rimraf --glob ./packages/*/build ./packages/*/coverage",
     "compile": "run-s compile:cddl compile:other",
     "compile:cddl": "pnpm --filter=@wdio/cddl exec tsc -p ./tsconfig.json",
-    "compile:other": "pnpm -r --filter=!@wdio/cddl exec tsc -p ./tsconfig.json",
+    "compile:other": "pnpm -r --filter=!@wdio/cddl --filter=!cddl exec tsc -p ./tsconfig.json",
     "release": "release-it --github.release",
     "release:ci": "pnpm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
     "release:patch": "pnpm run release -- patch",
