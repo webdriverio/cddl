@@ -27,8 +27,9 @@ jobs:
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22.x
+          cache: 'pnpm'
       - name: Install Dependencies
-        run: pnpm ci
+        run: pnpm install --frozen-lockfile
       - name: Unit Tests
         run: pnpm run test
   release:
@@ -45,13 +46,14 @@ jobs:
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 24.x
+          cache: 'pnpm'
           registry-url: https://registry.npmjs.org/
       - name: Setup Git
         run: |
           git config --global user.email "bot@webdriver.io"
           git config --global user.name "WebdriverIO Release Bot"
       - name: Install dependencies
-        run: pnpm ci
+        run: pnpm install --frozen-lockfile
       - name: Build package
         run: pnpm run build
         env:
