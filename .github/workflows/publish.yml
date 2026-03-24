@@ -68,8 +68,6 @@ jobs:
           NODE_ENV: production
       - name: Release
         run: |
-
-          # Execute release-it
           pnpm run release:ci:${{github.event.inputs.package}} -- ${{ github.event.inputs.releaseType }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
