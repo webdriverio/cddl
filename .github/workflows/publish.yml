@@ -36,8 +36,8 @@ jobs:
           cache: 'pnpm'
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
-      - name: Unit Tests
-        run: pnpm run test
+      - name: Validates compiling, typechecks, unit tests and CLI tests
+        run: pnpm run checks:all
   release:
     needs: test
     runs-on: ubuntu-latest
