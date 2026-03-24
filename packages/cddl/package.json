@@ -23,7 +23,7 @@
   },
   "scripts": {
     "release": "release-it --github.release --dry-run",
-    "release:ci": "pnpm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir"
+    "release:ci": "pnpm run release --ci --npm.skipChecks --no-git.requireCleanWorkingDir"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
