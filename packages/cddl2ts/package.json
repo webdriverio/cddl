@@ -25,7 +25,7 @@
   },
   "scripts": {
     "release": "release-it --github.release --dry-run",
-    "release:ci": "pnpm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
+    "release:ci": "pnpm release --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
     "cli-examples": "run-p cli-examples:*",
     "cli-examples:local": "pnpm run compile && node ./bin/cddl2ts.js ../../examples/webdriver/local.cddl --unknown-as-any > ./cli-examples/local.ts && tsc -p ./cli-examples/tsconfig.json",
     "cli-examples:remote": "pnpm run compile && node ./bin/cddl2ts.js ../../examples/webdriver/remote.cddl --unknown-as-any > ./cli-examples/remote.ts && tsc -p ./cli-examples/tsconfig.json"
