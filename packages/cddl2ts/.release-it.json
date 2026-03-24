@@ -10,6 +10,7 @@
     "requireCleanWorkingDir": false,
     "addUntrackedFiles": true,
     "tagName": "cddl2ts-v${version}",
-    "commitMessage": "chore(cddl2ts): release v${version}"
+    "commitMessage": "chore(cddl2ts): release v${version}",
+    "changelog": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE] -- . ../../tsconfig.json"
   }
 }
