@@ -11,6 +11,6 @@
     "addUntrackedFiles": true,
     "tagName": "cddl-v${version}",
     "commitMessage": "chore(cddl): release v${version}",
-    "changelog": "git log --pretty=format:\"* %s (%h)\" ${REV_RANGE:-HEAD} -- . ../../tsconfig.json"
+    "changelog": "git log --pretty=format:\"* %s (%h)\" ${latestTag ? latestTag + '..HEAD' : ''} -- . ../../tsconfig.json"
   }
 }
