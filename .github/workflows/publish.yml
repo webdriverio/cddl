@@ -7,12 +7,13 @@ on:
         description: 'Which package to release?'
         required: true
         type: choice
+        default: 'all'
         options:
           - all
           - cddl
           - cddl2ts
-      increment:
-        description: 'Increment type'
+      releaseType:
+        description: "Release type - major, minor or patch"
         required: true
         type: choice
         default: 'patch'
@@ -73,7 +74,7 @@ jobs:
         run: |
 
           # Execute release-it
-          pnpm run release:ci:${{github.event.inputs.package}} -- ${{ github.event.inputs.increment }}
+          pnpm run release:ci:${{github.event.inputs.package}} -- ${{ github.event.inputs.releaseType }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           NPM_CONFIG_PROVENANCE: true
