@@ -1,0 +1,7 @@
+## Description
+<!--
+1. The PR title will show in the release notes if you follow Conventional Commits: feat: ..., fix: ...
+  - Example with scope: feat(cddl2ts): ..., fix(cddl): ...
+  - Only feat & fix appears
+2. In the descrpition, to link the PR and issue uses: `Fixes issue#`
+-->
