@@ -15656,19 +15656,9 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         },
         "Type": [
           {
-            "Operator": {
-              "Type": "default",
-              "Value": {
-                "Type": "literal",
-                "Unwrapped": false,
-                "Value": 1,
-              },
-            },
-            "Type": {
-              "Type": "group",
-              "Unwrapped": false,
-              "Value": "js-uint",
-            },
+            "Type": "group",
+            "Unwrapped": false,
+            "Value": "js-uint",
           },
         ],
       },
@@ -15682,19 +15672,9 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         },
         "Type": [
           {
-            "Operator": {
-              "Type": "default",
-              "Value": {
-                "Type": "literal",
-                "Unwrapped": false,
-                "Value": 1,
-              },
-            },
-            "Type": {
-              "Type": "group",
-              "Unwrapped": false,
-              "Value": "js-uint",
-            },
+            "Type": "group",
+            "Unwrapped": false,
+            "Value": "js-uint",
           },
         ],
       },
@@ -15708,15 +15688,23 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         },
         "Type": [
           {
-            "Operator": {
-              "Type": "default",
+            "Type": {
+              "Type": "range",
+              "Unwrapped": false,
               "Value": {
-                "Type": "literal",
-                "Unwrapped": false,
-                "Value": 0,
+                "Inclusive": true,
+                "Max": {
+                  "Type": "literal",
+                  "Unwrapped": false,
+                  "Value": 1,
+                },
+                "Min": {
+                  "Type": "literal",
+                  "Unwrapped": false,
+                  "Value": 0,
+                },
               },
             },
-            "Type": "float",
           },
         ],
       },
@@ -15730,15 +15718,23 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         },
         "Type": [
           {
-            "Operator": {
-              "Type": "default",
+            "Type": {
+              "Type": "range",
+              "Unwrapped": false,
               "Value": {
-                "Type": "literal",
-                "Unwrapped": false,
-                "Value": 0,
+                "Inclusive": true,
+                "Max": {
+                  "Type": "literal",
+                  "Unwrapped": false,
+                  "Value": 1,
+                },
+                "Min": {
+                  "Type": "literal",
+                  "Unwrapped": false,
+                  "Value": -1,
+                },
               },
             },
-            "Type": "float",
           },
         ],
       },
@@ -15755,14 +15751,6 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Occurrence": {
           "m": Infinity,
           "n": 0,
-        },
-        "Operator": {
-          "Type": "default",
-          "Value": {
-            "Type": "literal",
-            "Unwrapped": false,
-            "Value": 0,
-          },
         },
         "Type": [
           {
@@ -15800,14 +15788,6 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
           "m": Infinity,
           "n": 0,
         },
-        "Operator": {
-          "Type": "default",
-          "Value": {
-            "Type": "literal",
-            "Unwrapped": false,
-            "Value": 0,
-          },
-        },
         "Type": [
           {
             "Type": {
@@ -15837,14 +15817,6 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Occurrence": {
           "m": Infinity,
           "n": 0,
-        },
-        "Operator": {
-          "Type": "default",
-          "Value": {
-            "Type": "literal",
-            "Unwrapped": false,
-            "Value": 0,
-          },
         },
         "Type": [
           {
