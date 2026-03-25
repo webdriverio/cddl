@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { transform } from '../src/index.js'
-import type { Variable } from '@wdio/cddl'
+import type { Variable } from 'cddl'
 
 describe('literal transformation direct', () => {
     it('should transform bigint literals correctly', () => {
