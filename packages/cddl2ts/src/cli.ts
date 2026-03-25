@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import yargs from 'yargs'
 
-import { parse } from '@wdio/cddl'
+import { parse } from 'cddl'
 
 import { transform } from './index.js'
 import { pkg } from './constants.js'

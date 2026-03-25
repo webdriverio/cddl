@@ -1,13 +1,13 @@
 {
-  "name": "@wdio/cddl2ts",
-  "version": "0.0.0",
+  "name": "cddl2ts",
+  "version": "0.3.1",
   "description": "A Node.js package that can generate a TypeScript definition based on a CDDL file",
   "author": "Christian Bromann <mail@bromann.dev>",
   "license": "MIT",
-  "homepage": "https://github.com/webdriverio/cddl2ts#readme",
+  "homepage": "https://github.com/webdriverio/cddl/blob/main/packages/cddl2ts/README.md",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/webdriverio/cddl2ts.git"
+    "url": "git+ssh://git@github.com/webdriverio/cddl.git"
   },
   "keywords": [
     "cddl",
@@ -15,7 +15,7 @@
     "javascript"
   ],
   "bugs": {
-    "url": "https://github.com/webdriverio/cddl2ts/issues"
+    "url": "https://github.com/webdriverio/cddl/issues"
   },
   "type": "module",
   "exports": "./build/index.js",
@@ -42,7 +42,7 @@
   "dependencies": {
     "@babel/parser": "^7.29.0",
     "camelcase": "^9.0.0",
-    "@wdio/cddl": "workspace:*",
+    "cddl": "workspace:*",
     "recast": "^0.23.11",
     "yargs": "^18.0.0"
   }
