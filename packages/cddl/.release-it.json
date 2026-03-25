@@ -1,14 +1,6 @@
 {
-  "npm": {
-    "publishPackageManager": "pnpm",
-    "ignoreVersion": true
-  },
   "plugins": {
-    "@release-it/bumper": {
-      "out": [
-        "package.json"
-      ]
-    }
+    "release-it-pnpm": {}
   },
   "git": {
     "requireCleanWorkingDir": false,
