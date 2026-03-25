@@ -1,4 +1,3 @@
-// changelogithub.config.ts
 import { defineConfig } from 'changelogithub'
 
 export default defineConfig({
