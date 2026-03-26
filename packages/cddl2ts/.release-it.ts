@@ -5,4 +5,6 @@ const config: Config = {
   ...baseConfig('cddl2ts'),
 };
 
+console.log("Release-it config for cddl2ts loaded", config);
+
 export default config;
