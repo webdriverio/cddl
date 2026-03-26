@@ -8,3 +8,4 @@ const config: Config = {
 console.log("Release-it config for cddl2ts loaded", config);
 
 export default config;
+
