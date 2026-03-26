@@ -58,3 +58,4 @@ console.log(ts)
 ---
 
 If you are interested in this project, please feel free to contribute ideas or code patches. Have a look at our [contributing guidelines](https://github.com/webdriverio/cddl/blob/master/CONTRIBUTING.md) to get started.
+
