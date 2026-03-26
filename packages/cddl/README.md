@@ -71,4 +71,3 @@ Read the full documentation on this AST in the [`docs`](./docs/README.md) direct
 ---
 
 If you are interested in this project, please feel free to contribute ideas or code patches. Have a look at our [contributing guidelines](https://github.com/webdriverio/cddl/blob/master/CONTRIBUTING.md) to get started.
-
