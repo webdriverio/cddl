@@ -3,7 +3,7 @@ import path from 'node:path'
 import util from 'node:util'
 
 import camelcase from 'camelcase'
-import { Array as CDDLArray, parse as parseCDDL, type PropertyReference, type Property, type Group, type Variable, type Assignment, type PropertyType } from '@wdio/cddl'
+import { Array as CDDLArray, parse as parseCDDL, type PropertyReference, type Property, type Group, type Variable, type Assignment, type PropertyType } from 'cddl'
 
 import { writeFile } from './utils.js'
 import { CDDL_PARSE_ERROR_MESSAGE } from './constants.js'
