@@ -1,6 +1,7 @@
-import { defineConfig } from 'changelogithub'
+import { ChangelogOptions } from "changelogithub";
 
-export default defineConfig({
+const baseConfig = (name: string): ChangelogOptions => ({
+  name,
   types: {
     feat: { title: '🚀 Features' },
     fix: { title: '🐞 Bug Fixes' },
@@ -11,5 +12,8 @@ export default defineConfig({
   },
   titles: {
     breakingChanges: '🚨 Breaking Changes'
-  }
+  },
+  tagFilter: (tag) => tag.startsWith(`${name}-v`),
 })
+
+export default baseConfig;
