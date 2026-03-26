@@ -1,4 +1,4 @@
-CDDL to Java
+CDDL to Java (Beta)
 ==================
 
 > A Node.js package that can generate Java classes based on a CDDL file
