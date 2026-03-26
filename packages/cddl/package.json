@@ -22,7 +22,7 @@
     "cddl": "./bin/cddl.js"
   },
   "scripts": {
-    "release": "release-it --config .release-it.ts",
+    "release": "release-it --config .release-it.ts --dry-run --VV",
     "release:ci": "pnpm release --ci --npm.skipChecks"
   },
   "devDependencies": {
