@@ -1,4 +1,4 @@
-import fs from 'node:fs'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import util from 'node:util'
 
@@ -588,7 +588,7 @@ async function createJavaFiles (javaFiles: Map<MapKey, string>, outputDir: strin
     for (const [[moduleScope, moduleName], code] of javaFiles.entries()) {
         const rootDir = path.join(outputDir, moduleScope)
 
-        await fs.mkdirSync(rootDir, { recursive: true })
+        await fs.mkdir(rootDir, { recursive: true })
         await writeFile(path.resolve(rootDir, `${moduleName}.java`), code)
     }
 }
@@ -701,7 +701,7 @@ public class ${resultClassName} {
 }
 
 async function createEmptyResultClass(outputDir: string) {
-    await fs.mkdirSync(path.join(outputDir), { recursive: true });
+    await fs.mkdir(path.join(outputDir), { recursive: true });
     await writeFile(path.resolve(outputDir, 'EmptyResult.java'), emptyResultTemplate);
 }
 
@@ -709,7 +709,7 @@ async function createHelperClasses( outputDir: string) {
     // Create directories and write files
     await writeFile(path.resolve(outputDir, 'ContextValue.java'), contextValueTemplate);
     await writeFile(path.resolve(outputDir, 'AccessibilityValue.java'), accessibilityValueTemplate);
-    await fs.mkdirSync(path.join(outputDir, 'Session'), { recursive: true });
+    await fs.mkdir(path.join(outputDir, 'Session'), { recursive: true });
     await writeFile(path.resolve(outputDir, 'Session/Capabilities.java'), capabilitiesTemplate);
 }
 
@@ -721,7 +721,7 @@ export async function transform (cddlFilePath: string, outputDir: string) {
         createResultClasses(ast)
     ])
 
-    await fs.mkdirSync(outputDir, { recursive: true })
+    await fs.mkdir(outputDir, { recursive: true })
     await Promise.all([
         createJavaFiles(moduleCode, outputDir),
         createJavaFiles(propertyCode, outputDir),
