@@ -5,7 +5,7 @@ import util from 'node:util'
 import camelcase from 'camelcase'
 import { Array as CDDLArray, parse as parseCDDL, type PropertyReference, type Property, type Group, type Variable, type Assignment, type PropertyType } from 'cddl'
 
-import { writeFile } from './utils.js'
+import { pascalCase, writeFile } from './utils.js'
 import { CDDL_PARSE_ERROR_MESSAGE } from './constants.js'
 import {
     emptyResultTemplate,
@@ -186,7 +186,6 @@ function resultName(name: string): string {
 }
 
 async function createPropertyClasses (assignments: Assignment[]) {
-    console.log('Array', Array)
     const javaPropFiles = new Map<MapKey, string>()
     const allGroupEnums = assignments
         .filter((a) => (
@@ -413,7 +412,7 @@ public class ${propClassName}${implementsExtension ? ` implements ${implementsEx
                     ` */\n` +
                     `public class ${prop} {\n\n}`
                 )
-                javaPropFiles.set([module.slice(0, 1).toUpperCase() + module.slice(1), prop], code)
+                javaPropFiles.set([pascalCase(module), prop], code)
             } else
             /**
              * handle literal enums like
@@ -439,7 +438,7 @@ public class ${propClassName}${implementsExtension ? ` implements ${implementsEx
                     return (p as PropertyReference).Value
                 }) as string[]
                 const code = getEnumTemplate(prop, enumValues)
-                javaPropFiles.set([module, prop], code)
+                javaPropFiles.set([pascalCase(module), prop], code)
             }
         }
     }

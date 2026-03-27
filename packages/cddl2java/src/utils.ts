@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 
 import { GENERATED_FILE_COMMENT } from './constants.js'
+import camelcase from 'camelcase'
 
 /**
  * write generated ts file so it
@@ -15,4 +16,8 @@ export async function writeFile (filePath: string, content: string) {
         filePath,
         GENERATED_FILE_COMMENT + '\n\n' + content.replace(/\r\n/g, '\n')
     )
+}
+
+export function pascalCase(name: string) {
+    return camelcase(name, { pascalCase: true })
 }
