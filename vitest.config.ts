@@ -23,6 +23,12 @@ export default defineConfig({
                     functions: 87.1,
                     statements: 71.3,
                     branches: 63.4,
+                },
+                'packages/cddl2java/**/*': {
+                    lines: 97.7,
+                    functions: 94.8,
+                    statements: 97.1,
+                    branches: 91.5,
                 }
             }
         }
