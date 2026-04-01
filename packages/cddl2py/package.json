@@ -1,16 +1,19 @@
 {
-  "name": "cddl",
-  "version": "0.14.10",
-  "description": "Concise data definition language (RFC 8610) implementation and JSON validator in Node.js",
+  "name": "cddl2py",
+  "version": "0.0.0",
+  "description": "A Node.js package that can generate Python type definitions (with optional Pydantic support) based on a CDDL file",
   "author": "Christian Bromann <mail@bromann.dev>",
   "license": "MIT",
-  "homepage": "https://github.com/webdriverio/cddl#readme",
+  "homepage": "https://github.com/webdriverio/cddl/blob/main/packages/cddl2py/README.md",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/webdriverio/cddl.git"
   },
   "keywords": [
-    "cddl"
+    "cddl",
+    "python",
+    "pydantic",
+    "dataclasses"
   ],
   "bugs": {
     "url": "https://github.com/webdriverio/cddl/issues"
@@ -19,18 +22,18 @@
   "exports": "./build/index.js",
   "types": "./build/index.d.ts",
   "bin": {
-    "cddl": "./bin/cddl.js"
+    "cddl2py": "./bin/cddl2py.js"
   },
   "scripts": {
     "release": "release-it --config .release-it.ts --VV",
     "release:ci": "pnpm release --ci --npm.skipChecks"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "@types/yargs": "^17.0.35"
+    "@types/yargs": "^17.0.35",
+    "@types/node": "^25.5.0"
   },
   "dependencies": {
-    "camelcase": "^9.0.0",
+    "cddl": "workspace:*",
     "yargs": "^18.0.0"
   }
 }

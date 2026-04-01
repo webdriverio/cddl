@@ -33,6 +33,7 @@
     "release:ci:cddl": "pnpm run --filter=cddl release:ci",
     "release:ci:cddl2ts": "pnpm run --filter=cddl2ts release:ci",
     "release:ci:cddl2java": "pnpm run --filter=cddl2java release:ci",
+    "release:ci:cddl2py": "pnpm run --filter=cddl2py release:ci",
     "test": "run-p test:*",
     "test:typechecks": "tsc -p ./tsconfig.test.json",
     "test:unit": "vitest --config vitest.config.ts --run",

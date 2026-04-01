@@ -1,0 +1,127 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`group choice conversion > should generate a union type for multiple group choices (Pydantic) 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Any, Literal, Tuple, Union
+from pydantic import BaseModel
+
+Extensible = dict[str, Any]
+
+ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]
+
+class AutodetectProxyConfiguration(Extensible):
+    proxy_type: Literal["autodetect"]
+
+class DirectProxyConfiguration(Extensible):
+    proxy_type: Literal["direct"]
+
+class ManualProxyConfiguration(Extensible):
+    proxy_type: Literal["manual"]
+
+SimpleGroupChoice = Union[Int, str]
+
+class NestedGroupChoice(BaseModel):
+    pass
+
+SequenceGroupChoice = Union[Tuple[int, str], float]
+
+class _MapGroupChoiceVariant0(BaseModel):
+    a: Literal[1]
+
+class _MapGroupChoiceVariant1(BaseModel):
+    b: Literal[2]
+
+MapGroupChoice = Union[_MapGroupChoiceVariant0, _MapGroupChoiceVariant1]
+
+TypeChoiceInsideGroup = Union[int, str]
+
+ArrayGroupChoice = list[Union[Int, str]]
+
+class MapWithBareGroup(BaseModel):
+    pass
+
+class MapWithParensGroup(BaseModel):
+    pass
+
+class MapGroupWrap(BaseModel):
+    pass
+
+class PropChoiceNoOp(BaseModel):
+    a: Union[int, float]
+    b: str
+
+NestedChoiceRef = Union[int, str]
+
+class MapNoComma(BaseModel):
+    a: int
+    b: str
+
+GroupChoiceMulti = Union[dict[str, Any], dict[str, Any], dict[str, Any]]
+"
+`;
+
+exports[`group choice conversion > should generate a union type for multiple group choices (TypedDict) 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Any, Literal, Tuple, Union
+from typing_extensions import TypedDict
+
+Extensible = dict[str, Any]
+
+ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]
+
+class AutodetectProxyConfiguration(Extensible):
+    proxy_type: Literal["autodetect"]
+
+class DirectProxyConfiguration(Extensible):
+    proxy_type: Literal["direct"]
+
+class ManualProxyConfiguration(Extensible):
+    proxy_type: Literal["manual"]
+
+SimpleGroupChoice = Union[Int, str]
+
+class NestedGroupChoice(TypedDict):
+    pass
+
+SequenceGroupChoice = Union[Tuple[int, str], float]
+
+class _MapGroupChoiceVariant0(TypedDict):
+    a: Literal[1]
+
+class _MapGroupChoiceVariant1(TypedDict):
+    b: Literal[2]
+
+MapGroupChoice = Union[_MapGroupChoiceVariant0, _MapGroupChoiceVariant1]
+
+TypeChoiceInsideGroup = Union[int, str]
+
+ArrayGroupChoice = list[Union[Int, str]]
+
+class MapWithBareGroup(TypedDict):
+    pass
+
+class MapWithParensGroup(TypedDict):
+    pass
+
+class MapGroupWrap(TypedDict):
+    pass
+
+class PropChoiceNoOp(TypedDict):
+    a: Union[int, float]
+    b: str
+
+NestedChoiceRef = Union[int, str]
+
+class MapNoComma(TypedDict):
+    a: int
+    b: str
+
+GroupChoiceMulti = Union[dict[str, Any], dict[str, Any], dict[str, Any]]
+"
+`;

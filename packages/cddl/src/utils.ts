@@ -1,3 +1,15 @@
+import camelcase from 'camelcase'
+
+import type {
+    Assignment,
+    Array as CDDLArray,
+    Group,
+    NativeTypeWithOperator,
+    Property,
+    PropertyReference,
+    Variable
+} from './ast.js'
+
 import { Tokens, Token } from './tokens.js'
 
 export function isLetter (ch: string): boolean {
@@ -34,4 +46,51 @@ export function parseNumberValue (token: Token): string | number {
     }
 
     return parseInt(token.Literal, 10)
+}
+
+export function pascalCase (name: string) {
+    return camelcase(name, { pascalCase: true })
+}
+
+export function isVariable (assignment: Assignment): assignment is Variable {
+    return assignment.Type === 'variable'
+}
+
+export function isGroup (t: any): t is Group {
+    return t && t.Type === 'group'
+}
+
+export function isCDDLArray (t: any): t is CDDLArray {
+    return t && t.Type === 'array'
+}
+
+export function isProperty (t: any): t is Property {
+    return t && typeof t.Name === 'string' && typeof t.HasCut === 'boolean'
+}
+
+export function isUnNamedProperty (t: any): t is Property & { Name: '' } {
+    return isProperty(t) && t.Name === ''
+}
+
+export function isNamedGroupReference (t: any): t is PropertyReference & { Value: string } {
+    return isGroup(t) && isPropertyReference(t) && typeof t.Value === 'string'
+}
+
+export function isPropertyReference (t: any): t is PropertyReference {
+    return t && typeof t === 'object' && 'Value' in t
+}
+
+export function isNativeTypeWithOperator (t: any): t is NativeTypeWithOperator {
+    return t && typeof t.Type === 'object' && 'Operator' in t
+}
+
+export function isRange (t: any): boolean {
+    return t && typeof t.Type === 'object' && (t.Type as any).Type === 'range'
+}
+
+export function isLiteralWithValue (t: any): t is {
+    Type: 'literal'
+    Value: unknown
+} {
+    return t && t.Type === 'literal' && 'Value' in t
 }

@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`named group choice > should generate a union type alias for named group references (Pydantic) 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Union
+from pydantic import BaseModel
+
+Choice = Union[OptionA, OptionB]
+
+class OptionA(BaseModel):
+    a: int
+
+class OptionB(BaseModel):
+    b: str
+"
+`;
+
+exports[`named group choice > should generate a union type alias for named group references (TypedDict) 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Union
+from typing_extensions import TypedDict
+
+Choice = Union[OptionA, OptionB]
+
+class OptionA(TypedDict):
+    a: int
+
+class OptionB(TypedDict):
+    b: str
+"
+`;
