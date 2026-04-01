@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest'
 import type {
     Array as CDDLArray,
     Assignment,
+    Comment,
     Group,
     NativeTypeWithOperator,
     Property,
@@ -29,7 +30,7 @@ import {
     pascalCase
 } from '../src/utils.js'
 
-const comments = []
+const comments: Comment[] = []
 
 function createVariable (): Variable {
     return {
