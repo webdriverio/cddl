@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import cli from '../src/cli.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-const groupChoiceCDDL = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'group_choice.cddl')
+const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'webdriver', 'remote.cddl')
 
 vi.mock('../src/constants', () => ({
     pkg: {
@@ -35,7 +35,7 @@ vi.mock('../src/constants', () => ({
     }
 }))
 
-describe('group choice conversion', () => {
+describe('webdriver remote spec', () => {
     let exitOrig = process.exit
     let logOrig = console.log
     let errorOrig = console.error
@@ -52,37 +52,13 @@ describe('group choice conversion', () => {
         console.error = errorOrig
     })
 
-    it('should generate a union type for multiple group choices (TypedDict)', async () => {
-        await cli([groupChoiceCDDL])
+    it('should generate Python types for remote.cddl', async () => {
+        await cli([cddlFile])
 
         expect(process.exit).not.toHaveBeenCalledWith(1)
         expect(console.error).not.toHaveBeenCalled()
         expect(console.log).toHaveBeenCalled()
         const output = vi.mocked(console.log).mock.calls.flat().join('\n')
-
-        expect(output).toContain('ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]')
-
-        expect(output).toContain('class AutodetectProxyConfiguration(Extensible):')
-        expect(output).toContain('class DirectProxyConfiguration(Extensible):')
-        expect(output).toContain('class ManualProxyConfiguration(Extensible):')
-
-        expect(output).toMatchSnapshot()
-    })
-
-    it('should generate a union type for multiple group choices (Pydantic)', async () => {
-        await cli([groupChoiceCDDL, '--pydantic'])
-
-        expect(process.exit).not.toHaveBeenCalledWith(1)
-        expect(console.error).not.toHaveBeenCalled()
-        expect(console.log).toHaveBeenCalled()
-        const output = vi.mocked(console.log).mock.calls.flat().join('\n')
-
-        expect(output).toContain('ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]')
-
-        expect(output).toContain('class AutodetectProxyConfiguration(Extensible):')
-        expect(output).toContain('class DirectProxyConfiguration(Extensible):')
-        expect(output).toContain('class ManualProxyConfiguration(Extensible):')
-
         expect(output).toMatchSnapshot()
     })
 })

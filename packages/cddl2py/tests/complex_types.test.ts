@@ -52,23 +52,41 @@ describe('complex types conversion', () => {
         console.error = errorOrig
     })
 
-    it('should handle complex types (TypedDict)', async () => {
+    it('should include all types in the union (TypedDict)', async () => {
         await cli([cddlFile])
 
         expect(process.exit).not.toHaveBeenCalledWith(1)
         expect(console.error).not.toHaveBeenCalled()
         expect(console.log).toHaveBeenCalled()
         const output = vi.mocked(console.log).mock.calls.flat().join('\n')
+
+        expect(output).toContain('ArrayLocalValue')
+        expect(output).toContain('DateLocalValue')
+        expect(output).toContain('MapLocalValue')
+        expect(output).toContain('ObjectLocalValue')
+        expect(output).toContain('RegExpLocalValue')
+        expect(output).toContain('SetLocalValue')
+
+        expect(output).toContain('LocalValue = Union[ArrayLocalValue, DateLocalValue, MapLocalValue, ObjectLocalValue, RegExpLocalValue, SetLocalValue]')
         expect(output).toMatchSnapshot()
     })
 
-    it('should handle complex types (Pydantic)', async () => {
+    it('should include all types in the union (Pydantic)', async () => {
         await cli([cddlFile, '--pydantic'])
 
         expect(process.exit).not.toHaveBeenCalledWith(1)
         expect(console.error).not.toHaveBeenCalled()
         expect(console.log).toHaveBeenCalled()
         const output = vi.mocked(console.log).mock.calls.flat().join('\n')
+
+        expect(output).toContain('ArrayLocalValue')
+        expect(output).toContain('DateLocalValue')
+        expect(output).toContain('MapLocalValue')
+        expect(output).toContain('ObjectLocalValue')
+        expect(output).toContain('RegExpLocalValue')
+        expect(output).toContain('SetLocalValue')
+
+        expect(output).toContain('LocalValue = Union[ArrayLocalValue, DateLocalValue, MapLocalValue, ObjectLocalValue, RegExpLocalValue, SetLocalValue]')
         expect(output).toMatchSnapshot()
     })
 })

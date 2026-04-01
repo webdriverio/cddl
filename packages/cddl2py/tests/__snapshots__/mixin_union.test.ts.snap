@@ -1,5 +1,69 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`mixin and union conversion > should generate union type aliases for mixin choices (Pydantic) 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Union
+from pydantic import BaseModel
+
+class Mixins(MixinA, MixinB):
+    pass
+
+class MixinA(BaseModel):
+    a: int
+
+class MixinB(BaseModel):
+    b: str
+
+UnionMixin = Union[MixinA, MixinB]
+
+class _ComplexMixinsFields(BaseModel):
+    c: bool
+
+class _ComplexMixinsVariant0(_ComplexMixinsFields, MixinA):
+    pass
+
+class _ComplexMixinsVariant1(_ComplexMixinsFields, MixinB):
+    pass
+
+ComplexMixins = Union[_ComplexMixinsVariant0, _ComplexMixinsVariant1]
+"
+`;
+
+exports[`mixin and union conversion > should generate union type aliases for mixin choices (TypedDict) 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Union
+from typing_extensions import TypedDict
+
+class Mixins(MixinA, MixinB):
+    pass
+
+class MixinA(TypedDict):
+    a: int
+
+class MixinB(TypedDict):
+    b: str
+
+UnionMixin = Union[MixinA, MixinB]
+
+class _ComplexMixinsFields(TypedDict):
+    c: bool
+
+class _ComplexMixinsVariant0(_ComplexMixinsFields, MixinA):
+    pass
+
+class _ComplexMixinsVariant1(_ComplexMixinsFields, MixinB):
+    pass
+
+ComplexMixins = Union[_ComplexMixinsVariant0, _ComplexMixinsVariant1]
+"
+`;
+
 exports[`mixin and union conversion > should handle mixins and unions (Pydantic) 1`] = `
 "# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
 

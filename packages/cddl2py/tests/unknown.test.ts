@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import cli from '../src/cli.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'mixin_union.cddl')
+const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'unknown.cddl')
 
 vi.mock('../src/constants', () => ({
     pkg: {
@@ -35,7 +35,7 @@ vi.mock('../src/constants', () => ({
     }
 }))
 
-describe('mixin and union conversion', () => {
+describe('any type mapping', () => {
     let exitOrig = process.exit
     let logOrig = console.log
     let errorOrig = console.error
@@ -52,29 +52,21 @@ describe('mixin and union conversion', () => {
         console.error = errorOrig
     })
 
-    it('should generate union type aliases for mixin choices (TypedDict)', async () => {
+    it('should map CDDL any to Python Any (TypedDict)', async () => {
         await cli([cddlFile])
 
-        expect(process.exit).not.toHaveBeenCalledWith(1)
-        expect(console.error).not.toHaveBeenCalled()
-
         const output = vi.mocked(console.log).mock.calls.flat().join('\n')
-
-        expect(output).toContain('class Mixins(MixinA, MixinB):')
-        expect(output).toContain('UnionMixin = Union[MixinA, MixinB]')
-        expect(output).toMatchSnapshot()
+        expect(output).toContain('Foo = Any')
+        expect(output).toContain('Bar = list[Any]')
+        expect(output).toContain('Baz = dict[str, Any]')
     })
 
-    it('should generate union type aliases for mixin choices (Pydantic)', async () => {
+    it('should map CDDL any to Python Any (Pydantic)', async () => {
         await cli([cddlFile, '--pydantic'])
 
-        expect(process.exit).not.toHaveBeenCalledWith(1)
-        expect(console.error).not.toHaveBeenCalled()
-
         const output = vi.mocked(console.log).mock.calls.flat().join('\n')
-
-        expect(output).toContain('class Mixins(MixinA, MixinB):')
-        expect(output).toContain('UnionMixin = Union[MixinA, MixinB]')
-        expect(output).toMatchSnapshot()
+        expect(output).toContain('Foo = Any')
+        expect(output).toContain('Bar = list[Any]')
+        expect(output).toContain('Baz = dict[str, Any]')
     })
 })
