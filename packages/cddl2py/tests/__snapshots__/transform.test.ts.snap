@@ -1,0 +1,137 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`transform > snapshot tests with parsed CDDL > should transform test.cddl Pydantic correctly 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Any, Literal, Optional, Union
+from pydantic import BaseModel, Field
+
+Message = Union[CommandResponse, ErrorResponse, Event]
+
+class ErrorResponse(Extensible):
+    id: Optional[Union[JsUint, None]] = None
+    error: ErrorCode
+    message: str
+    stacktrace: Optional[str] = None
+
+ResultData = Union[BrowsingContextResult, EmptyResult, NetworkResult, ScriptResult, SessionResult]
+
+ErrorCode = Union[Literal["invalid argument"], Literal["invalid session id"], Literal["no such alert"], Literal["no such frame"], Literal["no such handle"], Literal["no such node"], Literal["no such script"], Literal["session not created"], Literal["unknown command"], Literal["unknown error"], Literal["unsupported operation"]]
+
+JsInt = int
+
+JsUint = int
+
+Handle = str
+
+SharedId = str
+
+class UndefinedValue(BaseModel):
+    type: Literal["undefined"]
+
+class NullValue(BaseModel):
+    type: None
+
+class StringValue(BaseModel):
+    type: Literal["string"]
+    value: str
+
+SpecialNumber = Union[Literal["NaN"], Literal["-0"], Literal["Infinity"], Literal["-Infinity"]]
+
+class NumberValue(BaseModel):
+    type: Literal["number"]
+    value: Union[Number, SpecialNumber]
+
+class SessionCapabilitiesRequest(BaseModel):
+    always_match: Optional[SessionCapabilityRequest] = None
+    first_match: Optional[list[SessionCapabilityRequest]] = None
+    nested: dict[str, Any]
+
+class SomeGroup(BaseModel):
+    optional: Optional[str] = None  # this is not leading
+    orientation: Optional[Union[Literal["portrait"], Literal["landscape"]]] = Field(default="portrait")
+    scale: Optional[int] = None
+    shrink_to_fit: Optional[bool] = None
+    shrink_to_fit_p: Optional[bool] = Field(default=True)
+    bottom: Optional[float] = Field(default=1)  # this is the pageRanges param
+    page_ranges: Optional[list[Union[JsUint, str]]] = None
+    foo: Optional[str] = None
+    pointer_type: Optional[InputPointerType] = None
+
+ScriptListLocalValue = list[ScriptLocalValue]
+
+ScriptMappingLocalValue = list[Union[ScriptLocalValue, str]]
+
+Extensible = dict[str, Any]
+"
+`;
+
+exports[`transform > snapshot tests with parsed CDDL > should transform test.cddl TypedDict correctly 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Any, Literal, Union
+from typing_extensions import NotRequired, TypedDict
+
+Message = Union[CommandResponse, ErrorResponse, Event]
+
+class ErrorResponse(Extensible):
+    id: NotRequired[Union[JsUint, None]]
+    error: ErrorCode
+    message: str
+    stacktrace: NotRequired[str]
+
+ResultData = Union[BrowsingContextResult, EmptyResult, NetworkResult, ScriptResult, SessionResult]
+
+ErrorCode = Union[Literal["invalid argument"], Literal["invalid session id"], Literal["no such alert"], Literal["no such frame"], Literal["no such handle"], Literal["no such node"], Literal["no such script"], Literal["session not created"], Literal["unknown command"], Literal["unknown error"], Literal["unsupported operation"]]
+
+JsInt = int
+
+JsUint = int
+
+Handle = str
+
+SharedId = str
+
+class UndefinedValue(TypedDict):
+    type: Literal["undefined"]
+
+class NullValue(TypedDict):
+    type: None
+
+class StringValue(TypedDict):
+    type: Literal["string"]
+    value: str
+
+SpecialNumber = Union[Literal["NaN"], Literal["-0"], Literal["Infinity"], Literal["-Infinity"]]
+
+class NumberValue(TypedDict):
+    type: Literal["number"]
+    value: Union[Number, SpecialNumber]
+
+class SessionCapabilitiesRequest(TypedDict):
+    always_match: NotRequired[SessionCapabilityRequest]
+    first_match: NotRequired[list[SessionCapabilityRequest]]
+    nested: dict[str, Any]
+
+class SomeGroup(TypedDict):
+    optional: NotRequired[str]  # this is not leading
+    orientation: NotRequired[Union[Literal["portrait"], Literal["landscape"]]]
+    scale: NotRequired[int]
+    shrink_to_fit: NotRequired[bool]
+    shrink_to_fit_p: NotRequired[bool]
+    bottom: NotRequired[float]  # this is the pageRanges param
+    page_ranges: NotRequired[list[Union[JsUint, str]]]
+    foo: NotRequired[str]
+    pointer_type: NotRequired[InputPointerType]
+
+ScriptListLocalValue = list[ScriptLocalValue]
+
+ScriptMappingLocalValue = list[Union[ScriptLocalValue, str]]
+
+Extensible = dict[str, Any]
+"
+`;

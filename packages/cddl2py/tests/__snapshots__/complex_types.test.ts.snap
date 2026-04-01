@@ -1,0 +1,81 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`complex types conversion > should handle complex types (Pydantic) 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Literal, Union
+from pydantic import BaseModel
+
+LocalValue = Union[ArrayLocalValue, DateLocalValue, MapLocalValue, ObjectLocalValue, RegExpLocalValue, SetLocalValue]
+
+class ArrayLocalValue(BaseModel):
+    type: Literal["array"]
+    value: ListLocalValue
+
+class DateLocalValue(BaseModel):
+    type: Literal["date"]
+    value: str
+
+class MapLocalValue(BaseModel):
+    type: Literal["map"]
+    value: MappingLocalValue
+
+class ObjectLocalValue(BaseModel):
+    type: Literal["object"]
+    value: MappingLocalValue
+
+class RegExpLocalValue(BaseModel):
+    type: Literal["regexp"]
+    value: str
+
+class SetLocalValue(BaseModel):
+    type: Literal["set"]
+    value: ListLocalValue
+
+MappingLocalValue = list[Union[LocalValue, str]]
+
+ListLocalValue = list[LocalValue]
+"
+`;
+
+exports[`complex types conversion > should handle complex types (TypedDict) 1`] = `
+"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+
+from __future__ import annotations
+
+from typing import Literal, Union
+from typing_extensions import TypedDict
+
+LocalValue = Union[ArrayLocalValue, DateLocalValue, MapLocalValue, ObjectLocalValue, RegExpLocalValue, SetLocalValue]
+
+class ArrayLocalValue(TypedDict):
+    type: Literal["array"]
+    value: ListLocalValue
+
+class DateLocalValue(TypedDict):
+    type: Literal["date"]
+    value: str
+
+class MapLocalValue(TypedDict):
+    type: Literal["map"]
+    value: MappingLocalValue
+
+class ObjectLocalValue(TypedDict):
+    type: Literal["object"]
+    value: MappingLocalValue
+
+class RegExpLocalValue(TypedDict):
+    type: Literal["regexp"]
+    value: str
+
+class SetLocalValue(TypedDict):
+    type: Literal["set"]
+    value: ListLocalValue
+
+MappingLocalValue = list[Union[LocalValue, str]]
+
+ListLocalValue = list[LocalValue]
+"
+`;
