@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`group choice conversion > should generate a union type for multiple group choices (Pydantic) 1`] = `
-"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+"# compiled with https://www.npmjs.com/package/cddl2py v0.0.0
 
 from __future__ import annotations
 
@@ -64,7 +64,7 @@ GroupChoiceMulti = Union[dict[str, Any], dict[str, Any], dict[str, Any]]
 `;
 
 exports[`group choice conversion > should generate a union type for multiple group choices (TypedDict) 1`] = `
-"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+"# compiled with https://www.npmjs.com/package/cddl2py v0.0.0
 
 from __future__ import annotations
 

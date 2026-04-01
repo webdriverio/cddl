@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`literals > should support bigint and null literals 1`] = `
-"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+"# compiled with https://www.npmjs.com/package/cddl2py v0.0.0
 
 from __future__ import annotations
 
