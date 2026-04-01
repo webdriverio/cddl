@@ -2,8 +2,6 @@ import camelcase from 'camelcase'
 import { parse, print, types } from 'recast'
 import typescriptParser from 'recast/parsers/typescript.js'
 
-import type { Assignment, PropertyType, PropertyReference, Property, Array, Operator } from 'cddl'
-
 import {
     isCDDLArray,
     isGroup,
@@ -14,8 +12,14 @@ import {
     isPropertyReference,
     isRange,
     isVariable,
-    pascalCase
-} from './utils.js'
+    pascalCase,
+    type Assignment,
+    type PropertyType,
+    type PropertyReference,
+    type Property,
+    type Array,
+    type Operator
+} from 'cddl'
 
 import { pkg } from './constants.js'
 

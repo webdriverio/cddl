@@ -1,14 +1,13 @@
-import type {
-    Assignment, PropertyType, PropertyReference,
-    Property, Array as CDDLArray, Operator, Group,
-    Variable, Comment, Tag
-} from 'cddl'
-
 import {
     isCDDLArray, isGroup, isNamedGroupReference, isLiteralWithValue,
     isNativeTypeWithOperator, isUnNamedProperty, isPropertyReference,
-    isRange, isVariable, pascalCase, snakeCase
-} from './utils.js'
+    isRange, isVariable, pascalCase,
+    type Assignment, type PropertyType, type PropertyReference,
+    type Property, type Array as CDDLArray, type Operator, type Group,
+    type Variable, type Comment, type Tag
+} from 'cddl'
+
+import { snakeCase } from './utils.js'
 import { pkg, NATIVE_TYPE_MAP } from './constants.js'
 
 export interface TransformOptions {

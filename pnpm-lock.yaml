@@ -44,6 +44,9 @@ importers:
 
   packages/cddl:
     dependencies:
+      camelcase:
+        specifier: ^9.0.0
+        version: 9.0.0
       yargs:
         specifier: ^18.0.0
         version: 18.0.0
@@ -82,9 +85,6 @@ importers:
 
   packages/cddl2py:
     dependencies:
-      camelcase:
-        specifier: ^9.0.0
-        version: 9.0.0
       cddl:
         specifier: workspace:*
         version: link:../cddl

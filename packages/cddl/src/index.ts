@@ -9,3 +9,4 @@ export function parse (filePath: string) {
 export default { parse }
 export { Lexer, Parser }
 export * from './ast.js'
+export * from './utils.js'

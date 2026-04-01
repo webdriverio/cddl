@@ -33,7 +33,6 @@
     "@types/node": "^25.5.0"
   },
   "dependencies": {
-    "camelcase": "^9.0.0",
     "cddl": "workspace:*",
     "yargs": "^18.0.0"
   }
