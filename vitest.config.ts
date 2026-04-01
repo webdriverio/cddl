@@ -31,10 +31,10 @@ export default defineConfig({
                     branches: 91.5,
                 },
                 'packages/cddl2py/**/*': {
-                    lines: 50.0,
-                    functions: 50.0,
-                    statements: 50.0,
-                    branches: 50.0,
+                    lines: 87.5,
+                    functions: 100.0,
+                    statements: 88.0,
+                    branches: 83.5,
                 }
             }
         }
