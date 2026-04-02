@@ -56,7 +56,10 @@ export default class Parser {
     private parseAssignments (): Assignment {
         const comments: Comment[] = []
         while (this.curToken.Type === Tokens.COMMENT) {
-            comments.push(this.parseComment()!)
+            const comment = this.parseComment()
+            if (comment) {
+                comments.push(comment)
+            }
         }
 
         /**

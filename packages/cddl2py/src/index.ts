@@ -19,6 +19,13 @@ interface Context {
     typingImports: Set<string>
     typingExtensionsImports: Set<string>
     pydanticImports: Set<string>
+    definedTypeNames: Set<string>
+    assignmentsByName: Map<string, Assignment>
+    aliasUnionTypesByName: Map<string, string[]>
+}
+
+interface ResolveTypeOptions {
+    quoteForwardReferences?: boolean
 }
 
 export function transform (assignments: Assignment[], options?: TransformOptions): string {
@@ -27,15 +34,20 @@ export function transform (assignments: Assignment[], options?: TransformOptions
         typingImports: new Set(),
         typingExtensionsImports: new Set(),
         pydanticImports: new Set(),
+        definedTypeNames: new Set(),
+        assignmentsByName: new Map(assignments.map((assignment) => [pascalCase(assignment.Name), assignment] as const)),
+        aliasUnionTypesByName: new Map(),
     }
 
     const blocks: string[] = []
+    const orderedAssignments = orderAssignments(assignments)
 
-    for (const assignment of assignments) {
+    for (const assignment of orderedAssignments) {
         const block = generateAssignment(assignment, ctx)
         if (block) {
             blocks.push(block)
         }
+        ctx.definedTypeNames.add(pascalCase(assignment.Name))
     }
 
     return renderOutput(ctx, blocks)
@@ -97,13 +109,14 @@ function generateVariable (v: Variable, ctx: Context): string {
         return `${comments}${name} = int`
     }
 
-    const types = propTypes.map(t => resolveType(t, ctx))
+    const types = propTypes.map(t => resolveType(t, ctx, { quoteForwardReferences: true }))
 
     if (types.length === 1) {
         return `${comments}${name} = ${types[0]}`
     }
 
     ctx.typingImports.add('Union')
+    ctx.aliasUnionTypesByName.set(name, types)
     return `${comments}${name} = Union[${types.join(', ')}]`
 }
 
@@ -148,8 +161,13 @@ function generateGroup (group: Group, ctx: Context): string {
             unionMixinGroups.push(unionTypes)
         } else {
             const typeVal = Array.isArray(mixin.Type) ? mixin.Type[0] : mixin.Type
-            if (isNamedGroupReference(typeVal)) {
-                simpleMixinBases.push(pascalCase(typeVal.Value))
+            const mixinTarget = resolveMixinTarget(typeVal, ctx)
+            if (mixinTarget) {
+                if (mixinTarget.kind === 'union') {
+                    unionMixinGroups.push(mixinTarget.types)
+                } else {
+                    simpleMixinBases.push(mixinTarget.type)
+                }
             } else if (isGroup(typeVal) && !isNamedGroupReference(typeVal) && (typeVal as Group).Properties) {
                 const inlineGroup = typeVal as Group
                 const inlineProps = inlineGroup.Properties as Property[]
@@ -229,6 +247,7 @@ function generateGroupWithChoices (name: string, properties: (Property | Propert
         blocks.push(`${name} = ${unionTypes[0]}`)
     } else {
         ctx.typingImports.add('Union')
+        ctx.aliasUnionTypesByName.set(name, unionTypes)
         blocks.push(`${name} = Union[${unionTypes.join(', ')}]`)
     }
 
@@ -283,6 +302,7 @@ function generateGroupWithUnionMixins (
     }
 
     ctx.typingImports.add('Union')
+    ctx.aliasUnionTypesByName.set(name, variantNames)
     blocks.push(`${name} = Union[${variantNames.join(', ')}]`)
 
     return blocks.join('\n\n')
@@ -307,7 +327,7 @@ function generateArrayAssignment (arr: CDDLArray, ctx: Context): string {
     if (Array.isArray(firstVal)) {
         const options = firstVal.map(p => {
             const t = Array.isArray(p.Type) ? p.Type[0] : p.Type
-            return resolveType(t, ctx)
+            return resolveType(t, ctx, { quoteForwardReferences: true })
         })
         if (options.length === 1) {
             return `${comments}${name} = list[${options[0]}]`
@@ -323,7 +343,7 @@ function generateArrayAssignment (arr: CDDLArray, ctx: Context): string {
         const innerArr = types[0] as CDDLArray
         const innerVal = innerArr.Values[0] as Property
         const innerTypes = Array.isArray(innerVal.Type) ? innerVal.Type : [innerVal.Type]
-        const typeStrs = innerTypes.map(v => resolveType(v, ctx))
+        const typeStrs = innerTypes.map(v => resolveType(v, ctx, { quoteForwardReferences: true }))
 
         if (typeStrs.length === 1) {
             return `${comments}${name} = list[${typeStrs[0]}]`
@@ -332,7 +352,7 @@ function generateArrayAssignment (arr: CDDLArray, ctx: Context): string {
         return `${comments}${name} = list[Union[${typeStrs.join(', ')}]]`
     }
 
-    const typeStrs = types.map(t => resolveType(t, ctx))
+    const typeStrs = types.map(t => resolveType(t, ctx, { quoteForwardReferences: true }))
 
     if (typeStrs.length === 1) {
         return `${comments}${name} = list[${typeStrs[0]}]`
@@ -352,15 +372,17 @@ function generateClass (name: string, bases: string[], props: Property[], ctx: C
     let classDecl: string
     if (ctx.pydantic) {
         ctx.pydanticImports.add('BaseModel')
-        if (bases.length > 0) {
-            classDecl = `class ${name}(${bases.join(', ')}):`
+        const pydanticBases = bases.filter((base) => isModelCompatibleBase(base, ctx))
+        if (pydanticBases.length > 0) {
+            classDecl = `class ${name}(${pydanticBases.join(', ')}):`
         } else {
             classDecl = `class ${name}(BaseModel):`
         }
     } else {
         ctx.typingExtensionsImports.add('TypedDict')
-        if (bases.length > 0) {
-            classDecl = `class ${name}(${bases.join(', ')}):`
+        const typedDictBases = bases.filter((base) => isModelCompatibleBase(base, ctx))
+        if (typedDictBases.length > 0) {
+            classDecl = `class ${name}(${typedDictBases.join(', ')}):`
         } else {
             classDecl = `class ${name}(TypedDict):`
         }
@@ -407,7 +429,7 @@ function generateField (prop: Property, ctx: Context): string | null {
     }
 
     const inlineComment = prop.Comments
-        .filter(c => !c.Leading)
+        .filter((c): c is Comment => Boolean(c) && !c.Leading)
         .map(c => c.Content.trim())
         .join('; ')
     const commentSuffix = inlineComment ? `  # ${inlineComment}` : ''
@@ -452,7 +474,7 @@ function generateField (prop: Property, ctx: Context): string | null {
 // Type resolution
 // ---------------------------------------------------------------------------
 
-function resolveType (t: PropertyType, ctx: Context): string {
+function resolveType (t: PropertyType, ctx: Context, options: ResolveTypeOptions = {}): string {
     if (typeof t === 'string') {
         const mapped = NATIVE_TYPE_MAP[t]
         if (mapped) {
@@ -486,7 +508,7 @@ function resolveType (t: PropertyType, ctx: Context): string {
 
     if (isGroup(t)) {
         if (isNamedGroupReference(t)) {
-            return pascalCase((t as unknown as PropertyReference).Value as string)
+            return formatTypeReference(pascalCase((t as unknown as PropertyReference).Value as string), ctx, options)
         }
 
         const group = t as unknown as Group
@@ -494,37 +516,37 @@ function resolveType (t: PropertyType, ctx: Context): string {
             const props = group.Properties
 
             if (props.some(p => Array.isArray(p))) {
-                const options: string[] = []
+                const choiceTypes: string[] = []
                 for (const choice of props) {
                     const subProps = Array.isArray(choice) ? choice : [choice]
                     if (subProps.length === 1 && isUnNamedProperty(subProps[0])) {
                         const subType = Array.isArray(subProps[0].Type) ? subProps[0].Type[0] : subProps[0].Type
-                        options.push(resolveType(subType as PropertyType, ctx))
+                        choiceTypes.push(resolveType(subType as PropertyType, ctx, options))
                         continue
                     }
                     if (subProps.every(isUnNamedProperty)) {
                         const tupleItems = subProps.map(p => {
                             const subType = Array.isArray(p.Type) ? p.Type[0] : p.Type
-                            return resolveType(subType as PropertyType, ctx)
+                            return resolveType(subType as PropertyType, ctx, options)
                         })
                         ctx.typingImports.add('Tuple')
-                        options.push(`Tuple[${tupleItems.join(', ')}]`)
+                        choiceTypes.push(`Tuple[${tupleItems.join(', ')}]`)
                         continue
                     }
                 }
-                if (options.length > 1) {
+                if (choiceTypes.length > 1) {
                     ctx.typingImports.add('Union')
-                    return `Union[${options.join(', ')}]`
+                    return `Union[${choiceTypes.join(', ')}]`
                 }
-                if (options.length === 1) {
-                    return options[0]
+                if (choiceTypes.length === 1) {
+                    return choiceTypes[0]
                 }
             }
 
             if ((props as Property[]).every(isUnNamedProperty)) {
                 const items = (props as Property[]).map(p => {
                     const subType = Array.isArray(p.Type) ? p.Type[0] : p.Type
-                    return resolveType(subType as PropertyType, ctx)
+                    return resolveType(subType as PropertyType, ctx, options)
                 })
                 if (items.length === 1) {
                     return items[0]
@@ -538,7 +560,7 @@ function resolveType (t: PropertyType, ctx: Context): string {
                 if (keyType === 'Any') {
                     ctx.typingImports.add('Any')
                 }
-                const valType = resolveType(((props[0] as Property).Type as PropertyType[])[0], ctx)
+                const valType = resolveType(((props[0] as Property).Type as PropertyType[])[0], ctx, options)
                 return `dict[${keyType}, ${valType}]`
             }
 
@@ -577,7 +599,7 @@ function resolveType (t: PropertyType, ctx: Context): string {
         }
         const firstVal = arrValues[0] as Property
         const innerTypes = Array.isArray(firstVal.Type) ? firstVal.Type : [firstVal.Type]
-        const typeStrs = innerTypes.map(v => resolveType(v, ctx))
+        const typeStrs = innerTypes.map(v => resolveType(v, ctx, options))
 
         if (typeStrs.length === 1) {
             return `list[${typeStrs[0]}]`
@@ -595,13 +617,13 @@ function resolveType (t: PropertyType, ctx: Context): string {
     }
 
     if (isNativeTypeWithOperator(t) && isNamedGroupReference(t.Type)) {
-        return pascalCase((t.Type as unknown as PropertyReference).Value as string)
+        return formatTypeReference(pascalCase((t.Type as unknown as PropertyReference).Value as string), ctx, options)
     }
 
     if (isPropertyReference(t)) {
         const ref = t as PropertyReference
         if (ref.Type === 'group_array' && typeof ref.Value === 'string') {
-            return `list[${pascalCase(ref.Value)}]`
+            return `list[${formatTypeReference(pascalCase(ref.Value), ctx, options)}]`
         }
         if (ref.Type === 'tag') {
             const tag = ref.Value as Tag
@@ -612,7 +634,7 @@ function resolveType (t: PropertyType, ctx: Context): string {
                 }
                 return mapped
             }
-            return pascalCase(tag.TypePart)
+            return formatTypeReference(pascalCase(tag.TypePart), ctx, options)
         }
     }
 
@@ -623,12 +645,20 @@ function resolveType (t: PropertyType, ctx: Context): string {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatLeadingComments (comments: Comment[]): string {
-    const leading = comments.filter(c => c.Leading)
+function formatLeadingComments (comments: Array<Comment | null | undefined> = []): string {
+    const leading = comments.filter((c): c is Comment => c !== null && c !== undefined && c.Leading)
     if (leading.length === 0) {
         return ''
     }
     return leading.map(c => `# ${c.Content}`).join('\n') + '\n'
+}
+
+function formatTypeReference (typeName: string, ctx: Context, options: ResolveTypeOptions): string {
+    if (!options.quoteForwardReferences || ctx.definedTypeNames.has(typeName)) {
+        return typeName
+    }
+
+    return `"${typeName}"`
 }
 
 function formatDefaultValue (operator: Operator): string {
@@ -655,4 +685,249 @@ function formatDefaultValue (operator: Operator): string {
     }
 
     return ''
+}
+
+function orderAssignments (assignments: Assignment[]): Assignment[] {
+    const assignmentsByName = new Map(
+        assignments.map((assignment) => [pascalCase(assignment.Name), assignment] as const)
+    )
+    const ordered: Assignment[] = []
+    const visited = new Set<string>()
+    const visiting = new Set<string>()
+
+    function visit (assignment: Assignment) {
+        const name = pascalCase(assignment.Name)
+        if (visited.has(name) || visiting.has(name)) {
+            return
+        }
+
+        visiting.add(name)
+        for (const dependencyName of getHardDependencies(assignment, assignmentsByName)) {
+            const dependency = assignmentsByName.get(dependencyName)
+            if (dependency) {
+                visit(dependency)
+            }
+        }
+        visiting.delete(name)
+        visited.add(name)
+        ordered.push(assignment)
+    }
+
+    for (const assignment of assignments) {
+        visit(assignment)
+    }
+
+    return ordered
+}
+
+function getHardDependencies (assignment: Assignment, assignmentsByName: Map<string, Assignment>): string[] {
+    if (!isGroup(assignment)) {
+        return []
+    }
+
+    const deps = new Set<string>()
+    for (const propertyOrChoice of assignment.Properties) {
+        const properties = Array.isArray(propertyOrChoice) ? propertyOrChoice : [propertyOrChoice]
+        for (const property of properties) {
+            if (!isUnNamedProperty(property)) {
+                continue
+            }
+
+            for (const dependency of getMixinDependencies(property.Type, assignmentsByName)) {
+                deps.add(dependency)
+            }
+        }
+    }
+
+    return [...deps]
+}
+
+function getMixinDependencies (type: Property['Type'], assignmentsByName: Map<string, Assignment>): string[] {
+    const deps = new Set<string>()
+    const values = Array.isArray(type) ? type : [type]
+
+    for (const value of values) {
+        if (isNamedGroupReference(value)) {
+            for (const dependency of getNamedMixinDependencies(pascalCase(value.Value as string), assignmentsByName)) {
+                deps.add(dependency)
+            }
+            continue
+        }
+
+        if (isNativeTypeWithOperator(value) && isNamedGroupReference(value.Type)) {
+            for (const dependency of getNamedMixinDependencies(pascalCase(value.Type.Value as string), assignmentsByName)) {
+                deps.add(dependency)
+            }
+            continue
+        }
+
+        if (isGroup(value) && !isNamedGroupReference(value) && value.Properties) {
+            for (const property of value.Properties) {
+                if (Array.isArray(property)) {
+                    for (const choice of property) {
+                        if (isUnNamedProperty(choice)) {
+                            for (const dependency of getMixinDependencies(choice.Type, assignmentsByName)) {
+                                deps.add(dependency)
+                            }
+                        }
+                    }
+                    continue
+                }
+
+                if (!isUnNamedProperty(property)) {
+                    continue
+                }
+
+                for (const dependency of getMixinDependencies(property.Type, assignmentsByName)) {
+                    deps.add(dependency)
+                }
+            }
+        }
+    }
+
+    return [...deps]
+}
+
+function getNamedMixinDependencies (name: string, assignmentsByName: Map<string, Assignment>): string[] {
+    const assignment = assignmentsByName.get(name)
+    if (!assignment || !isVariable(assignment)) {
+        return [name]
+    }
+
+    const propertyTypes = Array.isArray(assignment.PropertyType) ? assignment.PropertyType : [assignment.PropertyType]
+    const deps = new Set<string>()
+
+    for (const propertyType of propertyTypes) {
+        const referencedName = getReferencedMixinName(propertyType)
+        if (referencedName) {
+            for (const dependency of getNamedMixinDependencies(referencedName, assignmentsByName)) {
+                deps.add(dependency)
+            }
+            continue
+        }
+    }
+
+    return deps.size > 0 ? [...deps] : [name]
+}
+
+function getReferencedMixinName (propertyType: PropertyType): string | undefined {
+    if (isNamedGroupReference(propertyType)) {
+        return pascalCase(propertyType.Value as string)
+    }
+
+    if (isNativeTypeWithOperator(propertyType) && isNamedGroupReference(propertyType.Type)) {
+        return pascalCase(propertyType.Type.Value as string)
+    }
+
+    return undefined
+}
+
+function resolveMixinTarget (
+    propertyType: PropertyType,
+    ctx: Context
+): { kind: 'single', type: string } | { kind: 'union', types: string[] } | null {
+    const name = getReferencedMixinName(propertyType)
+    if (!name) {
+        return null
+    }
+
+    const unionTypes = ctx.aliasUnionTypesByName.get(name)
+    if (unionTypes && unionTypes.length > 1) {
+        return { kind: 'union', types: expandMixinUnionTypes(unionTypes, ctx) }
+    }
+
+    const assignment = ctx.assignmentsByName.get(name)
+    if (!assignment || !isVariable(assignment)) {
+        return { kind: 'single', type: name }
+    }
+
+    const propertyTypes = Array.isArray(assignment.PropertyType) ? assignment.PropertyType : [assignment.PropertyType]
+    if (propertyTypes.length > 1) {
+        return { kind: 'union', types: expandMixinUnionTypes(propertyTypes.map((type) => resolveType(type, ctx)), ctx) }
+    }
+
+    const referencedName = getReferencedMixinName(propertyTypes[0])
+    if (referencedName) {
+        return { kind: 'single', type: referencedName }
+    }
+
+    return { kind: 'single', type: name }
+}
+
+function expandMixinUnionTypes (types: string[], ctx: Context, seen = new Set<string>()): string[] {
+    const expanded: string[] = []
+
+    for (const type of types) {
+        if (seen.has(type)) {
+            expanded.push(type)
+            continue
+        }
+
+        const nested = ctx.aliasUnionTypesByName.get(type)
+        if (nested && nested.length > 1) {
+            seen.add(type)
+            expanded.push(...expandMixinUnionTypes(nested, ctx, seen))
+            seen.delete(type)
+            continue
+        }
+
+        expanded.push(type)
+    }
+
+    return [...new Set(expanded)]
+}
+
+function isModelCompatibleBase (base: string, ctx: Context, seen = new Set<string>()): boolean {
+    if (base.startsWith('_')) {
+        return true
+    }
+
+    if (seen.has(base)) {
+        return false
+    }
+
+    const assignment = ctx.assignmentsByName.get(base)
+    if (!assignment) {
+        return false
+    }
+
+    if (isGroup(assignment)) {
+        return isConcreteGroupBase(assignment)
+    }
+
+    if (isCDDLArray(assignment)) {
+        return false
+    }
+
+    if (!isVariable(assignment)) {
+        return false
+    }
+
+    const propertyTypes = Array.isArray(assignment.PropertyType) ? assignment.PropertyType : [assignment.PropertyType]
+    if (propertyTypes.length !== 1) {
+        return false
+    }
+
+    const referencedName = getReferencedMixinName(propertyTypes[0])
+    if (!referencedName) {
+        return false
+    }
+
+    seen.add(base)
+    const isCompatible = isModelCompatibleBase(referencedName, ctx, seen)
+    seen.delete(base)
+    return isCompatible
+}
+
+function isConcreteGroupBase (group: Group): boolean {
+    if (group.Properties.some((property) => Array.isArray(property))) {
+        return false
+    }
+
+    const properties = group.Properties as Property[]
+    if (properties.length === 1 && Object.keys(NATIVE_TYPE_MAP).includes(properties[0].Name)) {
+        return false
+    }
+
+    return true
 }

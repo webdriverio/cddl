@@ -8,13 +8,13 @@ from __future__ import annotations
 from typing import Union
 from pydantic import BaseModel
 
-Choice = Union[OptionA, OptionB]
-
 class OptionA(BaseModel):
     a: int
 
 class OptionB(BaseModel):
     b: str
+
+Choice = Union[OptionA, OptionB]
 "
 `;
 
@@ -26,12 +26,12 @@ from __future__ import annotations
 from typing import Union
 from typing_extensions import TypedDict
 
-Choice = Union[OptionA, OptionB]
-
 class OptionA(TypedDict):
     a: int
 
 class OptionB(TypedDict):
     b: str
+
+Choice = Union[OptionA, OptionB]
 "
 `;

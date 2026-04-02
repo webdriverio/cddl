@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Literal, Union
 from pydantic import BaseModel
 
-LocalValue = Union[ArrayLocalValue, DateLocalValue, MapLocalValue, ObjectLocalValue, RegExpLocalValue, SetLocalValue]
+LocalValue = Union["ArrayLocalValue", "DateLocalValue", "MapLocalValue", "ObjectLocalValue", "RegExpLocalValue", "SetLocalValue"]
 
 class ArrayLocalValue(BaseModel):
     type: Literal["array"]
@@ -48,7 +48,7 @@ from __future__ import annotations
 from typing import Literal, Union
 from typing_extensions import TypedDict
 
-LocalValue = Union[ArrayLocalValue, DateLocalValue, MapLocalValue, ObjectLocalValue, RegExpLocalValue, SetLocalValue]
+LocalValue = Union["ArrayLocalValue", "DateLocalValue", "MapLocalValue", "ObjectLocalValue", "RegExpLocalValue", "SetLocalValue"]
 
 class ArrayLocalValue(TypedDict):
     type: Literal["array"]

@@ -62,9 +62,9 @@ describe('group choice conversion', () => {
 
         expect(output).toContain('ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]')
 
-        expect(output).toContain('class AutodetectProxyConfiguration(Extensible):')
-        expect(output).toContain('class DirectProxyConfiguration(Extensible):')
-        expect(output).toContain('class ManualProxyConfiguration(Extensible):')
+        expect(output).toContain('class AutodetectProxyConfiguration(TypedDict):')
+        expect(output).toContain('class DirectProxyConfiguration(TypedDict):')
+        expect(output).toContain('class ManualProxyConfiguration(TypedDict):')
 
         expect(output).toMatchSnapshot()
     })
@@ -79,9 +79,9 @@ describe('group choice conversion', () => {
 
         expect(output).toContain('ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]')
 
-        expect(output).toContain('class AutodetectProxyConfiguration(Extensible):')
-        expect(output).toContain('class DirectProxyConfiguration(Extensible):')
-        expect(output).toContain('class ManualProxyConfiguration(Extensible):')
+        expect(output).toContain('class AutodetectProxyConfiguration(BaseModel):')
+        expect(output).toContain('class DirectProxyConfiguration(BaseModel):')
+        expect(output).toContain('class ManualProxyConfiguration(BaseModel):')
 
         expect(output).toMatchSnapshot()
     })

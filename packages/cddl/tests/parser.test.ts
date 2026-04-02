@@ -41,4 +41,23 @@ describe('parser', () => {
         expect(() => p.parse()).toThrow('group identifier expected')
         vi.restoreAllMocks()
     })
+
+    it('skips blank comment lines in assignment comments', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('; heading\n;\nfoo = int\n')
+        const p = new Parser('foo.cddl')
+
+        expect(p.parse()).toEqual([{
+            Type: 'variable',
+            Name: 'foo',
+            IsChoiceAddition: false,
+            PropertyType: ['int'],
+            Comments: [{
+                Type: 'comment',
+                Content: 'heading',
+                Leading: false
+            }]
+        }])
+
+        vi.restoreAllMocks()
+    })
 })

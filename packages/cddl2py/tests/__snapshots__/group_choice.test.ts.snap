@@ -10,16 +10,16 @@ from pydantic import BaseModel
 
 Extensible = dict[str, Any]
 
-ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]
-
-class AutodetectProxyConfiguration(Extensible):
+class AutodetectProxyConfiguration(BaseModel):
     proxy_type: Literal["autodetect"]
 
-class DirectProxyConfiguration(Extensible):
+class DirectProxyConfiguration(BaseModel):
     proxy_type: Literal["direct"]
 
-class ManualProxyConfiguration(Extensible):
+class ManualProxyConfiguration(BaseModel):
     proxy_type: Literal["manual"]
+
+ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]
 
 SimpleGroupChoice = Union[Int, str]
 
@@ -38,7 +38,7 @@ MapGroupChoice = Union[_MapGroupChoiceVariant0, _MapGroupChoiceVariant1]
 
 TypeChoiceInsideGroup = Union[int, str]
 
-ArrayGroupChoice = list[Union[Int, str]]
+ArrayGroupChoice = list[Union["Int", str]]
 
 class MapWithBareGroup(BaseModel):
     pass
@@ -73,16 +73,16 @@ from typing_extensions import TypedDict
 
 Extensible = dict[str, Any]
 
-ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]
-
-class AutodetectProxyConfiguration(Extensible):
+class AutodetectProxyConfiguration(TypedDict):
     proxy_type: Literal["autodetect"]
 
-class DirectProxyConfiguration(Extensible):
+class DirectProxyConfiguration(TypedDict):
     proxy_type: Literal["direct"]
 
-class ManualProxyConfiguration(Extensible):
+class ManualProxyConfiguration(TypedDict):
     proxy_type: Literal["manual"]
+
+ProxyConfiguration = Union[AutodetectProxyConfiguration, DirectProxyConfiguration, ManualProxyConfiguration]
 
 SimpleGroupChoice = Union[Int, str]
 
@@ -101,7 +101,7 @@ MapGroupChoice = Union[_MapGroupChoiceVariant0, _MapGroupChoiceVariant1]
 
 TypeChoiceInsideGroup = Union[int, str]
 
-ArrayGroupChoice = list[Union[Int, str]]
+ArrayGroupChoice = list[Union["Int", str]]
 
 class MapWithBareGroup(TypedDict):
     pass

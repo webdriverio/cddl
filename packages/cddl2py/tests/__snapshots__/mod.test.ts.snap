@@ -10,13 +10,15 @@ from __future__ import annotations
 from typing import Any, Literal, Optional, Union
 from pydantic import BaseModel, Field
 
-Message = Union[CommandResponse, ErrorResponse, Event]
+Extensible = dict[str, Any]
 
-class ErrorResponse(Extensible):
+class ErrorResponse(BaseModel):
     id: Optional[Union[JsUint, None]] = None
     error: ErrorCode
     message: str
     stacktrace: Optional[str] = None
+
+Message = Union[CommandResponse, ErrorResponse, Event]
 
 ResultData = Union[BrowsingContextResult, EmptyResult, NetworkResult, ScriptResult, SessionResult]
 
@@ -62,11 +64,9 @@ class SomeGroup(BaseModel):
     foo: Optional[str] = None
     pointer_type: Optional[InputPointerType] = None
 
-ScriptListLocalValue = list[ScriptLocalValue]
+ScriptListLocalValue = list["ScriptLocalValue"]
 
-ScriptMappingLocalValue = list[Union[ScriptLocalValue, str]]
-
-Extensible = dict[str, Any]
+ScriptMappingLocalValue = list[Union["ScriptLocalValue", str]]
 ",
   ],
 ]
@@ -82,13 +82,15 @@ from __future__ import annotations
 from typing import Any, Literal, Union
 from typing_extensions import NotRequired, TypedDict
 
-Message = Union[CommandResponse, ErrorResponse, Event]
+Extensible = dict[str, Any]
 
-class ErrorResponse(Extensible):
+class ErrorResponse(TypedDict):
     id: NotRequired[Union[JsUint, None]]
     error: ErrorCode
     message: str
     stacktrace: NotRequired[str]
+
+Message = Union[CommandResponse, ErrorResponse, Event]
 
 ResultData = Union[BrowsingContextResult, EmptyResult, NetworkResult, ScriptResult, SessionResult]
 
@@ -134,11 +136,9 @@ class SomeGroup(TypedDict):
     foo: NotRequired[str]
     pointer_type: NotRequired[InputPointerType]
 
-ScriptListLocalValue = list[ScriptLocalValue]
+ScriptListLocalValue = list["ScriptLocalValue"]
 
-ScriptMappingLocalValue = list[Union[ScriptLocalValue, str]]
-
-Extensible = dict[str, Any]
+ScriptMappingLocalValue = list[Union["ScriptLocalValue", str]]
 ",
   ],
 ]

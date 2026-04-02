@@ -8,14 +8,14 @@ from __future__ import annotations
 from typing import Union
 from pydantic import BaseModel
 
-class Mixins(MixinA, MixinB):
-    pass
-
 class MixinA(BaseModel):
     a: int
 
 class MixinB(BaseModel):
     b: str
+
+class Mixins(MixinA, MixinB):
+    pass
 
 UnionMixin = Union[MixinA, MixinB]
 
@@ -40,14 +40,14 @@ from __future__ import annotations
 from typing import Union
 from typing_extensions import TypedDict
 
-class Mixins(MixinA, MixinB):
-    pass
-
 class MixinA(TypedDict):
     a: int
 
 class MixinB(TypedDict):
     b: str
+
+class Mixins(MixinA, MixinB):
+    pass
 
 UnionMixin = Union[MixinA, MixinB]
 
