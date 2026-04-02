@@ -27,17 +27,35 @@ const b = types.builders
 const NATIVE_TYPES: Record<string, any> = {
     any: b.tsAnyKeyword(),
     number: b.tsNumberKeyword(),
+    integer: b.tsNumberKeyword(),
     int: b.tsNumberKeyword(),
-    float: b.tsNumberKeyword(),
     uint: b.tsNumberKeyword(),
+    nint: b.tsNumberKeyword(),
+    unsigned: b.tsNumberKeyword(),
+    float: b.tsNumberKeyword(),
+    float16: b.tsNumberKeyword(),
+    float32: b.tsNumberKeyword(),
+    float64: b.tsNumberKeyword(),
+    'float16-32': b.tsNumberKeyword(),
+    'float32-64': b.tsNumberKeyword(),
     bool: b.tsBooleanKeyword(),
+    false: b.tsBooleanKeyword(),
+    true: b.tsBooleanKeyword(),
+    bstr: b.tsTypeReference(b.identifier('Uint8Array')),
+    bytes: b.tsTypeReference(b.identifier('Uint8Array')),
     str: b.tsStringKeyword(),
     text: b.tsStringKeyword(),
     tstr: b.tsStringKeyword(),
     range: b.tsNumberKeyword(),
+    undefined: b.tsUndefinedKeyword(),
     nil: b.tsNullKeyword(),
     null: b.tsNullKeyword()
 }
+const RECORD_KEY_TYPES = new Set([
+    'int', 'uint', 'nint', 'integer', 'unsigned', 'number',
+    'float', 'float16', 'float32', 'float64', 'float16-32', 'float32-64',
+    'str', 'text', 'tstr'
+])
 type ObjectEntry = types.namedTypes.TSCallSignatureDeclaration | types.namedTypes.TSConstructSignatureDeclaration | types.namedTypes.TSIndexSignature | types.namedTypes.TSMethodSignature | types.namedTypes.TSPropertySignature
 type ObjectBody = ObjectEntry[]
 type TSTypeKind = types.namedTypes.TSAsExpression['typeAnnotation']
@@ -195,7 +213,7 @@ function parseAssignment (assignment: Assignment) {
         if (props.length === 1) {
             const prop = props[0]
             const propType = Array.isArray(prop.Type) ? prop.Type : [prop.Type]
-            if (propType.length === 1 && Object.keys(NATIVE_TYPES).includes(prop.Name)) {
+            if (propType.length === 1 && RECORD_KEY_TYPES.has(prop.Name)) {
                 const value = parseUnionType(assignment)
                 const expr = b.tsTypeAliasDeclaration(id, value)
                 expr.comments = assignment.Comments.map((c) => b.commentLine(` ${c.Content}`, true))
@@ -578,7 +596,7 @@ function parseUnionType (t: PropertyType | Assignment): TSTypeKind {
             /**
              * {*text => text} which will be transformed to `Record<string, string>`
              */
-            if (prop.length === 1 && Object.keys(NATIVE_TYPES).includes((prop[0] as Property).Name)) {
+            if (prop.length === 1 && RECORD_KEY_TYPES.has((prop[0] as Property).Name)) {
                 return b.tsTypeReference(
                     b.identifier('Record'),
                     b.tsTypeParameterInstantiation([
