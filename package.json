@@ -29,7 +29,7 @@
     "compile": "run-s compile:cddl compile:other",
     "compile:cddl": "pnpm --filter=cddl exec tsc -p ./tsconfig.json",
     "compile:other": "pnpm -r --filter=!cddl --filter=!cddl-monorepo exec tsc -p ./tsconfig.json",
-    "release:ci:all": "run-s \"release:ci:cddl {@}\" \"release:ci:cddl2ts {@}\"",
+    "release:ci:all": "run-s \"release:ci:cddl {@}\" \"release:ci:cddl2ts {@}\" \"release:ci:cddl2java {@}\" \"release:ci:cddl2py {@}\"",
     "release:ci:cddl": "pnpm run --filter=cddl release:ci",
     "release:ci:cddl2ts": "pnpm run --filter=cddl2ts release:ci",
     "release:ci:cddl2java": "pnpm run --filter=cddl2java release:ci",

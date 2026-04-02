@@ -12,6 +12,8 @@ on:
           - all
           - cddl
           - cddl2ts
+          - cddl2java
+          - cddl2py
       releaseType:
         description: "Release type - major, minor or patch"
         required: true
