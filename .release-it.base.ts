@@ -5,6 +5,8 @@ const baseConfig = (name: string): Config => ({
     "release-it-pnpm": {
       // Disable the release step here to skip changelogithub and use `conventional-changelog` instead.
       disableRelease: true,
+      // Publish only the current package; the plugin defaults to recursive workspace publishing.
+      publishCommand: 'pnpm publish --access public --no-git-checks --tag $tag',
     },
     "@release-it/conventional-changelog": {
       infile: false,
