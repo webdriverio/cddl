@@ -3,6 +3,7 @@ import path from 'node:path'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 import cli from '../src/cli.js'
+import { normalizeSnapshotOutput } from './snapshot.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'complex_types.cddl')
@@ -68,7 +69,7 @@ describe('complex types conversion', () => {
         expect(output).toContain('SetLocalValue')
 
         expect(output).toContain('LocalValue = Union["ArrayLocalValue", "DateLocalValue", "MapLocalValue", "ObjectLocalValue", "RegExpLocalValue", "SetLocalValue"]')
-        expect(output).toMatchSnapshot()
+        expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 
     it('should include all types in the union (Pydantic)', async () => {
@@ -87,6 +88,6 @@ describe('complex types conversion', () => {
         expect(output).toContain('SetLocalValue')
 
         expect(output).toContain('LocalValue = Union["ArrayLocalValue", "DateLocalValue", "MapLocalValue", "ObjectLocalValue", "RegExpLocalValue", "SetLocalValue"]')
-        expect(output).toMatchSnapshot()
+        expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 })

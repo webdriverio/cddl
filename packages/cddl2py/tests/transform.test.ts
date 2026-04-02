@@ -4,6 +4,7 @@ import { describe, it, expect } from 'vitest'
 import { parse } from 'cddl'
 import { transform } from '../src/index.js'
 import type { Variable, Group, Array as CDDLArray } from 'cddl'
+import { normalizeSnapshotOutput } from './snapshot.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
@@ -137,13 +138,13 @@ describe('transform', () => {
         it('should transform test.cddl TypedDict correctly', () => {
             const ast = parse(path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'test.cddl'))
             const output = transform(ast)
-            expect(output).toMatchSnapshot()
+            expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
         })
 
         it('should transform test.cddl Pydantic correctly', () => {
             const ast = parse(path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'test.cddl'))
             const output = transform(ast, { pydantic: true })
-            expect(output).toMatchSnapshot()
+            expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
         })
     })
 })

@@ -3,7 +3,7 @@
 exports[`cddl2py CLI > should generate correct pydantic types for test.cddl 1`] = `
 [
   [
-    "# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+    "# compiled with https://www.npmjs.com/package/cddl2py
 
 from __future__ import annotations
 
@@ -75,7 +75,7 @@ ScriptMappingLocalValue = list[Union["ScriptLocalValue", str]]
 exports[`cddl2py CLI > should generate correct types for test.cddl 1`] = `
 [
   [
-    "# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+    "# compiled with https://www.npmjs.com/package/cddl2py
 
 from __future__ import annotations
 

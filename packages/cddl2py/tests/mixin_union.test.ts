@@ -3,6 +3,7 @@ import path from 'node:path'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 import cli from '../src/cli.js'
+import { normalizeSnapshotOutput } from './snapshot.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'mixin_union.cddl')
@@ -62,7 +63,7 @@ describe('mixin and union conversion', () => {
 
         expect(output).toContain('class Mixins(MixinA, MixinB):')
         expect(output).toContain('UnionMixin = Union[MixinA, MixinB]')
-        expect(output).toMatchSnapshot()
+        expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 
     it('should generate union type aliases for mixin choices (Pydantic)', async () => {
@@ -75,6 +76,6 @@ describe('mixin and union conversion', () => {
 
         expect(output).toContain('class Mixins(MixinA, MixinB):')
         expect(output).toContain('UnionMixin = Union[MixinA, MixinB]')
-        expect(output).toMatchSnapshot()
+        expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 })

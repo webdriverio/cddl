@@ -3,6 +3,7 @@ import path from 'node:path'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 import cli from '../src/cli.js'
+import { normalizeConsoleLogCalls } from './snapshot.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
@@ -84,7 +85,7 @@ describe('cddl2py CLI', () => {
     it('should generate correct types for test.cddl', async () => {
         await cli([path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'test.cddl')])
 
-        expect(vi.mocked(console.log).mock.calls).toMatchSnapshot()
+        expect(normalizeConsoleLogCalls(vi.mocked(console.log).mock.calls)).toMatchSnapshot()
         expect(process.exit).toHaveBeenCalledTimes(0)
     })
 
@@ -94,7 +95,7 @@ describe('cddl2py CLI', () => {
             '--pydantic'
         ])
 
-        expect(vi.mocked(console.log).mock.calls).toMatchSnapshot()
+        expect(normalizeConsoleLogCalls(vi.mocked(console.log).mock.calls)).toMatchSnapshot()
         expect(process.exit).toHaveBeenCalledTimes(0)
     })
 

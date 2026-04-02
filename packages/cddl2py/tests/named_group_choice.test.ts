@@ -3,6 +3,7 @@ import path from 'node:path'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 import cli from '../src/cli.js'
+import { normalizeSnapshotOutput } from './snapshot.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'named_group_choice.cddl')
@@ -63,7 +64,7 @@ describe('named group choice', () => {
         expect(output).toContain('Choice = Union[OptionA, OptionB]')
         expect(output).toContain('class OptionA(TypedDict):')
         expect(output).toContain('class OptionB(TypedDict):')
-        expect(output).toMatchSnapshot()
+        expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 
     it('should generate a union type alias for named group references (Pydantic)', async () => {
@@ -77,6 +78,6 @@ describe('named group choice', () => {
         expect(output).toContain('Choice = Union[OptionA, OptionB]')
         expect(output).toContain('class OptionA(BaseModel):')
         expect(output).toContain('class OptionB(BaseModel):')
-        expect(output).toMatchSnapshot()
+        expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 })

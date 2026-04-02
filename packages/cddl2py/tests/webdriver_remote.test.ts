@@ -3,6 +3,7 @@ import path from 'node:path'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 import cli from '../src/cli.js'
+import { normalizeSnapshotOutput } from './snapshot.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'webdriver', 'remote.cddl')
@@ -59,6 +60,6 @@ describe('webdriver remote spec', () => {
         expect(console.error).not.toHaveBeenCalled()
         expect(console.log).toHaveBeenCalled()
         const output = vi.mocked(console.log).mock.calls.flat().join('\n')
-        expect(output).toMatchSnapshot()
+        expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 })

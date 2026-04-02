@@ -3,6 +3,7 @@ import path from 'node:path'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 import cli from '../src/cli.js'
+import { normalizeSnapshotOutput } from './snapshot.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 const groupChoiceCDDL = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'group_choice.cddl')
@@ -66,7 +67,7 @@ describe('group choice conversion', () => {
         expect(output).toContain('class DirectProxyConfiguration(TypedDict):')
         expect(output).toContain('class ManualProxyConfiguration(TypedDict):')
 
-        expect(output).toMatchSnapshot()
+        expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 
     it('should generate a union type for multiple group choices (Pydantic)', async () => {
@@ -83,6 +84,6 @@ describe('group choice conversion', () => {
         expect(output).toContain('class DirectProxyConfiguration(BaseModel):')
         expect(output).toContain('class ManualProxyConfiguration(BaseModel):')
 
-        expect(output).toMatchSnapshot()
+        expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 })

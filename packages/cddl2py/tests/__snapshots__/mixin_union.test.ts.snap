@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`mixin and union conversion > should generate union type aliases for mixin choices (Pydantic) 1`] = `
-"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+"# compiled with https://www.npmjs.com/package/cddl2py
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ ComplexMixins = Union[_ComplexMixinsVariant0, _ComplexMixinsVariant1]
 `;
 
 exports[`mixin and union conversion > should generate union type aliases for mixin choices (TypedDict) 1`] = `
-"# compiled with https://www.npmjs.com/package/cddl2py v0.1.0
+"# compiled with https://www.npmjs.com/package/cddl2py
 
 from __future__ import annotations
 
