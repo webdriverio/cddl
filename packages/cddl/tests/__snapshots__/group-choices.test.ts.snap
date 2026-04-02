@@ -262,6 +262,131 @@ exports[`Group Choice Parsing > Type Choice (/) > should correctly handle slash 
 ]
 `;
 
+exports[`Group Choice Parsing > Type Choice (/) > should parse inline array alternatives inside map properties 1`] = `
+[
+  {
+    "Comments": [],
+    "IsChoiceAddition": false,
+    "Name": "StorePutParams",
+    "Properties": [
+      {
+        "Comments": [],
+        "HasCut": true,
+        "Name": "storeNamespace",
+        "Occurrence": {
+          "m": 1,
+          "n": 1,
+        },
+        "Type": [
+          {
+            "Comments": [],
+            "Name": "",
+            "Type": "array",
+            "Values": [
+              {
+                "Comments": [],
+                "HasCut": false,
+                "Name": "",
+                "Occurrence": {
+                  "m": Infinity,
+                  "n": 0,
+                },
+                "Type": "text",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        "Comments": [],
+        "HasCut": true,
+        "Name": "key",
+        "Occurrence": {
+          "m": 1,
+          "n": 1,
+        },
+        "Type": [
+          "text",
+        ],
+      },
+      {
+        "Comments": [],
+        "HasCut": true,
+        "Name": "value",
+        "Occurrence": {
+          "m": 1,
+          "n": 1,
+        },
+        "Type": [
+          {
+            "Comments": [],
+            "IsChoiceAddition": false,
+            "Name": "",
+            "Properties": [
+              {
+                "Comments": [],
+                "HasCut": false,
+                "Name": "text",
+                "Occurrence": {
+                  "m": Infinity,
+                  "n": 0,
+                },
+                "Type": [
+                  "any",
+                ],
+              },
+            ],
+            "Type": "group",
+          },
+        ],
+      },
+      {
+        "Comments": [],
+        "HasCut": true,
+        "Name": "index",
+        "Occurrence": {
+          "m": Infinity,
+          "n": 0,
+        },
+        "Type": [
+          "bool",
+          {
+            "Comments": [],
+            "Name": "",
+            "Type": "array",
+            "Values": [
+              {
+                "Comments": [],
+                "HasCut": false,
+                "Name": "",
+                "Occurrence": {
+                  "m": Infinity,
+                  "n": 0,
+                },
+                "Type": "text",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        "Comments": [],
+        "HasCut": true,
+        "Name": "ttl",
+        "Occurrence": {
+          "m": Infinity,
+          "n": 0,
+        },
+        "Type": [
+          "uint",
+        ],
+      },
+    ],
+    "Type": "group",
+  },
+]
+`;
+
 exports[`Group Choice Parsing > Type Choice (/) > should parse type choice inside group 1`] = `
 [
   {

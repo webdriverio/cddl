@@ -667,12 +667,12 @@ export default class Parser {
                         Value: this.curToken.Literal === 'true',
                         Unwrapped: isUnwrapped
                     }
-                } else if (this.curToken.Literal === Tokens.LBRACE) {
-                   const val = this.parseAssignmentValue();
-                   if (Array.isArray(val)) {
-                     throw new Error('Unexpected array in property type parsing');
-                   }
-                   type = val
+                } else if (this.curToken.Literal === Tokens.LBRACE || this.curToken.Literal === Tokens.LBRACK) {
+                    const val = this.parseAssignmentValue()
+                    if (Array.isArray(val)) {
+                        throw new Error('Unexpected array in property type parsing')
+                    }
+                    type = val
                 } else if (this.curToken.Type === Tokens.IDENT) {
                     type = {
                         Type: 'group' as PropertyReferenceType,
@@ -830,6 +830,22 @@ export default class Parser {
         propertyTypes.push(prop)
 
         /**
+         * ignore comments between type choice members, e.g.
+         * ```
+         * Foo = int ; comment
+         *     / text
+         * ```
+         * or
+         * ```
+         * Foo = int / ; comment
+         *     text
+         * ```
+         */
+        while (this.curToken.Type === Tokens.COMMENT && this.peekToken.Type === Tokens.SLASH) {
+            this.parseComment()
+        }
+
+        /**
          * ensure we don't go into the next choice, e.g.:
          * ```
          * delivery = (
@@ -845,6 +861,9 @@ export default class Parser {
          */
         while (this.curToken.Type === Tokens.SLASH) {
             this.nextToken() // eat `/`
+            while ([Tokens.COMMENT].includes(this.curToken.Type)) {
+                this.parseComment()
+            }
             propertyTypes.push(this.parsePropertyType())
             if (!this.isOperator() && this.curToken.Type !== Tokens.SLASH) {
                 /**
@@ -852,6 +871,10 @@ export default class Parser {
                  * otherwise, the operator will be parsed by the caller
                  */
                 this.nextToken()
+            }
+
+            while ([Tokens.COMMENT].includes(this.curToken.Type) && this.peekToken.Type === Tokens.SLASH) {
+                this.parseComment()
             }
 
             /**

@@ -70,10 +70,39 @@ describe('Group Choice Parsing', () => {
             expect(ast).toMatchSnapshot()
         })
 
+        it('should treat comments around type choice separators the same', () => {
+            const slashAfterComment = `
+                FlowStrategy = "drop-oldest"            ; Discard oldest when buffer is full
+                             / "pause-producer"          ; Apply backpressure to slow production
+                             / "sample"                  ; Deliver every Nth event under pressure
+            `
+            const slashBeforeComment = `
+                FlowStrategy = "drop-oldest" /           ; Discard oldest when buffer is full
+                               "pause-producer" /        ; Apply backpressure to slow production
+                               "sample"                  ; Deliver every Nth event under pressure
+            `
+
+            expect(parse(slashAfterComment)).toEqual(parse(slashBeforeComment))
+        })
+
         // This tests the change: closingTokens.includes(Tokens.RPAREN) && this.peekToken.Type === Tokens.SLASH
         it('should correctly handle slash in mixed context', () => {
             const cddl = `
                 myrule = [ (int / text) ]
+            `
+            const ast = parse(cddl)
+            expect(ast).toMatchSnapshot()
+        })
+
+        it('should parse inline array alternatives inside map properties', () => {
+            const cddl = `
+                StorePutParams = {
+                    storeNamespace: [* text],
+                    key: text,
+                    value: {* text => any},
+                    ? index: bool / [* text],
+                    ? ttl: uint,
+                }
             `
             const ast = parse(cddl)
             expect(ast).toMatchSnapshot()
