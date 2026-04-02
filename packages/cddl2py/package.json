@@ -18,6 +18,10 @@
   "bugs": {
     "url": "https://github.com/webdriverio/cddl/issues"
   },
+  "files": [
+    "build",
+    "bin"
+  ],
   "type": "module",
   "exports": "./build/index.js",
   "types": "./build/index.d.ts",
