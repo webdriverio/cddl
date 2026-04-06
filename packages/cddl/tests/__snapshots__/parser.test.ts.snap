@@ -778,6 +778,78 @@ exports[`parser > can parse comments 1`] = `
     ],
     "Type": "group",
   },
+  {
+    "Comments": [],
+    "IsChoiceAddition": false,
+    "Name": "sport",
+    "Properties": [
+      {
+        "Comments": [
+          {
+            "Content": "Some sports involve kicking a ball,",
+            "Leading": true,
+            "Type": "comment",
+          },
+          {
+            "Content": "this field is self-explanatory but it is",
+            "Leading": true,
+            "Type": "comment",
+          },
+          {
+            "Content": "good to test multiline comments",
+            "Leading": true,
+            "Type": "comment",
+          },
+        ],
+        "HasCut": true,
+        "Name": "involves-kicking",
+        "Occurrence": {
+          "m": 1,
+          "n": 1,
+        },
+        "Type": [
+          "bool",
+        ],
+      },
+      {
+        "Comments": [
+          {
+            "Content": "a simple leading comment",
+            "Leading": false,
+            "Type": "comment",
+          },
+        ],
+        "HasCut": true,
+        "Name": "uses-ball",
+        "Occurrence": {
+          "m": Infinity,
+          "n": 0,
+        },
+        "Type": [
+          "bool",
+        ],
+      },
+      {
+        "Comments": [
+          {
+            "Content": "an extra comment",
+            "Leading": false,
+            "Type": "comment",
+          },
+        ],
+        "HasCut": true,
+        "Name": "involves-throwing",
+        "Occurrence": {
+          "m": Infinity,
+          "n": 0,
+        },
+        "Type": [
+          "bool",
+        ],
+      },
+    ],
+    "Type": "group",
+  },
 ]
 `;
 

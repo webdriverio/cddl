@@ -211,6 +211,13 @@ export default class Parser {
         }
 
         while (!closingTokens.includes(this.curToken.Type)) {
+            const comments: Comment[] = []
+            let leadingComment = this.parseComment(true)
+            while (leadingComment) {
+                comments.push(leadingComment)
+                leadingComment = this.parseComment(true)
+            }
+
             /**
              * check if we have a group choice instead of an assignment
              */
@@ -230,13 +237,9 @@ export default class Parser {
             }
 
             const propertyType: PropertyType[] = []
-            const comments: Comment[] = []
             let isUnwrapped = false
             let hasCut = false
             let propertyName = ''
-
-            const leadingComment = this.parseComment(true)
-            leadingComment && comments.push(leadingComment)
 
             const occurrence = this.parseOccurrences()
 
