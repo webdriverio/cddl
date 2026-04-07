@@ -1,0 +1,11 @@
+MetadataScalar = null / bool / int / float / text
+MessageMetadata = {
+  ? provider: text,
+  ? model: text,
+  ? modelType: text,
+  ? runId: text,
+  ? threadId: text,
+  ? systemFingerprint: text,
+  ? serviceTier: text,
+  * text => MetadataScalar,
+}
