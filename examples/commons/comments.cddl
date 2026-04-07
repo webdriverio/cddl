@@ -10,3 +10,15 @@ foo = { bar } ; some comment
 ; another comment
 
 som = { g } ; some g
+
+sport = {
+    ; Some sports involve kicking a ball,
+    ; this field is self-explanatory but it is
+    ; good to test multiline comments
+    involves-kicking: bool
+
+    ? uses-ball: bool
+
+    ; a simple leading comment
+    ? involves-throwing: bool ; an extra comment
+}
