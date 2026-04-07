@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`extensible metadata > should render extensible metadata as an interface with an index signature 1`] = `
+"export type MetadataScalar = null | boolean | number | number | string;
+
+export interface MessageMetadata {
+  provider?: string;
+  model?: string;
+  modelType?: string;
+  runId?: string;
+  threadId?: string;
+  systemFingerprint?: string;
+  serviceTier?: string;
+  [key: string]: MetadataScalar | undefined;
+}"
+`;

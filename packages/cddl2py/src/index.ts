@@ -28,6 +28,8 @@ interface ResolveTypeOptions {
     quoteForwardReferences?: boolean
 }
 
+const STRING_RECORD_KEY_TYPES = new Set(['str', 'text', 'tstr'])
+
 export function transform (assignments: Assignment[], options?: TransformOptions): string {
     const ctx: Context = {
         pydantic: options?.pydantic ?? false,
@@ -135,6 +137,7 @@ function generateGroup (group: Group, ctx: Context): string {
     }
 
     const props = properties as Property[]
+    const extraItemsType = getExtraItemsType(props, ctx)
 
     if (props.length === 1) {
         const prop = props[0]
@@ -150,7 +153,7 @@ function generateGroup (group: Group, ctx: Context): string {
     }
 
     const mixins = props.filter(isUnNamedProperty)
-    const ownProps = props.filter(p => !isUnNamedProperty(p))
+    const ownProps = props.filter(p => !isUnNamedProperty(p) && !isExtensibleRecordProperty(p))
 
     const simpleMixinBases: string[] = []
     const unionMixinGroups: string[][] = []
@@ -186,10 +189,10 @@ function generateGroup (group: Group, ctx: Context): string {
     }
 
     if (unionMixinGroups.length > 0) {
-        return comments + generateGroupWithUnionMixins(name, simpleMixinBases, unionMixinGroups, ownProps, ctx)
+        return comments + generateGroupWithUnionMixins(name, simpleMixinBases, unionMixinGroups, ownProps, extraItemsType, ctx)
     }
 
-    return comments + generateClass(name, simpleMixinBases, ownProps, ctx)
+    return comments + generateClass(name, simpleMixinBases, ownProps, ctx, extraItemsType)
 }
 
 function generateGroupWithChoices (name: string, properties: (Property | Property[])[], ctx: Context): string {
@@ -259,6 +262,7 @@ function generateGroupWithUnionMixins (
     simpleBases: string[],
     unionGroups: string[][],
     ownProps: Property[],
+    extraItemsType: string | undefined,
     ctx: Context
 ): string {
     if (ownProps.length === 0 && simpleBases.length === 0) {
@@ -278,7 +282,7 @@ function generateGroupWithUnionMixins (
 
         if (ownProps.length > 0) {
             const baseName = `_${name}Fields`
-            blocks.push(generateClass(baseName, [], ownProps, ctx))
+            blocks.push(generateClass(baseName, [], ownProps, ctx, extraItemsType))
 
             for (let i = 0; i < unionTypes.length; i++) {
                 const variantName = `_${name}Variant${i}`
@@ -291,7 +295,7 @@ function generateGroupWithUnionMixins (
                 const variantName = `_${name}Variant${i}`
                 variantNames.push(variantName)
                 const bases = [unionTypes[i], ...simpleBases]
-                blocks.push(generateClass(variantName, bases, [], ctx))
+                blocks.push(generateClass(variantName, bases, [], ctx, extraItemsType))
             }
         }
     } else {
@@ -366,7 +370,13 @@ function generateArrayAssignment (arr: CDDLArray, ctx: Context): string {
 // Class generation (TypedDict or Pydantic BaseModel)
 // ---------------------------------------------------------------------------
 
-function generateClass (name: string, bases: string[], props: Property[], ctx: Context): string {
+function generateClass (
+    name: string,
+    bases: string[],
+    props: Property[],
+    ctx: Context,
+    extraItemsType?: string
+): string {
     const lines: string[] = []
 
     let classDecl: string
@@ -381,17 +391,25 @@ function generateClass (name: string, bases: string[], props: Property[], ctx: C
     } else {
         ctx.typingExtensionsImports.add('TypedDict')
         const typedDictBases = bases.filter((base) => isModelCompatibleBase(base, ctx))
-        if (typedDictBases.length > 0) {
-            classDecl = `class ${name}(${typedDictBases.join(', ')}):`
-        } else {
-            classDecl = `class ${name}(TypedDict):`
-        }
+        const baseList = typedDictBases.length > 0 ? typedDictBases.join(', ') : 'TypedDict'
+        classDecl = extraItemsType
+            ? `class ${name}(${baseList}, extra_items=${extraItemsType}):`
+            : `class ${name}(${baseList}):`
     }
 
     lines.push(classDecl)
 
+    if (ctx.pydantic && extraItemsType) {
+        ctx.pydanticImports.add('ConfigDict')
+        ctx.pydanticImports.add('Field')
+        lines.push(`    __pydantic_extra__: dict[str, ${extraItemsType}] = Field(init=False)`)
+        lines.push(`    model_config = ConfigDict(extra='allow')`)
+    }
+
     if (props.length === 0) {
-        lines.push('    pass')
+        if (lines.length === 1) {
+            lines.push('    pass')
+        }
         return lines.join('\n')
     }
 
@@ -468,6 +486,34 @@ function generateField (prop: Property, ctx: Context): string | null {
         return `    ${propName}: NotRequired[${typeStr}]${commentSuffix}`
     }
     return `    ${propName}: ${typeStr}${commentSuffix}`
+}
+
+function isExtensibleRecordProperty (prop: Property): boolean {
+    return !isUnNamedProperty(prop) &&
+        prop.Occurrence.m === Infinity &&
+        !prop.HasCut &&
+        STRING_RECORD_KEY_TYPES.has(prop.Name)
+}
+
+function getExtraItemsType (props: Property[], ctx: Context): string | undefined {
+    const types = props
+        .filter(isExtensibleRecordProperty)
+        .flatMap((prop) => {
+            const cddlTypes = Array.isArray(prop.Type) ? prop.Type : [prop.Type]
+            return cddlTypes.map((type) => resolveType(type, ctx))
+        })
+
+    if (types.length === 0) {
+        return
+    }
+
+    const uniqueTypes = [...new Set(types)]
+    if (uniqueTypes.length === 1) {
+        return uniqueTypes[0]
+    }
+
+    ctx.typingImports.add('Union')
+    return `Union[${uniqueTypes.join(', ')}]`
 }
 
 // ---------------------------------------------------------------------------

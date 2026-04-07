@@ -281,6 +281,48 @@ describe('transform edge cases', () => {
         expect(output).toContain('maybe_enabled: Optional[bool] = Field(default=False)')
     })
 
+    it('should emit extensible TypedDict properties as extra_items', () => {
+        const output = transform([
+            variable('metadata-scalar', ['null', 'bool', 'int', 'float', 'text']),
+            group('message-metadata', [
+                property('provider', 'text', {
+                    Occurrence: { n: 0, m: 1 }
+                }),
+                property('model', 'text', {
+                    Occurrence: { n: 0, m: 1 }
+                }),
+                property('text', groupRef('metadata-scalar'), {
+                    Occurrence: { n: 0, m: Infinity }
+                })
+            ])
+        ])
+
+        expect(output).toContain('class MessageMetadata(TypedDict, extra_items=MetadataScalar):')
+        expect(output).toContain('provider: NotRequired[str]')
+        expect(output).toContain('model: NotRequired[str]')
+        expect(output).not.toContain('text: NotRequired[MetadataScalar]')
+    })
+
+    it('should emit typed extra fields for pydantic models', () => {
+        const output = transform([
+            variable('metadata-scalar', ['null', 'bool', 'int', 'float', 'text']),
+            group('message-metadata', [
+                property('provider', 'text', {
+                    Occurrence: { n: 0, m: 1 }
+                }),
+                property('text', groupRef('metadata-scalar'), {
+                    Occurrence: { n: 0, m: Infinity }
+                })
+            ])
+        ], { pydantic: true })
+
+        expect(output).toContain('from pydantic import BaseModel, ConfigDict, Field')
+        expect(output).toContain('class MessageMetadata(BaseModel):')
+        expect(output).toContain('__pydantic_extra__: dict[str, MetadataScalar] = Field(init=False)')
+        expect(output).toContain(`model_config = ConfigDict(extra='allow')`)
+        expect(output).not.toContain('text: MetadataScalar')
+    })
+
     it('should cover direct type-resolution edge cases', () => {
         const output = transform([
             variable('direct-range', {

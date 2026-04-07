@@ -14,11 +14,11 @@ import { transform } from '../src/index.js'
 
 const COMMENTS: Comment[] = []
 
-function comment (content: string): Comment {
+function comment (content: string, leading = false): Comment {
     return {
         Type: 'comment',
         Content: content,
-        Leading: false
+        Leading: leading
     }
 }
 
@@ -238,6 +238,40 @@ describe('transform edge cases', () => {
         expect(output).toContain('* status docs')
         expect(output).toContain(`* @default 'ready'`)
         expect(output).toContain('enabled?: boolean')
+    })
+
+    it('should place leading comments before exported declarations', () => {
+        const output = transform([
+            variable('metadata-scalar', ['null', 'bool', 'int', 'float', 'text'], [
+                comment('Flat scalar value used by concise metadata bags.', true)
+            ])
+        ])
+
+        expect(output).toContain(`// Flat scalar value used by concise metadata bags.\nexport type MetadataScalar = null | boolean | number | number | string;`)
+        expect(output).not.toContain('export // Flat scalar value used by concise metadata bags.')
+    })
+
+    it('should emit extensible object properties as index signatures', () => {
+        const output = transform([
+            variable('metadata-scalar', ['null', 'bool', 'int', 'float', 'text']),
+            group('message-metadata', [
+                property('provider', 'text', {
+                    Occurrence: { n: 0, m: 1 }
+                }),
+                property('model', 'text', {
+                    Occurrence: { n: 0, m: 1 }
+                }),
+                property('text', groupRef('metadata-scalar'), {
+                    Occurrence: { n: 0, m: Infinity }
+                })
+            ])
+        ])
+
+        expect(output).toContain('export interface MessageMetadata {')
+        expect(output).toContain('provider?: string;')
+        expect(output).toContain('model?: string;')
+        expect(output).toContain('[key: string]: MetadataScalar | undefined;')
+        expect(output).not.toContain('text?: MetadataScalar;')
     })
 
     it('should throw clear errors for unsupported inputs', () => {

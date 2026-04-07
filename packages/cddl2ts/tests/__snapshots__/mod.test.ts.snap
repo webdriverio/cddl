@@ -95,8 +95,8 @@ export interface SomeGroup {
 export type ScriptListLocalValue = ScriptLocalValue[];
 export type ScriptMappingLocalValue = (ScriptLocalValue | ScriptLocalValue)[];
 
-export // some comments here
-type Extensible = Record<string, any>;",
+// some comments here
+export type Extensible = Record<string, any>;",
   ],
 ]
 `;

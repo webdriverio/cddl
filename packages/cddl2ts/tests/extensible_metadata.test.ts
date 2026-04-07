@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import cli from '../src/cli.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'named_group_choice.cddl')
+const cddlFile = path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'extensible_metadata.cddl')
 
 vi.mock('../src/constants', () => ({
     pkg: {
@@ -14,7 +14,7 @@ vi.mock('../src/constants', () => ({
     }
 }))
 
-describe('named group choice', () => {
+describe('extensible metadata', () => {
     let exitOrig = process.exit
     let logOrig = console.log
     let errorOrig = console.error
@@ -31,7 +31,7 @@ describe('named group choice', () => {
         console.error = errorOrig
     })
 
-    it('should generate a union type alias for named group references', async () => {
+    it('should render extensible metadata as an interface with an index signature', async () => {
         await cli([cddlFile])
 
         expect(process.exit).not.toHaveBeenCalledWith(1)
@@ -39,9 +39,11 @@ describe('named group choice', () => {
 
         const output = vi.mocked(console.log).mock.calls.flat().join('\n')
 
-        // Leading comments should render before the exported declaration.
-        expect(output).toMatch(/(\/\/.*\n)+export type Choice = OptionA \| OptionB/)
-        expect(output).toContain('export interface OptionA {')
-        expect(output).toContain('export interface OptionB {')
+        expect(output).toContain('export interface MessageMetadata {')
+        expect(output).toContain('provider?: string;')
+        expect(output).toContain('modelType?: string;')
+        expect(output).toContain('[key: string]: MetadataScalar | undefined;')
+        expect(output).not.toContain('text?: MetadataScalar;')
+        expect(output).toMatchSnapshot()
     })
 })

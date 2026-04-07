@@ -90,6 +90,27 @@ export function transform (assignments: Assignment[], options?: TransformOptions
     return print(ast).code
 }
 
+function getAssignmentComments (assignment: Assignment) {
+    return assignment.Comments.map((c) => b.commentLine(` ${c.Content}`, true))
+}
+
+function exportWithComments (
+    declaration: types.namedTypes.TSTypeAliasDeclaration
+        | types.namedTypes.TSInterfaceDeclaration
+) {
+    const expr = b.exportDeclaration(false, declaration)
+    expr.comments = declaration.comments
+    declaration.comments = []
+    return expr
+}
+
+function isExtensibleRecordProperty (prop: Property) {
+    return !isUnNamedProperty(prop) &&
+        prop.Occurrence.m === Infinity &&
+        !prop.HasCut &&
+        RECORD_KEY_TYPES.has(prop.Name)
+}
+
 function parseAssignment (assignment: Assignment) {
     if (isVariable(assignment)) {
         const propType = Array.isArray(assignment.PropertyType)
@@ -107,8 +128,8 @@ function parseAssignment (assignment: Assignment) {
         }
 
         const expr = b.tsTypeAliasDeclaration(id, typeParameters)
-        expr.comments = assignment.Comments.map((c) => b.commentLine(` ${c.Content}`, true))
-        return b.exportDeclaration(false, expr)
+        expr.comments = getAssignmentComments(assignment)
+        return exportWithComments(expr)
     }
 
     if (isGroup(assignment)) {
@@ -201,8 +222,8 @@ function parseAssignment (assignment: Assignment) {
             }
 
             const expr = b.tsTypeAliasDeclaration(id, value)
-            expr.comments = assignment.Comments.map((c) => b.commentLine(` ${c.Content}`, true))
-            return b.exportDeclaration(false, expr)
+            expr.comments = getAssignmentComments(assignment)
+            return exportWithComments(expr)
         }
 
         const props = properties as Property[]
@@ -216,8 +237,8 @@ function parseAssignment (assignment: Assignment) {
             if (propType.length === 1 && RECORD_KEY_TYPES.has(prop.Name)) {
                 const value = parseUnionType(assignment)
                 const expr = b.tsTypeAliasDeclaration(id, value)
-                expr.comments = assignment.Comments.map((c) => b.commentLine(` ${c.Content}`, true))
-                return b.exportDeclaration(false, expr)
+                expr.comments = getAssignmentComments(assignment)
+                return exportWithComments(expr)
             }
         }
 
@@ -431,16 +452,16 @@ function parseAssignment (assignment: Assignment) {
             }
 
             const expr = b.tsTypeAliasDeclaration(id, value)
-            expr.comments = assignment.Comments.map((c) => b.commentLine(` ${c.Content}`, true))
-            return b.exportDeclaration(false, expr)
+            expr.comments = getAssignmentComments(assignment)
+            return exportWithComments(expr)
         }
 
         // Fallback to interface if no mixins (pure object)
         const objectType = parseObjectType(props)
 
         const expr = b.tsInterfaceDeclaration(id, b.tsInterfaceBody(objectType))
-        expr.comments = assignment.Comments.map((c) => b.commentLine(` ${c.Content}`, true))
-        return b.exportDeclaration(false, expr)
+        expr.comments = getAssignmentComments(assignment)
+        return exportWithComments(expr)
     }
 
     if (isCDDLArray(assignment)) {
@@ -459,8 +480,8 @@ function parseAssignment (assignment: Assignment) {
             })
             const value = b.tsArrayType(b.tsParenthesizedType(b.tsUnionType(obj)))
             const expr = b.tsTypeAliasDeclaration(id, value)
-            expr.comments = assignment.Comments.map((c) => b.commentLine(` ${c.Content}`, true))
-            return b.exportDeclaration(false, expr)
+            expr.comments = getAssignmentComments(assignment)
+            return exportWithComments(expr)
         }
 
         // Standard array
@@ -477,8 +498,8 @@ function parseAssignment (assignment: Assignment) {
                 : b.tsParenthesizedType(b.tsUnionType(obj))
         )
         const expr = b.tsTypeAliasDeclaration(id, value)
-        expr.comments = assignment.Comments.map((c) => b.commentLine(` ${c.Content}`, true))
-        return b.exportDeclaration(false, expr)
+        expr.comments = getAssignmentComments(assignment)
+        return exportWithComments(expr)
     }
 
     throw new Error(`Unknown assignment type "${(assignment as any).Type}"`)
@@ -502,9 +523,30 @@ function parseObjectType (props: Property[]): ObjectBody {
             continue
         }
 
-        const id = b.identifier(camelcase(prop.Name))
         const cddlType: PropertyType[] = Array.isArray(prop.Type) ? prop.Type : [prop.Type]
         const comments: string[] = prop.Comments.map((c) => ` ${c.Content}`)
+
+        if (isExtensibleRecordProperty(prop)) {
+            const keyIdentifier = b.identifier('key')
+            keyIdentifier.typeAnnotation = b.tsTypeAnnotation(NATIVE_TYPES[prop.Name])
+
+            const indexSignature = b.tsIndexSignature(
+                [keyIdentifier],
+                b.tsTypeAnnotation(
+                    b.tsUnionType([
+                        ...cddlType.map((t) => parseUnionType(t)),
+                        b.tsUndefinedKeyword()
+                    ])
+                )
+            )
+            indexSignature.comments = comments.length
+                ? [b.commentBlock(`*\n *${comments.join('\n *')}\n `)]
+                : []
+            propItems.push(indexSignature)
+            continue
+        }
+
+        const id = b.identifier(camelcase(prop.Name))
 
         if (prop.Operator && prop.Operator.Type === 'default') {
             const defaultValue = parseDefaultValue(prop.Operator)
