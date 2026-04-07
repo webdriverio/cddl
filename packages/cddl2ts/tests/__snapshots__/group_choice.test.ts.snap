@@ -12,52 +12,52 @@ export type DirectProxyConfiguration = Extensible & {
   proxyType: "direct";
 };
 
-export // 1. Simple Group Choice
-type ManualProxyConfiguration = Extensible & {
+// 1. Simple Group Choice
+export type ManualProxyConfiguration = Extensible & {
   proxyType: "manual";
 };
 
-export // 2. Nested Group Choice
-type SimpleGroupChoice = Int | string;
+// 2. Nested Group Choice
+export type SimpleGroupChoice = Int | string;
 
-export // 3. Group Choice with Multiple Items (Sequence) - interpreted as tuple
-type NestedGroupChoice = (Int | Tstr);
+// 3. Group Choice with Multiple Items (Sequence) - interpreted as tuple
+export type NestedGroupChoice = (Int | Tstr);
 
-export // 4. Map Group Choice - interpreted as map (interface) union
-type SequenceGroupChoice = [number, string] | number;
+// 4. Map Group Choice - interpreted as map (interface) union
+export type SequenceGroupChoice = [number, string] | number;
 
-export // 5. Type Choice inside Group - should be value union
-type MapGroupChoice = {
+// 5. Type Choice inside Group - should be value union
+export type MapGroupChoice = {
   a: 1;
 } | {
   b: 2;
 };
 
-export // 6. Array with Group Choice - should be array of union?
-type TypeChoiceInsideGroup = number | string;
+// 6. Array with Group Choice - should be array of union?
+export type TypeChoiceInsideGroup = number | string;
 
-export // 7. Map with nested group (bare and parens) - should be object like
-type ArrayGroupChoice = Int | string[];
+// 7. Map with nested group (bare and parens) - should be object like
+export type ArrayGroupChoice = Int | string[];
 
 export type MapWithBareGroup = number;
 
-export // 8. Group wrapped in map with multiple properties
-type MapWithParensGroup = number;
+// 8. Group wrapped in map with multiple properties
+export type MapWithParensGroup = number;
 
-export // 9. Property type choice without operators
-type MapGroupWrap = ;
+// 9. Property type choice without operators
+export type MapGroupWrap = ;
 
-export // 10. Nested choice with group reference
-interface PropChoiceNoOp {
+// 10. Nested choice with group reference
+export interface PropChoiceNoOp {
   a: number | number;
   b: string;
 }
 
-export // 11. Complex type (group) followed by property without comma
-type NestedChoiceRef = number | string;
+// 11. Complex type (group) followed by property without comma
+export type NestedChoiceRef = number | string;
 
-export // 12. Multi-item group choice (verifies isChoice persistence)
-interface MapNoComma {
+// 12. Multi-item group choice (verifies isChoice persistence)
+export interface MapNoComma {
   a: number;
   b: string;
 }

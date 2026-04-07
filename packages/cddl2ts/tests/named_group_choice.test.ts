@@ -39,8 +39,8 @@ describe('named group choice', () => {
 
         const output = vi.mocked(console.log).mock.calls.flat().join('\n')
 
-        // The export keyword is separated from the type definition by comments
-        expect(output).toMatch(/export\s+(\/\/.*\n)+\s*type Choice = OptionA \| OptionB/)
+        // Leading comments should render before the exported declaration.
+        expect(output).toMatch(/(\/\/.*\n)+export type Choice = OptionA \| OptionB/)
         expect(output).toContain('export interface OptionA {')
         expect(output).toContain('export interface OptionB {')
     })
