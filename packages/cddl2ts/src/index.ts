@@ -317,10 +317,10 @@ function parseAssignment (assignment: Assignment, options: TransformSettings) {
 
                     for (const prop of group.Properties) {
                         // Choices are wrapped in arrays in the properties
-                        const options = Array.isArray(prop) ? prop : [prop]
-                        if (options.length > 1) { // It's a choice within the mixin group
+                        const choiceProps = Array.isArray(prop) ? prop : [prop]
+                        if (choiceProps.length > 1) { // It's a choice within the mixin group
                             const unionOptions: any[] = []
-                            for (const option of options) {
+                            for (const option of choiceProps) {
                                 let refName: string | undefined
                                 const type = option.Type
                                 if (typeof type === 'string') refName = type
@@ -347,7 +347,7 @@ function parseAssignment (assignment: Assignment, options: TransformSettings) {
                             }
                         }
 
-                        for (const option of options) {
+                        for (const option of choiceProps) {
                             let refName: string | undefined
                             const type = option.Type
 

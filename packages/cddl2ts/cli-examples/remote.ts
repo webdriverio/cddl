@@ -385,9 +385,9 @@ export interface BrowsingContextPrintParameters {
   shrinkToFit?: boolean;
 }
 
-export // Minimum size is 1pt x 1pt. Conversion follows from
+// Minimum size is 1pt x 1pt. Conversion follows from
 // https://www.w3.org/TR/css3-values/#absolute-lengths
-interface BrowsingContextPrintMarginParameters {
+export interface BrowsingContextPrintMarginParameters {
   /**
    * @default 1
    */
