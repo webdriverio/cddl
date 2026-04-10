@@ -66,6 +66,23 @@ describe('cddl2ts', () => {
         expect(process.exit).toHaveBeenCalledTimes(0)
     })
 
+    it('should allow configuring snake_case fields from the CLI', async () => {
+        await cli([
+            path.join(__dirname, '..', '..', '..', 'examples', 'commons', 'test.cddl'),
+            '--field-case',
+            'snake'
+        ])
+
+        expect(console.log).toHaveBeenCalledTimes(1)
+        const output = vi.mocked(console.log).mock.calls[0]?.[0] as string
+        expect(output).toContain('export interface SessionCapabilitiesRequest {')
+        expect(output).toContain('always_match?: SessionCapabilityRequest;')
+        expect(output).toContain('first_match?: SessionCapabilityRequest[];')
+        expect(output).toContain('pointer_type?: InputPointerType;')
+        expect(output).not.toContain('alwaysMatch?: SessionCapabilityRequest;')
+        expect(process.exit).toHaveBeenCalledTimes(0)
+    })
+
     afterEach(() => {
         process.exit = exitOrig
         console.log = logOrig
