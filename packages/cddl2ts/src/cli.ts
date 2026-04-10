@@ -4,8 +4,10 @@ import yargs from 'yargs'
 
 import { parse } from 'cddl'
 
-import { transform } from './index.js'
+import { transform, type FieldCase } from './index.js'
 import { pkg } from './constants.js'
+
+const FIELD_CASE_CHOICES = ['camel', 'snake'] as const satisfies readonly FieldCase[]
 
 export default async function cli (argv = process.argv.slice(2)) {
     const parser = yargs(argv)
@@ -17,6 +19,12 @@ export default async function cli (argv = process.argv.slice(2)) {
             type: 'boolean',
             description: 'Use unknown instead of any',
             default: false
+        })
+        .option('field-case', {
+            choices: FIELD_CASE_CHOICES,
+            type: 'string',
+            description: 'Case for generated interface fields',
+            default: 'camel'
         })
         .help('help')
         .alias('h', 'help')
@@ -38,5 +46,8 @@ export default async function cli (argv = process.argv.slice(2)) {
     }
 
     const ast = parse(absoluteFilePath)
-    console.log(transform(ast, { useUnknown: args.u as boolean }))
+    console.log(transform(ast, {
+        useUnknown: args.u as boolean,
+        fieldCase: args.fieldCase as FieldCase
+    }))
 }

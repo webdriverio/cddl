@@ -123,6 +123,35 @@ describe('transform edge cases', () => {
         expect(output).toContain('export type MaybeValue = unknown;')
     })
 
+    it('should keep camelCase fields by default', () => {
+        const output = transform([
+            group('session-capability-request', [
+                property('page_ranges', 'tstr')
+            ])
+        ])
+
+        expect(output).toContain('export interface SessionCapabilityRequest {')
+        expect(output).toContain('pageRanges: string;')
+    })
+
+    it('should support snake_case fields without changing exported type names', () => {
+        const output = transform([
+            group('session-capability-request', [
+                property('acceptInsecureCerts', 'bool'),
+                property('pageRanges', 'tstr'),
+                property('nestedConfig', group('', [
+                    property('requestId', 'uint')
+                ]))
+            ])
+        ], { fieldCase: 'snake' })
+
+        expect(output).toContain('export interface SessionCapabilityRequest {')
+        expect(output).toContain('accept_insecure_certs: boolean;')
+        expect(output).toContain('page_ranges: string;')
+        expect(output).toContain('nested_config: {')
+        expect(output).toContain('request_id: number;')
+    })
+
     it('should generate intersections for choices with static props and mixins', () => {
         const output = transform([
             group('combined', [

@@ -23,6 +23,12 @@ This package exposes a CLI as well as a programmatic interface for transforming 
 npx cddl2ts ./path/to/interface.cddl &> ./path/to/interface.ts
 ```
 
+Generated interface fields default to `camelCase`. Pass `--field-case snake` to emit `snake_case` fields while keeping exported interface and type names unchanged.
+
+```sh
+npx cddl2ts ./path/to/interface.cddl --field-case snake &> ./path/to/interface.ts
+```
+
 ### Programmatic Interface
 
 The module exports a `transform` method that takes a CDDL AST object and returns a TypeScript definition as `string`, e.g.:
@@ -41,16 +47,16 @@ import { parse, transform } from 'cddl'
  * };
  */
 const ast = parse('./spec.cddl')
-const ts = transform(ast)
+const ts = transform(ast, { fieldCase: 'snake' })
 console.log(ts)
 /**
  * outputs:
  *
  * interface SessionCapabilityRequest {
- *   acceptInsecureCerts?: boolean,
- *   browserName?: string,
- *   browserVersion?: string,
- *   platformName?: string,
+ *   accept_insecure_certs?: boolean,
+ *   browser_name?: string,
+ *   browser_version?: string,
+ *   platform_name?: string,
  * }
  */
 ```

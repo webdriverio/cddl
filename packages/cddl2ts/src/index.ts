@@ -59,13 +59,23 @@ const RECORD_KEY_TYPES = new Set([
 type ObjectEntry = types.namedTypes.TSCallSignatureDeclaration | types.namedTypes.TSConstructSignatureDeclaration | types.namedTypes.TSIndexSignature | types.namedTypes.TSMethodSignature | types.namedTypes.TSPropertySignature
 type ObjectBody = ObjectEntry[]
 type TSTypeKind = types.namedTypes.TSAsExpression['typeAnnotation']
+export type FieldCase = 'camel' | 'snake'
+type TransformSettings = Required<TransformOptions>
+const IDENTIFIER_PATTERN = /^[A-Za-z_$][A-Za-z0-9_$]*$/
 
 export interface TransformOptions {
     useUnknown?: boolean
+    fieldCase?: FieldCase
 }
 
 export function transform (assignments: Assignment[], options?: TransformOptions) {
-    if (options?.useUnknown) {
+    const transformOptions: TransformSettings = {
+        useUnknown: false,
+        fieldCase: 'camel',
+        ...options
+    }
+
+    if (transformOptions.useUnknown) {
         NATIVE_TYPES.any = b.tsUnknownKeyword()
     } else {
         NATIVE_TYPES.any = b.tsAnyKeyword()
@@ -81,7 +91,7 @@ export function transform (assignments: Assignment[], options?: TransformOptions
     ) satisfies types.namedTypes.File
 
     for (const assignment of assignments) {
-        const statement = parseAssignment(assignment)
+        const statement = parseAssignment(assignment, transformOptions)
         if (!statement) {
             continue
         }
@@ -111,7 +121,30 @@ function isExtensibleRecordProperty (prop: Property) {
         RECORD_KEY_TYPES.has(prop.Name)
 }
 
-function parseAssignment (assignment: Assignment) {
+function toSnakeCase (name: string) {
+    return name
+        .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+        .replace(/([A-Z])([A-Z][a-z])/g, '$1_$2')
+        .replace(/[^A-Za-z0-9_$]+/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_+|_+$/g, '')
+        .toLowerCase()
+}
+
+function formatFieldName (name: string, fieldCase: FieldCase) {
+    return fieldCase === 'snake'
+        ? toSnakeCase(name)
+        : camelcase(name)
+}
+
+function createPropertyKey (name: string, options: TransformSettings) {
+    const fieldName = formatFieldName(name, options.fieldCase)
+    return IDENTIFIER_PATTERN.test(fieldName)
+        ? b.identifier(fieldName)
+        : b.stringLiteral(fieldName)
+}
+
+function parseAssignment (assignment: Assignment, options: TransformSettings) {
     if (isVariable(assignment)) {
         const propType = Array.isArray(assignment.PropertyType)
             ? assignment.PropertyType
@@ -124,7 +157,7 @@ function parseAssignment (assignment: Assignment) {
         if (propType.length === 1 && propType[0].Type === 'range') {
             typeParameters = b.tsNumberKeyword()
         } else {
-            typeParameters = b.tsUnionType(propType.map(parseUnionType))
+            typeParameters = b.tsUnionType(propType.map((prop) => parseUnionType(prop, options)))
         }
 
         const expr = b.tsTypeAliasDeclaration(id, typeParameters)
@@ -161,7 +194,7 @@ function parseAssignment (assignment: Assignment) {
                         i++ // Skip next property
                     }
 
-                    const options = choiceOptions.map(p => {
+                    const choiceTypes = choiceOptions.map(p => {
                         // If p is a group reference (Name ''), it's a TypeReference
                         // e.g. SessionAutodetectProxyConfiguration // SessionDirectProxyConfiguration
                         // The parser sometimes wraps it in an array, sometimes not (if inside a choice)
@@ -175,12 +208,12 @@ function parseAssignment (assignment: Assignment) {
                                    b.identifier(pascalCase(typeVal.Value || typeVal.Type))
                                )
                             }
-                            return parseUnionType(typeVal);
+                            return parseUnionType(typeVal, options)
                        }
                         // Otherwise it is an object literal with this property
-                        return b.tsTypeLiteral(parseObjectType([p]))
+                        return b.tsTypeLiteral(parseObjectType([p], options))
                     })
-                    intersections.push(b.tsUnionType(options))
+                    intersections.push(b.tsUnionType(choiceTypes))
                 } else {
                     staticProps.push(prop)
                 }
@@ -192,13 +225,13 @@ function parseAssignment (assignment: Assignment) {
                 const ownProps = staticProps.filter(p => !isUnNamedProperty(p))
 
                 if (ownProps.length > 0) {
-                    intersections.unshift(b.tsTypeLiteral(parseObjectType(ownProps)))
+                    intersections.unshift(b.tsTypeLiteral(parseObjectType(ownProps, options)))
                 }
 
                 for (const mixin of mixins) {
                     if (Array.isArray(mixin.Type) && mixin.Type.length > 1) {
-                         const options = mixin.Type.map(parseUnionType)
-                         intersections.push(b.tsUnionType(options))
+                         const choices = mixin.Type.map((type) => parseUnionType(type, options))
+                         intersections.push(b.tsUnionType(choices))
                     } else {
                         const typeVal = Array.isArray(mixin.Type) ? mixin.Type[0] : mixin.Type
                         if (isNamedGroupReference(typeVal)) {
@@ -235,7 +268,7 @@ function parseAssignment (assignment: Assignment) {
             const prop = props[0]
             const propType = Array.isArray(prop.Type) ? prop.Type : [prop.Type]
             if (propType.length === 1 && RECORD_KEY_TYPES.has(prop.Name)) {
-                const value = parseUnionType(assignment)
+                const value = parseUnionType(assignment, options)
                 const expr = b.tsTypeAliasDeclaration(id, value)
                 expr.comments = getAssignmentComments(assignment)
                 return exportWithComments(expr)
@@ -284,10 +317,10 @@ function parseAssignment (assignment: Assignment) {
 
                     for (const prop of group.Properties) {
                         // Choices are wrapped in arrays in the properties
-                        const options = Array.isArray(prop) ? prop : [prop]
-                        if (options.length > 1) { // It's a choice within the mixin group
+                        const choiceProps = Array.isArray(prop) ? prop : [prop]
+                        if (choiceProps.length > 1) { // It's a choice within the mixin group
                             const unionOptions: any[] = []
-                            for (const option of options) {
+                            for (const option of choiceProps) {
                                 let refName: string | undefined
                                 const type = option.Type
                                 if (typeof type === 'string') refName = type
@@ -314,7 +347,7 @@ function parseAssignment (assignment: Assignment) {
                             }
                         }
 
-                        for (const option of options) {
+                        for (const option of choiceProps) {
                             let refName: string | undefined
                             const type = option.Type
 
@@ -395,7 +428,7 @@ function parseAssignment (assignment: Assignment) {
                                 }
                             } else if (type && typeof type === 'object') {
                                 if (isGroup(type) && Array.isArray(type.Properties)) {
-                                    choices.push(b.tsTypeLiteral(parseObjectType(type.Properties as Property[])))
+                                    choices.push(b.tsTypeLiteral(parseObjectType(type.Properties as Property[], options)))
                                     continue
                                 }
                                 refName = isNamedGroupReference(type)
@@ -441,7 +474,7 @@ function parseAssignment (assignment: Assignment) {
 
             const ownProps = props.filter(p => !isUnNamedProperty(p))
             if (ownProps.length > 0) {
-                 intersections.push(b.tsTypeLiteral(parseObjectType(ownProps)))
+                 intersections.push(b.tsTypeLiteral(parseObjectType(ownProps, options)))
             }
 
             let value: any
@@ -457,7 +490,7 @@ function parseAssignment (assignment: Assignment) {
         }
 
         // Fallback to interface if no mixins (pure object)
-        const objectType = parseObjectType(props)
+        const objectType = parseObjectType(props, options)
 
         const expr = b.tsInterfaceDeclaration(id, b.tsInterfaceBody(objectType))
         expr.comments = getAssignmentComments(assignment)
@@ -476,7 +509,7 @@ function parseAssignment (assignment: Assignment) {
             // We need to parse each choice.
             const obj = assignmentValues.map((prop) => {
                  const t = Array.isArray(prop.Type) ? prop.Type[0] : prop.Type
-                 return parseUnionType(t)
+                 return parseUnionType(t, options)
             })
             const value = b.tsArrayType(b.tsParenthesizedType(b.tsUnionType(obj)))
             const expr = b.tsTypeAliasDeclaration(id, value)
@@ -487,10 +520,10 @@ function parseAssignment (assignment: Assignment) {
         // Standard array
         const firstType = assignmentValues.Type
         const obj = Array.isArray(firstType)
-            ? firstType.map(parseUnionType)
+            ? firstType.map((type) => parseUnionType(type, options))
             : isCDDLArray(firstType)
-                ? firstType.Values.map((val: any) => parseUnionType(Array.isArray(val.Type) ? val.Type[0] : val.Type))
-                : [parseUnionType(firstType)]
+                ? firstType.Values.map((val: any) => parseUnionType(Array.isArray(val.Type) ? val.Type[0] : val.Type, options))
+                : [parseUnionType(firstType, options)]
 
         const value = b.tsArrayType(
             obj.length === 1
@@ -505,7 +538,7 @@ function parseAssignment (assignment: Assignment) {
     throw new Error(`Unknown assignment type "${(assignment as any).Type}"`)
 }
 
-function parseObjectType (props: Property[]): ObjectBody {
+function parseObjectType (props: Property[], options: TransformSettings): ObjectBody {
     const propItems: ObjectBody = []
     for (const prop of props) {
         /**
@@ -534,7 +567,7 @@ function parseObjectType (props: Property[]): ObjectBody {
                 [keyIdentifier],
                 b.tsTypeAnnotation(
                     b.tsUnionType([
-                        ...cddlType.map((t) => parseUnionType(t)),
+                        ...cddlType.map((t) => parseUnionType(t, options)),
                         b.tsUndefinedKeyword()
                     ])
                 )
@@ -546,7 +579,7 @@ function parseObjectType (props: Property[]): ObjectBody {
             continue
         }
 
-        const id = b.identifier(camelcase(prop.Name))
+        const id = createPropertyKey(prop.Name, options)
 
         if (prop.Operator && prop.Operator.Type === 'default') {
             const defaultValue = parseDefaultValue(prop.Operator)
@@ -555,7 +588,7 @@ function parseObjectType (props: Property[]): ObjectBody {
         }
 
         const type = cddlType.map((t) => {
-            const unionType = parseUnionType(t)
+            const unionType = parseUnionType(t, options)
             if (unionType) {
                 const defaultValue = parseDefaultValue((t as PropertyReference).Operator)
                 defaultValue && comments.length && comments.push('') // add empty line if we have previous comments
@@ -577,7 +610,7 @@ function parseObjectType (props: Property[]): ObjectBody {
     return propItems
 }
 
-function parseUnionType (t: PropertyType | Assignment): TSTypeKind {
+function parseUnionType (t: PropertyType | Assignment, options: TransformSettings): TSTypeKind {
     if (typeof t === 'string') {
         if (!NATIVE_TYPES[t]) {
             throw new Error(`Unknown native type: "${t}`)
@@ -600,35 +633,35 @@ function parseUnionType (t: PropertyType | Assignment): TSTypeKind {
              * Check if we have choices in the group (arrays of Properties)
              */
             if (prop.some(p => Array.isArray(p))) {
-                const options: TSTypeKind[] = []
+                const choices: TSTypeKind[] = []
                 for (const choice of prop) {
                     const subProps = Array.isArray(choice) ? choice : [choice]
 
                     if (subProps.length === 1 && isUnNamedProperty(subProps[0])) {
                         const first = subProps[0]
                         const subType = Array.isArray(first.Type) ? first.Type[0] : first.Type
-                        options.push(parseUnionType(subType as PropertyType))
+                        choices.push(parseUnionType(subType as PropertyType, options))
                         continue
                     }
 
                     if (subProps.every(isUnNamedProperty)) {
                         const tupleItems = subProps.map((p) => {
                             const subType = Array.isArray(p.Type) ? p.Type[0] : p.Type
-                            return parseUnionType(subType as PropertyType)
+                            return parseUnionType(subType as PropertyType, options)
                         })
-                        options.push(b.tsTupleType(tupleItems))
+                        choices.push(b.tsTupleType(tupleItems))
                         continue
                     }
 
-                    options.push(b.tsTypeLiteral(parseObjectType(subProps)))
+                    choices.push(b.tsTypeLiteral(parseObjectType(subProps, options)))
                 }
-                return b.tsUnionType(options)
+                return b.tsUnionType(choices)
             }
 
             if ((prop as Property[]).every(isUnNamedProperty)) {
                  const items = (prop as Property[]).map(p => {
                        const t = Array.isArray(p.Type) ? p.Type[0] : p.Type
-                       return parseUnionType(t as PropertyType)
+                       return parseUnionType(t as PropertyType, options)
                  })
 
                  if (items.length === 1) return items[0];
@@ -643,7 +676,7 @@ function parseUnionType (t: PropertyType | Assignment): TSTypeKind {
                     b.identifier('Record'),
                     b.tsTypeParameterInstantiation([
                         NATIVE_TYPES[(prop[0] as Property).Name],
-                        parseUnionType(((prop[0] as Property).Type as PropertyType[])[0])
+                        parseUnionType(((prop[0] as Property).Type as PropertyType[])[0], options)
                     ])
                 )
             }
@@ -651,7 +684,7 @@ function parseUnionType (t: PropertyType | Assignment): TSTypeKind {
             /**
              * e.g. ?attributes: {*foo => text},
              */
-            return b.tsTypeLiteral(parseObjectType(t.Properties as Property[]))
+            return b.tsTypeLiteral(parseObjectType(t.Properties as Property[], options))
         } else if (isNamedGroupReference(t)) {
             return b.tsTypeReference(
                 b.identifier(pascalCase(t.Value))
