@@ -81,7 +81,14 @@ export function isPropertyReference (t: any): t is PropertyReference {
 }
 
 export function isNativeTypeWithOperator (t: any): t is NativeTypeWithOperator {
-    return t && typeof t === 'object' && 'Type' in t && 'Operator' in t
+    return Boolean(
+        t &&
+        typeof t === 'object' &&
+        'Type' in t &&
+        !('Value' in t) &&
+        t.Operator &&
+        typeof t.Operator === 'object'
+    )
 }
 
 export function getRegexpPattern (t: any): string | undefined {

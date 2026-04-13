@@ -10,6 +10,7 @@ import type {
     PropertyReference,
     Variable
 } from '../src/ast.js'
+import { Type } from '../src/ast.js'
 import { Tokens, type Token } from '../src/tokens.js'
 import {
     getRegexpPattern,
@@ -185,7 +186,7 @@ describe('utils', () => {
                 }
             }
             const nativeStringTypeWithRegexp: NativeTypeWithOperator = {
-                Type: 'tstr',
+                Type: Type.TSTR,
                 Operator: {
                     Type: 'regexp',
                     Value: {
