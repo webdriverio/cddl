@@ -1,0 +1,8 @@
+{
+  "name": "node-24-pnpm-workspace",
+  "user": "ubuntu",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  }
+}
