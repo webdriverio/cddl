@@ -209,8 +209,23 @@ describe('utils', () => {
             expect(isNativeTypeWithOperator(nativeTypeWithOperator)).toBe(true)
             expect(isNativeTypeWithOperator(nativeStringTypeWithRegexp)).toBe(true)
             expect(isNativeTypeWithOperator({ Type: 'tstr' })).toBe(false)
+            expect(isNativeTypeWithOperator({
+                Type: Type.TSTR,
+                Operator: 'regexp'
+            })).toBe(false)
             expect(getRegexpPattern(nativeStringTypeWithRegexp)).toBe('custom:.+')
             expect(getRegexpPattern(nativeTypeWithOperator)).toBeUndefined()
+            expect(getRegexpPattern({
+                Type: Type.TSTR,
+                Operator: {
+                    Type: 'regexp',
+                    Value: {
+                        Type: 'literal',
+                        Value: 42,
+                        Unwrapped: false
+                    }
+                }
+            })).toBeUndefined()
 
             expect(isRange({ Type: rangeReference })).toBe(true)
             expect(isRange({ Type: 'range' })).toBe(false)
