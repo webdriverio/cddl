@@ -151,6 +151,74 @@ describe('transform edge cases', () => {
         expect(output).toContain('Combined = Union[_CombinedVariant0, _CombinedVariant1]')
     })
 
+    it('should preserve template-like regexp strings in python-friendly types', () => {
+        const typedDictOutput = transform([
+            variable('channel', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('custom:.+')
+                }
+            } as any),
+            variable('prefixed-name', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('foo_.+')
+                }
+            } as any),
+            variable('sandwiched-name', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('some_.+_name')
+                }
+            } as any),
+            variable('multi-slot-name', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('pre_.+_mid_.+_post')
+                }
+            } as any),
+            group('event-envelope', [
+                property('channel', {
+                    Type: 'tstr',
+                    Operator: {
+                        Type: 'regexp',
+                        Value: literal('custom:.+')
+                    }
+                } as any)
+            ]),
+            variable('email-address', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('[^@]+@[^@]+')
+                }
+            } as any)
+        ])
+        const pydanticOutput = transform([
+            variable('channel', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('custom:.+')
+                }
+            } as any)
+        ], { pydantic: true })
+
+        expect(typedDictOutput).toContain('from typing import Annotated')
+        expect(typedDictOutput).toContain('Channel = Annotated[str, "custom:" + str]')
+        expect(typedDictOutput).toContain('PrefixedName = Annotated[str, "foo_" + str]')
+        expect(typedDictOutput).toContain('SandwichedName = Annotated[str, "some_" + str + "_name"]')
+        expect(typedDictOutput).toContain('MultiSlotName = Annotated[str, "pre_" + str + "_mid_" + str + "_post"]')
+        expect(typedDictOutput).toContain('channel: Annotated[str, "custom:" + str]')
+        expect(typedDictOutput).toContain('EmailAddress = str')
+        expect(pydanticOutput).toContain('from pydantic import StringConstraints')
+        expect(pydanticOutput).toContain('Channel = Annotated[str, StringConstraints(pattern="custom:.+")]')
+    })
+
     it('should collapse multiple union mixin groups into a single alias', () => {
         const output = transform([
             group('combined', [

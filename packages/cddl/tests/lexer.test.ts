@@ -60,4 +60,12 @@ describe('lexer', () => {
         expect(locEnd.line).toBe(0)
         expect(locEnd.position).toBe(0)
     })
+
+    it('should render caret location info for the current line', () => {
+        const l = new Lexer('foo\nbar')
+        l.nextToken()
+
+        expect(l.getLine(1)).toBe('bar')
+        expect(l.getLocationInfo()).toBe('foo\n ^\n |\n')
+    })
 })

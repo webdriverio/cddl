@@ -1,8 +1,9 @@
 import {
+    getRegexpPattern,
     isCDDLArray, isGroup, isNamedGroupReference, isLiteralWithValue,
     isNativeTypeWithOperator, isUnNamedProperty, isPropertyReference,
     isRange, isVariable, pascalCase,
-    type Assignment, type PropertyType, type PropertyReference,
+    type Assignment, type NativeTypeWithOperator, type PropertyType, type PropertyReference,
     type Property, type Array as CDDLArray, type Operator, type Group,
     type Variable, type Comment, type Tag
 } from 'cddl'
@@ -516,6 +517,72 @@ function getExtraItemsType (props: Property[], ctx: Context): string | undefined
     return `Union[${uniqueTypes.join(', ')}]`
 }
 
+function stringifyPythonLiteral (value: string) {
+    return JSON.stringify(value)
+}
+
+function getTemplateAnnotatedPattern (regexpPattern: string): string | undefined {
+    const wildcard = '.+'
+    if (!regexpPattern.includes(wildcard) || /[\\()[\]{}|?*^$]/.test(regexpPattern.replaceAll(wildcard, ''))) {
+        return
+    }
+
+    const segments = regexpPattern.split(wildcard)
+    const parts: string[] = []
+
+    for (let i = 0; i < segments.length; i++) {
+        const segment = segments[i]
+        if (segment.length > 0) {
+            parts.push(stringifyPythonLiteral(segment))
+        }
+
+        if (i < segments.length - 1) {
+            parts.push('str')
+        }
+    }
+
+    if (parts.length === 0 || !parts.includes('str')) {
+        return
+    }
+
+    return `Annotated[str, ${parts.join(' + ')}]`
+}
+
+function resolveNativeTypeWithOperator (t: NativeTypeWithOperator, ctx: Context): string | undefined {
+    if (typeof t.Type !== 'string') {
+        return
+    }
+
+    const mapped = NATIVE_TYPE_MAP[t.Type]
+    if (!mapped) {
+        return
+    }
+
+    const regexpPattern = getRegexpPattern(t)
+    if (!regexpPattern) {
+        if (mapped === 'Any') {
+            ctx.typingImports.add('Any')
+        }
+        return mapped
+    }
+
+    const templateAnnotatedPattern = getTemplateAnnotatedPattern(regexpPattern)
+    if (!templateAnnotatedPattern) {
+        if (mapped === 'Any') {
+            ctx.typingImports.add('Any')
+        }
+        return mapped
+    }
+
+    ctx.typingImports.add('Annotated')
+    if (ctx.pydantic) {
+        ctx.pydanticImports.add('StringConstraints')
+        return `Annotated[${mapped}, StringConstraints(pattern=${JSON.stringify(regexpPattern)})]`
+    }
+
+    return templateAnnotatedPattern
+}
+
 // ---------------------------------------------------------------------------
 // Type resolution
 // ---------------------------------------------------------------------------
@@ -530,6 +597,14 @@ function resolveType (t: PropertyType, ctx: Context, options: ResolveTypeOptions
             return mapped
         }
         throw new Error(`Unknown native type: "${t}"`)
+    }
+
+    if (isNativeTypeWithOperator(t) && typeof t.Type === 'string') {
+        const resolved = resolveNativeTypeWithOperator(t, ctx)
+        if (resolved) {
+            return resolved
+        }
+        throw new Error(`Unknown native type with operator: ${JSON.stringify(t)}`)
     }
 
     if ((t as any).Type && typeof (t as any).Type === 'string' && NATIVE_TYPE_MAP[(t as any).Type]) {

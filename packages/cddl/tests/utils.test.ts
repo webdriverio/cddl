@@ -10,8 +10,10 @@ import type {
     PropertyReference,
     Variable
 } from '../src/ast.js'
+import { Type } from '../src/ast.js'
 import { Tokens, type Token } from '../src/tokens.js'
 import {
+    getRegexpPattern,
     hasSpecialNumberCharacter,
     isAlphabeticCharacter,
     isCDDLArray,
@@ -183,6 +185,17 @@ describe('utils', () => {
                     Value: 'tstr'
                 }
             }
+            const nativeStringTypeWithRegexp: NativeTypeWithOperator = {
+                Type: Type.TSTR,
+                Operator: {
+                    Type: 'regexp',
+                    Value: {
+                        Type: 'literal',
+                        Value: 'custom:.+',
+                        Unwrapped: false
+                    }
+                }
+            }
             const rangeReference: PropertyReference = {
                 Type: 'range',
                 Value: {
@@ -194,7 +207,25 @@ describe('utils', () => {
             }
 
             expect(isNativeTypeWithOperator(nativeTypeWithOperator)).toBe(true)
+            expect(isNativeTypeWithOperator(nativeStringTypeWithRegexp)).toBe(true)
             expect(isNativeTypeWithOperator({ Type: 'tstr' })).toBe(false)
+            expect(isNativeTypeWithOperator({
+                Type: Type.TSTR,
+                Operator: 'regexp'
+            })).toBe(false)
+            expect(getRegexpPattern(nativeStringTypeWithRegexp)).toBe('custom:.+')
+            expect(getRegexpPattern(nativeTypeWithOperator)).toBeUndefined()
+            expect(getRegexpPattern({
+                Type: Type.TSTR,
+                Operator: {
+                    Type: 'regexp',
+                    Value: {
+                        Type: 'literal',
+                        Value: 42,
+                        Unwrapped: false
+                    }
+                }
+            })).toBeUndefined()
 
             expect(isRange({ Type: rangeReference })).toBe(true)
             expect(isRange({ Type: 'range' })).toBe(false)

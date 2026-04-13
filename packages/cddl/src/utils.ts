@@ -81,7 +81,32 @@ export function isPropertyReference (t: any): t is PropertyReference {
 }
 
 export function isNativeTypeWithOperator (t: any): t is NativeTypeWithOperator {
-    return t && typeof t.Type === 'object' && 'Operator' in t
+    return Boolean(
+        t &&
+        typeof t === 'object' &&
+        'Type' in t &&
+        !('Value' in t) &&
+        t.Operator &&
+        typeof t.Operator === 'object'
+    )
+}
+
+export function getRegexpPattern (t: any): string | undefined {
+    if (!isNativeTypeWithOperator(t)) {
+        return
+    }
+
+    if (typeof t.Type !== 'string' || !['str', 'text', 'tstr'].includes(t.Type)) {
+        return
+    }
+
+    if (t.Operator?.Type !== 'regexp' || !isLiteralWithValue(t.Operator.Value)) {
+        return
+    }
+
+    return typeof t.Operator.Value.Value === 'string'
+        ? t.Operator.Value.Value
+        : undefined
 }
 
 export function isRange (t: any): boolean {
