@@ -117,7 +117,7 @@ export default class Parser {
                     Type: 'variable',
                     Name: groupName,
                     IsChoiceAddition: isChoiceAddition,
-                    PropertyType: this.parsePropertyTypes(),
+                    PropertyType: this.parsePropertyTypes(true),
                     Comments: []
                 }
 
@@ -148,7 +148,7 @@ export default class Parser {
         ) {
             const propertyType: PropertyType[] = []
             while (!closingTokens.includes(this.curToken.Type)) {
-                propertyType.push(...this.parsePropertyTypes())
+                propertyType.push(...this.parsePropertyTypes(true))
                 if (closingTokens.includes(this.curToken.Type)) {
                     this.nextToken()
                     break
@@ -820,7 +820,7 @@ export default class Parser {
         return this.curToken.Literal === Tokens.DOT && OPERATORS.includes(this.peekToken.Literal as OperatorType)
     }
 
-    private parsePropertyTypes (): PropertyType[] {
+    private parsePropertyTypes (attachChoiceOperators = false): PropertyType[] {
         const propertyTypes: PropertyType[] = []
 
         let prop: PropertyType = this.parsePropertyType()
@@ -870,14 +870,22 @@ export default class Parser {
             while ([Tokens.COMMENT].includes(this.curToken.Type)) {
                 this.parseComment()
             }
-            propertyTypes.push(this.parsePropertyType())
-            if (!this.isOperator() && this.curToken.Type !== Tokens.SLASH) {
+            let nextProp: PropertyType = this.parsePropertyType()
+            if (this.isOperator()) {
+                if (attachChoiceOperators) {
+                    nextProp = {
+                        Type: nextProp,
+                        Operator: this.parseOperator()
+                    } as NativeTypeWithOperator
+                }
+            } else if (this.curToken.Type !== Tokens.SLASH) {
                 /**
                  * If we are not parsing an operator, we need to eat the next token;
                  * otherwise, the operator will be parsed by the caller
                  */
                 this.nextToken()
             }
+            propertyTypes.push(nextProp)
 
             while ([Tokens.COMMENT].includes(this.curToken.Type) && this.peekToken.Type === Tokens.SLASH) {
                 this.parseComment()
