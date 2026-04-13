@@ -30,7 +30,6 @@ interface ResolveTypeOptions {
 }
 
 const STRING_RECORD_KEY_TYPES = new Set(['str', 'text', 'tstr'])
-const CUSTOM_CHANNEL_REGEXP_PATTERNS = new Set(['custom:.+', '^custom:.+$'])
 
 export function transform (assignments: Assignment[], options?: TransformOptions): string {
     const ctx: Context = {
@@ -518,6 +517,37 @@ function getExtraItemsType (props: Property[], ctx: Context): string | undefined
     return `Union[${uniqueTypes.join(', ')}]`
 }
 
+function stringifyPythonLiteral (value: string) {
+    return JSON.stringify(value)
+}
+
+function getTemplateAnnotatedPattern (regexpPattern: string): string | undefined {
+    const wildcard = '.+'
+    if (!regexpPattern.includes(wildcard) || /[\\()[\]{}|?*^$]/.test(regexpPattern.replaceAll(wildcard, ''))) {
+        return
+    }
+
+    const segments = regexpPattern.split(wildcard)
+    const parts: string[] = []
+
+    for (let i = 0; i < segments.length; i++) {
+        const segment = segments[i]
+        if (segment.length > 0) {
+            parts.push(stringifyPythonLiteral(segment))
+        }
+
+        if (i < segments.length - 1) {
+            parts.push('str')
+        }
+    }
+
+    if (parts.length === 0 || !parts.includes('str')) {
+        return
+    }
+
+    return `Annotated[str, ${parts.join(' + ')}]`
+}
+
 function resolveNativeTypeWithOperator (t: NativeTypeWithOperator, ctx: Context): string | undefined {
     if (typeof t.Type !== 'string') {
         return
@@ -529,7 +559,15 @@ function resolveNativeTypeWithOperator (t: NativeTypeWithOperator, ctx: Context)
     }
 
     const regexpPattern = getRegexpPattern(t)
-    if (!regexpPattern || !CUSTOM_CHANNEL_REGEXP_PATTERNS.has(regexpPattern)) {
+    if (!regexpPattern) {
+        if (mapped === 'Any') {
+            ctx.typingImports.add('Any')
+        }
+        return mapped
+    }
+
+    const templateAnnotatedPattern = getTemplateAnnotatedPattern(regexpPattern)
+    if (!templateAnnotatedPattern) {
         if (mapped === 'Any') {
             ctx.typingImports.add('Any')
         }
@@ -542,7 +580,7 @@ function resolveNativeTypeWithOperator (t: NativeTypeWithOperator, ctx: Context)
         return `Annotated[${mapped}, StringConstraints(pattern=${JSON.stringify(regexpPattern)})]`
     }
 
-    return `Annotated[${mapped}, ${JSON.stringify(regexpPattern)}]`
+    return templateAnnotatedPattern
 }
 
 // ---------------------------------------------------------------------------

@@ -123,7 +123,7 @@ describe('transform edge cases', () => {
         expect(output).toContain('export type MaybeValue = unknown;')
     })
 
-    it('should map custom channel regexp strings to template literal types', () => {
+    it('should map simple wildcard regexp strings to template literal types', () => {
         const output = transform([
             variable('channel', {
                 Type: 'tstr',
@@ -147,12 +147,36 @@ describe('transform edge cases', () => {
                     Type: 'regexp',
                     Value: literal('[^@]+@[^@]+')
                 }
+            } as any),
+            variable('prefixed-name', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('foo_.+')
+                }
+            } as any),
+            variable('wrapped-name', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('some_.+_name')
+                }
+            } as any),
+            variable('double-wildcard', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('some_.+_middle_.+')
+                }
             } as any)
         ])
 
         expect(output).toContain('export type Channel = `custom:${string}`;')
         expect(output).toContain('channel: `custom:${string}`;')
         expect(output).toContain('export type EmailAddress = string;')
+        expect(output).toContain('export type PrefixedName = `foo_${string}`;')
+        expect(output).toContain('export type WrappedName = `some_${string}_name`;')
+        expect(output).toContain('export type DoubleWildcard = `some_${string}_middle_${string}`;')
     })
 
     it('should keep camelCase fields by default', () => {

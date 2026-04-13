@@ -53,7 +53,6 @@ const NATIVE_TYPES: Record<string, any> = {
     nil: b.tsNullKeyword(),
     null: b.tsNullKeyword()
 }
-const CUSTOM_CHANNEL_REGEXP_PATTERNS = new Set(['custom:.+', '^custom:.+$'])
 const RECORD_KEY_TYPES = new Set([
     'int', 'uint', 'nint', 'integer', 'unsigned', 'number',
     'float', 'float16', 'float32', 'float64', 'float16-32', 'float32-64',
@@ -622,14 +621,44 @@ function parseTemplateLiteralType (template: string): TSTypeKind {
     return (ast.program.body[0] as types.namedTypes.TSTypeAliasDeclaration).typeAnnotation
 }
 
+function escapeTemplateLiteralSegment (segment: string): string {
+    return segment
+        .replace(/\\/g, '\\\\')
+        .replace(/`/g, '\\`')
+        .replace(/\$\{/g, '\\${')
+}
+
+function regexpPatternToTemplateLiteral (pattern: string): string | undefined {
+    const normalized = pattern.startsWith('^') && pattern.endsWith('$')
+        ? pattern.slice(1, -1)
+        : pattern
+
+    if (!normalized.includes('.+')) {
+        return
+    }
+
+    const wildcardOnlyPattern = normalized.replace(/(\.\+)+/g, '')
+    if (wildcardOnlyPattern.includes('(') || wildcardOnlyPattern.includes('[') || wildcardOnlyPattern.includes('\\')) {
+        return
+    }
+
+    const segments = normalized.split(/(?:\.\+)+/g)
+    if (segments.length <= 1) {
+        return
+    }
+
+    return `\`${segments.map(escapeTemplateLiteralSegment).join('${string}')}\``
+}
+
 function parseNativeTypeWithOperator (t: NativeTypeWithOperator): TSTypeKind | undefined {
     if (typeof t.Type !== 'string') {
         return
     }
 
     const regexpPattern = getRegexpPattern(t)
-    if (regexpPattern && CUSTOM_CHANNEL_REGEXP_PATTERNS.has(regexpPattern)) {
-        return parseTemplateLiteralType('`custom:${string}`')
+    const templateLiteral = regexpPattern && regexpPatternToTemplateLiteral(regexpPattern)
+    if (templateLiteral) {
+        return parseTemplateLiteralType(templateLiteral)
     }
 
     return NATIVE_TYPES[t.Type]
