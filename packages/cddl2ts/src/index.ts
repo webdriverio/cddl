@@ -3,6 +3,7 @@ import { parse, print, types } from 'recast'
 import typescriptParser from 'recast/parsers/typescript.js'
 
 import {
+    getRegexpPattern,
     isCDDLArray,
     isGroup,
     isNamedGroupReference,
@@ -14,6 +15,7 @@ import {
     isVariable,
     pascalCase,
     type Assignment,
+    type NativeTypeWithOperator,
     type PropertyType,
     type PropertyReference,
     type Property,
@@ -51,6 +53,7 @@ const NATIVE_TYPES: Record<string, any> = {
     nil: b.tsNullKeyword(),
     null: b.tsNullKeyword()
 }
+const CUSTOM_CHANNEL_REGEXP_PATTERNS = new Set(['custom:.+', '^custom:.+$'])
 const RECORD_KEY_TYPES = new Set([
     'int', 'uint', 'nint', 'integer', 'unsigned', 'number',
     'float', 'float16', 'float32', 'float64', 'float16-32', 'float32-64',
@@ -610,12 +613,40 @@ function parseObjectType (props: Property[], options: TransformSettings): Object
     return propItems
 }
 
+function parseTemplateLiteralType (template: string): TSTypeKind {
+    const ast = parse(`type __CDDLTemplate = ${template};`, {
+        parser: typescriptParser,
+        sourceFileName: 'cddl2Ts.ts',
+        sourceRoot: process.cwd()
+    }) satisfies types.namedTypes.File
+    return (ast.program.body[0] as types.namedTypes.TSTypeAliasDeclaration).typeAnnotation
+}
+
+function parseNativeTypeWithOperator (t: NativeTypeWithOperator): TSTypeKind | undefined {
+    if (typeof t.Type !== 'string') {
+        return
+    }
+
+    const regexpPattern = getRegexpPattern(t)
+    if (regexpPattern && CUSTOM_CHANNEL_REGEXP_PATTERNS.has(regexpPattern)) {
+        return parseTemplateLiteralType('`custom:${string}`')
+    }
+
+    return NATIVE_TYPES[t.Type]
+}
+
 function parseUnionType (t: PropertyType | Assignment, options: TransformSettings): TSTypeKind {
     if (typeof t === 'string') {
         if (!NATIVE_TYPES[t]) {
             throw new Error(`Unknown native type: "${t}`)
         }
         return NATIVE_TYPES[t]
+    } else if (isNativeTypeWithOperator(t) && typeof t.Type === 'string') {
+        const nativeType = parseNativeTypeWithOperator(t)
+        if (!nativeType) {
+            throw new Error(`Unknown native type with operator: ${JSON.stringify(t)}`)
+        }
+        return nativeType
     } else if ((t as any).Type && typeof (t as any).Type === 'string' && NATIVE_TYPES[(t as any).Type]) {
         return NATIVE_TYPES[(t as any).Type]
     } else if (isNativeTypeWithOperator(t) && NATIVE_TYPES[(t.Type as any).Type]) {

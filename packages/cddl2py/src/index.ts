@@ -1,8 +1,9 @@
 import {
+    getRegexpPattern,
     isCDDLArray, isGroup, isNamedGroupReference, isLiteralWithValue,
     isNativeTypeWithOperator, isUnNamedProperty, isPropertyReference,
     isRange, isVariable, pascalCase,
-    type Assignment, type PropertyType, type PropertyReference,
+    type Assignment, type NativeTypeWithOperator, type PropertyType, type PropertyReference,
     type Property, type Array as CDDLArray, type Operator, type Group,
     type Variable, type Comment, type Tag
 } from 'cddl'
@@ -29,6 +30,7 @@ interface ResolveTypeOptions {
 }
 
 const STRING_RECORD_KEY_TYPES = new Set(['str', 'text', 'tstr'])
+const CUSTOM_CHANNEL_REGEXP_PATTERNS = new Set(['custom:.+', '^custom:.+$'])
 
 export function transform (assignments: Assignment[], options?: TransformOptions): string {
     const ctx: Context = {
@@ -516,6 +518,33 @@ function getExtraItemsType (props: Property[], ctx: Context): string | undefined
     return `Union[${uniqueTypes.join(', ')}]`
 }
 
+function resolveNativeTypeWithOperator (t: NativeTypeWithOperator, ctx: Context): string | undefined {
+    if (typeof t.Type !== 'string') {
+        return
+    }
+
+    const mapped = NATIVE_TYPE_MAP[t.Type]
+    if (!mapped) {
+        return
+    }
+
+    const regexpPattern = getRegexpPattern(t)
+    if (!regexpPattern || !CUSTOM_CHANNEL_REGEXP_PATTERNS.has(regexpPattern)) {
+        if (mapped === 'Any') {
+            ctx.typingImports.add('Any')
+        }
+        return mapped
+    }
+
+    ctx.typingImports.add('Annotated')
+    if (ctx.pydantic) {
+        ctx.pydanticImports.add('StringConstraints')
+        return `Annotated[${mapped}, StringConstraints(pattern=${JSON.stringify(regexpPattern)})]`
+    }
+
+    return `Annotated[${mapped}, ${JSON.stringify(regexpPattern)}]`
+}
+
 // ---------------------------------------------------------------------------
 // Type resolution
 // ---------------------------------------------------------------------------
@@ -530,6 +559,14 @@ function resolveType (t: PropertyType, ctx: Context, options: ResolveTypeOptions
             return mapped
         }
         throw new Error(`Unknown native type: "${t}"`)
+    }
+
+    if (isNativeTypeWithOperator(t) && typeof t.Type === 'string') {
+        const resolved = resolveNativeTypeWithOperator(t, ctx)
+        if (resolved) {
+            return resolved
+        }
+        throw new Error(`Unknown native type with operator: ${JSON.stringify(t)}`)
     }
 
     if ((t as any).Type && typeof (t as any).Type === 'string' && NATIVE_TYPE_MAP[(t as any).Type]) {

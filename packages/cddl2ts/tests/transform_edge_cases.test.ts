@@ -123,6 +123,38 @@ describe('transform edge cases', () => {
         expect(output).toContain('export type MaybeValue = unknown;')
     })
 
+    it('should map custom channel regexp strings to template literal types', () => {
+        const output = transform([
+            variable('channel', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('custom:.+')
+                }
+            } as any),
+            group('event-envelope', [
+                property('channel', {
+                    Type: 'tstr',
+                    Operator: {
+                        Type: 'regexp',
+                        Value: literal('custom:.+')
+                    }
+                } as any)
+            ]),
+            variable('email-address', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('[^@]+@[^@]+')
+                }
+            } as any)
+        ])
+
+        expect(output).toContain('export type Channel = `custom:${string}`;')
+        expect(output).toContain('channel: `custom:${string}`;')
+        expect(output).toContain('export type EmailAddress = string;')
+    })
+
     it('should keep camelCase fields by default', () => {
         const output = transform([
             group('session-capability-request', [

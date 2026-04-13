@@ -151,6 +151,50 @@ describe('transform edge cases', () => {
         expect(output).toContain('Combined = Union[_CombinedVariant0, _CombinedVariant1]')
     })
 
+    it('should preserve custom channel regexp strings in python-friendly types', () => {
+        const typedDictOutput = transform([
+            variable('channel', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('custom:.+')
+                }
+            } as any),
+            group('event-envelope', [
+                property('channel', {
+                    Type: 'tstr',
+                    Operator: {
+                        Type: 'regexp',
+                        Value: literal('custom:.+')
+                    }
+                } as any)
+            ]),
+            variable('email-address', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('[^@]+@[^@]+')
+                }
+            } as any)
+        ])
+        const pydanticOutput = transform([
+            variable('channel', {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: literal('custom:.+')
+                }
+            } as any)
+        ], { pydantic: true })
+
+        expect(typedDictOutput).toContain('from typing import Annotated')
+        expect(typedDictOutput).toContain('Channel = Annotated[str, "custom:.+"]')
+        expect(typedDictOutput).toContain('channel: Annotated[str, "custom:.+"]')
+        expect(typedDictOutput).toContain('EmailAddress = str')
+        expect(pydanticOutput).toContain('from pydantic import StringConstraints')
+        expect(pydanticOutput).toContain('Channel = Annotated[str, StringConstraints(pattern="custom:.+")]')
+    })
+
     it('should collapse multiple union mixin groups into a single alias', () => {
         const output = transform([
             group('combined', [

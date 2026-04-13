@@ -12,6 +12,7 @@ import type {
 } from '../src/ast.js'
 import { Tokens, type Token } from '../src/tokens.js'
 import {
+    getRegexpPattern,
     hasSpecialNumberCharacter,
     isAlphabeticCharacter,
     isCDDLArray,
@@ -183,6 +184,17 @@ describe('utils', () => {
                     Value: 'tstr'
                 }
             }
+            const nativeStringTypeWithRegexp: NativeTypeWithOperator = {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: {
+                        Type: 'literal',
+                        Value: 'custom:.+',
+                        Unwrapped: false
+                    }
+                }
+            }
             const rangeReference: PropertyReference = {
                 Type: 'range',
                 Value: {
@@ -194,7 +206,10 @@ describe('utils', () => {
             }
 
             expect(isNativeTypeWithOperator(nativeTypeWithOperator)).toBe(true)
+            expect(isNativeTypeWithOperator(nativeStringTypeWithRegexp)).toBe(true)
             expect(isNativeTypeWithOperator({ Type: 'tstr' })).toBe(false)
+            expect(getRegexpPattern(nativeStringTypeWithRegexp)).toBe('custom:.+')
+            expect(getRegexpPattern(nativeTypeWithOperator)).toBeUndefined()
 
             expect(isRange({ Type: rangeReference })).toBe(true)
             expect(isRange({ Type: 'range' })).toBe(false)

@@ -60,4 +60,29 @@ describe('parser', () => {
 
         vi.restoreAllMocks()
     })
+
+    it('parses RFC 9165 regexp operators on text strings', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('channel = tstr .regexp "custom:.+"\n')
+        const p = new Parser('foo.cddl')
+
+        expect(p.parse()).toEqual([{
+            Type: 'variable',
+            Name: 'channel',
+            IsChoiceAddition: false,
+            PropertyType: [{
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: {
+                        Type: 'literal',
+                        Value: 'custom:.+',
+                        Unwrapped: false
+                    }
+                }
+            }],
+            Comments: []
+        }])
+
+        vi.restoreAllMocks()
+    })
 })
