@@ -1,6 +1,6 @@
 {
   "name": "cddl2py",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A Node.js package that can generate Python type definitions (with optional Pydantic support) based on a CDDL file",
   "author": "Christian Bromann <mail@bromann.dev>",
   "license": "MIT",
