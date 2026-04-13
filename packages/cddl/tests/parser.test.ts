@@ -85,4 +85,33 @@ describe('parser', () => {
 
         vi.restoreAllMocks()
     })
+
+    it('parses type choices with regexp operators on later members', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('channel = "values" / tstr .regexp "custom:.+"\n')
+        const p = new Parser('foo.cddl')
+
+        expect(p.parse()).toEqual([{
+            Type: 'variable',
+            Name: 'channel',
+            IsChoiceAddition: false,
+            PropertyType: [{
+                Type: 'literal',
+                Value: 'values',
+                Unwrapped: false
+            }, {
+                Type: 'tstr',
+                Operator: {
+                    Type: 'regexp',
+                    Value: {
+                        Type: 'literal',
+                        Value: 'custom:.+',
+                        Unwrapped: false
+                    }
+                }
+            }],
+            Comments: []
+        }])
+
+        vi.restoreAllMocks()
+    })
 })
