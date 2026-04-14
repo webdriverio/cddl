@@ -517,37 +517,6 @@ function getExtraItemsType (props: Property[], ctx: Context): string | undefined
     return `Union[${uniqueTypes.join(', ')}]`
 }
 
-function stringifyPythonLiteral (value: string) {
-    return JSON.stringify(value)
-}
-
-function getTemplateAnnotatedPattern (regexpPattern: string): string | undefined {
-    const wildcard = '.+'
-    if (!regexpPattern.includes(wildcard) || /[\\()[\]{}|?*^$]/.test(regexpPattern.replaceAll(wildcard, ''))) {
-        return
-    }
-
-    const segments = regexpPattern.split(wildcard)
-    const parts: string[] = []
-
-    for (let i = 0; i < segments.length; i++) {
-        const segment = segments[i]
-        if (segment.length > 0) {
-            parts.push(stringifyPythonLiteral(segment))
-        }
-
-        if (i < segments.length - 1) {
-            parts.push('str')
-        }
-    }
-
-    if (parts.length === 0 || !parts.includes('str')) {
-        return
-    }
-
-    return `Annotated[str, ${parts.join(' + ')}]`
-}
-
 function resolveNativeTypeWithOperator (t: NativeTypeWithOperator, ctx: Context): string | undefined {
     if (typeof t.Type !== 'string') {
         return
@@ -566,21 +535,13 @@ function resolveNativeTypeWithOperator (t: NativeTypeWithOperator, ctx: Context)
         return mapped
     }
 
-    const templateAnnotatedPattern = getTemplateAnnotatedPattern(regexpPattern)
-    if (!templateAnnotatedPattern) {
-        if (mapped === 'Any') {
-            ctx.typingImports.add('Any')
-        }
-        return mapped
-    }
-
     ctx.typingImports.add('Annotated')
     if (ctx.pydantic) {
         ctx.pydanticImports.add('StringConstraints')
         return `Annotated[${mapped}, StringConstraints(pattern=${JSON.stringify(regexpPattern)})]`
     }
 
-    return templateAnnotatedPattern
+    return `Annotated[${mapped}, ${JSON.stringify(regexpPattern)}]`
 }
 
 // ---------------------------------------------------------------------------
