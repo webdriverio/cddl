@@ -601,8 +601,6 @@ class BrowserDownloadBehavior(BrowserDownloadBehaviorDenied):
 
 BrowsingContextBrowsingContext = str
 
-BrowsingContextLocator = Union["BrowsingContextAccessibilityLocator", "BrowsingContextCssLocator", "BrowsingContextContextLocator", "BrowsingContextInnerTextLocator", "BrowsingContextXPathLocator"]
-
 class BrowsingContextAccessibilityLocator(TypedDict):
     type: Literal["accessibility"]
     value: dict[str, Any]
@@ -626,6 +624,8 @@ class BrowsingContextXPathLocator(TypedDict):
     type: Literal["xpath"]
     value: str
 
+BrowsingContextLocator = Union[BrowsingContextAccessibilityLocator, BrowsingContextCssLocator, BrowsingContextContextLocator, BrowsingContextInnerTextLocator, BrowsingContextXPathLocator]
+
 BrowsingContextNavigation = str
 
 BrowsingContextReadinessState = Union[Literal["none"], Literal["interactive"], Literal["complete"]]
@@ -645,18 +645,18 @@ class BrowsingContextImageFormat(TypedDict):
     type: str
     quality: NotRequired[int]
 
-BrowsingContextClipRectangle = Union["BrowsingContextBoxClipRectangle", "BrowsingContextElementClipRectangle"]
-
-class BrowsingContextElementClipRectangle(TypedDict):
-    type: Literal["element"]
-    element: ScriptSharedReference
-
 class BrowsingContextBoxClipRectangle(TypedDict):
     type: Literal["box"]
     x: float
     y: float
     width: float
     height: float
+
+class BrowsingContextElementClipRectangle(TypedDict):
+    type: Literal["element"]
+    element: ScriptSharedReference
+
+BrowsingContextClipRectangle = Union[BrowsingContextBoxClipRectangle, BrowsingContextElementClipRectangle]
 
 class BrowsingContextCloseParameters(TypedDict):
     context: BrowsingContextBrowsingContext
@@ -768,10 +768,10 @@ class EmulationSetNetworkConditionsParameters(TypedDict):
     contexts: NotRequired[list[BrowsingContextBrowsingContext]]
     user_contexts: NotRequired[list[BrowserUserContext]]
 
-EmulationNetworkConditions = "EmulationNetworkConditionsOffline"
-
 class EmulationNetworkConditionsOffline(TypedDict):
     type: Literal["offline"]
+
+EmulationNetworkConditions = EmulationNetworkConditionsOffline
 
 class EmulationScreenArea(TypedDict):
     width: JsUint
@@ -825,8 +825,6 @@ class NetworkAuthCredentials(TypedDict):
     username: str
     password: str
 
-NetworkBytesValue = Union["NetworkStringValue", "NetworkBase64Value"]
-
 class NetworkStringValue(TypedDict):
     type: Literal["string"]
     value: str
@@ -834,6 +832,8 @@ class NetworkStringValue(TypedDict):
 class NetworkBase64Value(TypedDict):
     type: Literal["base64"]
     value: str
+
+NetworkBytesValue = Union[NetworkStringValue, NetworkBase64Value]
 
 NetworkCollector = str
 
@@ -877,8 +877,6 @@ class NetworkSetCookieHeader(TypedDict):
     same_site: NotRequired[NetworkSameSite]
     secure: NotRequired[bool]
 
-NetworkUrlPattern = Union["NetworkUrlPatternPattern", "NetworkUrlPatternString"]
-
 class NetworkUrlPatternPattern(TypedDict):
     type: Literal["pattern"]
     protocol: NotRequired[str]
@@ -890,6 +888,8 @@ class NetworkUrlPatternPattern(TypedDict):
 class NetworkUrlPatternString(TypedDict):
     type: Literal["string"]
     pattern: str
+
+NetworkUrlPattern = Union[NetworkUrlPatternPattern, NetworkUrlPatternString]
 
 class NetworkAddDataCollectorParameters(TypedDict):
     data_types: list[NetworkDataType]
@@ -979,8 +979,6 @@ class ScriptChannelProperties(TypedDict):
     serialization_options: NotRequired[ScriptSerializationOptions]
     ownership: NotRequired[ScriptResultOwnership]
 
-ScriptEvaluateResult = Union["ScriptEvaluateResultSuccess", "ScriptEvaluateResultException"]
-
 class ScriptEvaluateResultSuccess(TypedDict):
     type: Literal["success"]
     result: ScriptRemoteValue
@@ -990,6 +988,8 @@ class ScriptEvaluateResultException(TypedDict):
     type: Literal["exception"]
     exception_details: ScriptExceptionDetails
     realm: ScriptRealm
+
+ScriptEvaluateResult = Union[ScriptEvaluateResultSuccess, ScriptEvaluateResultException]
 
 class ScriptExceptionDetails(TypedDict):
     column_number: JsUint
@@ -1002,45 +1002,15 @@ ScriptHandle = str
 
 ScriptInternalId = str
 
-ScriptLocalValue = Union["ScriptRemoteReference", "ScriptPrimitiveProtocolValue", ScriptChannelValue, "ScriptArrayLocalValue", "ScriptDateLocalValue", "ScriptMapLocalValue", "ScriptObjectLocalValue", "ScriptRegExpLocalValue", "ScriptSetLocalValue"]
+class ScriptSharedReference(TypedDict):
+    shared_id: ScriptSharedId
+    handle: NotRequired[ScriptHandle]
 
-ScriptListLocalValue = list[ScriptLocalValue]
+class ScriptRemoteObjectReference(TypedDict):
+    handle: ScriptHandle
+    shared_id: NotRequired[ScriptSharedId]
 
-class ScriptArrayLocalValue(TypedDict):
-    type: Literal["array"]
-    value: ScriptListLocalValue
-
-class ScriptDateLocalValue(TypedDict):
-    type: Literal["date"]
-    value: str
-
-ScriptMappingLocalValue = list[Union[ScriptLocalValue, str]]
-
-class ScriptMapLocalValue(TypedDict):
-    type: Literal["map"]
-    value: ScriptMappingLocalValue
-
-class ScriptObjectLocalValue(TypedDict):
-    type: Literal["object"]
-    value: ScriptMappingLocalValue
-
-class ScriptRegExpValue(TypedDict):
-    pattern: str
-    flags: NotRequired[str]
-
-class ScriptRegExpLocalValue(TypedDict):
-    type: Literal["regexp"]
-    value: ScriptRegExpValue
-
-class ScriptSetLocalValue(TypedDict):
-    type: Literal["set"]
-    value: ScriptListLocalValue
-
-ScriptPreloadScript = str
-
-ScriptRealm = str
-
-ScriptPrimitiveProtocolValue = Union["ScriptUndefinedValue", "ScriptNullValue", "ScriptStringValue", "ScriptNumberValue", "ScriptBooleanValue", "ScriptBigIntValue"]
+ScriptRemoteReference = Union[ScriptSharedReference, ScriptRemoteObjectReference]
 
 class ScriptUndefinedValue(TypedDict):
     type: Literal["undefined"]
@@ -1051,8 +1021,6 @@ class ScriptNullValue(TypedDict):
 class ScriptStringValue(TypedDict):
     type: Literal["string"]
     value: str
-
-ScriptSpecialNumber = Union[Literal["NaN"], Literal["-0"], Literal["Infinity"], Literal["-Infinity"]]
 
 class ScriptNumberValue(TypedDict):
     type: Literal["number"]
@@ -1066,23 +1034,49 @@ class ScriptBigIntValue(TypedDict):
     type: Literal["bigint"]
     value: str
 
+ScriptPrimitiveProtocolValue = Union[ScriptUndefinedValue, ScriptNullValue, ScriptStringValue, ScriptNumberValue, ScriptBooleanValue, ScriptBigIntValue]
+
+class ScriptArrayLocalValue(TypedDict):
+    type: Literal["array"]
+    value: ScriptListLocalValue
+
+class ScriptDateLocalValue(TypedDict):
+    type: Literal["date"]
+    value: str
+
+class ScriptMapLocalValue(TypedDict):
+    type: Literal["map"]
+    value: ScriptMappingLocalValue
+
+class ScriptObjectLocalValue(TypedDict):
+    type: Literal["object"]
+    value: ScriptMappingLocalValue
+
+class ScriptRegExpLocalValue(TypedDict):
+    type: Literal["regexp"]
+    value: ScriptRegExpValue
+
+class ScriptSetLocalValue(TypedDict):
+    type: Literal["set"]
+    value: ScriptListLocalValue
+
+ScriptLocalValue = Union[ScriptRemoteReference, ScriptPrimitiveProtocolValue, ScriptChannelValue, ScriptArrayLocalValue, ScriptDateLocalValue, ScriptMapLocalValue, ScriptObjectLocalValue, ScriptRegExpLocalValue, ScriptSetLocalValue]
+
+ScriptListLocalValue = list[ScriptLocalValue]
+
+ScriptMappingLocalValue = list[Union[ScriptLocalValue, str]]
+
+class ScriptRegExpValue(TypedDict):
+    pattern: str
+    flags: NotRequired[str]
+
+ScriptPreloadScript = str
+
+ScriptRealm = str
+
+ScriptSpecialNumber = Union[Literal["NaN"], Literal["-0"], Literal["Infinity"], Literal["-Infinity"]]
+
 ScriptRealmType = Union[Literal["window"], Literal["dedicated-worker"], Literal["shared-worker"], Literal["service-worker"], Literal["worker"], Literal["paint-worklet"], Literal["audio-worklet"], Literal["worklet"]]
-
-ScriptRemoteReference = Union["ScriptSharedReference", "ScriptRemoteObjectReference"]
-
-class ScriptSharedReference(TypedDict):
-    shared_id: ScriptSharedId
-    handle: NotRequired[ScriptHandle]
-
-class ScriptRemoteObjectReference(TypedDict):
-    handle: ScriptHandle
-    shared_id: NotRequired[ScriptSharedId]
-
-ScriptRemoteValue = Union[ScriptPrimitiveProtocolValue, "ScriptSymbolRemoteValue", "ScriptArrayRemoteValue", "ScriptObjectRemoteValue", "ScriptFunctionRemoteValue", "ScriptRegExpRemoteValue", "ScriptDateRemoteValue", "ScriptMapRemoteValue", "ScriptSetRemoteValue", "ScriptWeakMapRemoteValue", "ScriptWeakSetRemoteValue", "ScriptGeneratorRemoteValue", "ScriptErrorRemoteValue", "ScriptProxyRemoteValue", "ScriptPromiseRemoteValue", "ScriptTypedArrayRemoteValue", "ScriptArrayBufferRemoteValue", "ScriptNodeListRemoteValue", "ScriptHtmlCollectionRemoteValue", "ScriptNodeRemoteValue", "ScriptWindowProxyRemoteValue"]
-
-ScriptListRemoteValue = list[ScriptRemoteValue]
-
-ScriptMappingRemoteValue = list[Union[ScriptRemoteValue, str]]
 
 class ScriptSymbolRemoteValue(TypedDict):
     type: Literal["symbol"]
@@ -1185,6 +1179,18 @@ class ScriptNodeRemoteValue(TypedDict):
     internal_id: NotRequired[ScriptInternalId]
     value: NotRequired[ScriptNodeProperties]
 
+class ScriptWindowProxyRemoteValue(TypedDict):
+    type: Literal["window"]
+    value: ScriptWindowProxyProperties
+    handle: NotRequired[ScriptHandle]
+    internal_id: NotRequired[ScriptInternalId]
+
+ScriptRemoteValue = Union[ScriptPrimitiveProtocolValue, ScriptSymbolRemoteValue, ScriptArrayRemoteValue, ScriptObjectRemoteValue, ScriptFunctionRemoteValue, ScriptRegExpRemoteValue, ScriptDateRemoteValue, ScriptMapRemoteValue, ScriptSetRemoteValue, ScriptWeakMapRemoteValue, ScriptWeakSetRemoteValue, ScriptGeneratorRemoteValue, ScriptErrorRemoteValue, ScriptProxyRemoteValue, ScriptPromiseRemoteValue, ScriptTypedArrayRemoteValue, ScriptArrayBufferRemoteValue, ScriptNodeListRemoteValue, ScriptHtmlCollectionRemoteValue, ScriptNodeRemoteValue, ScriptWindowProxyRemoteValue]
+
+ScriptListRemoteValue = list[ScriptRemoteValue]
+
+ScriptMappingRemoteValue = list[Union[ScriptRemoteValue, str]]
+
 class ScriptNodeProperties(TypedDict):
     node_type: JsUint
     child_node_count: JsUint
@@ -1195,12 +1201,6 @@ class ScriptNodeProperties(TypedDict):
     namespace_uri: NotRequired[str]
     node_value: NotRequired[str]
     shadow_root: NotRequired[Union[ScriptNodeRemoteValue, None]]
-
-class ScriptWindowProxyRemoteValue(TypedDict):
-    type: Literal["window"]
-    value: ScriptWindowProxyProperties
-    handle: NotRequired[ScriptHandle]
-    internal_id: NotRequired[ScriptInternalId]
 
 class ScriptWindowProxyProperties(TypedDict):
     context: BrowsingContextBrowsingContext
@@ -1324,21 +1324,15 @@ class InputPerformActionsParameters(TypedDict):
     context: BrowsingContextBrowsingContext
     actions: list[InputSourceActions]
 
-InputSourceActions = Union["InputNoneSourceActions", "InputKeySourceActions", "InputPointerSourceActions", "InputWheelSourceActions"]
-
 class InputNoneSourceActions(TypedDict):
     type: Literal["none"]
     id: str
     actions: list[InputNoneSourceAction]
 
-InputNoneSourceAction = "InputPauseAction"
-
 class InputKeySourceActions(TypedDict):
     type: Literal["key"]
     id: str
     actions: list[InputKeySourceAction]
-
-InputKeySourceAction = Union["InputPauseAction", "InputKeyDownAction", "InputKeyUpAction"]
 
 class InputPointerSourceActions(TypedDict):
     type: Literal["pointer"]
@@ -1346,23 +1340,18 @@ class InputPointerSourceActions(TypedDict):
     parameters: NotRequired[InputPointerParameters]
     actions: list[InputPointerSourceAction]
 
-InputPointerType = Union[Literal["mouse"], Literal["pen"], Literal["touch"]]
-
-class InputPointerParameters(TypedDict):
-    pointer_type: NotRequired[InputPointerType]
-
-InputPointerSourceAction = Union["InputPauseAction", "InputPointerDownAction", "InputPointerUpAction", "InputPointerMoveAction"]
-
 class InputWheelSourceActions(TypedDict):
     type: Literal["wheel"]
     id: str
     actions: list[InputWheelSourceAction]
 
-InputWheelSourceAction = Union["InputPauseAction", "InputWheelScrollAction"]
+InputSourceActions = Union[InputNoneSourceActions, InputKeySourceActions, InputPointerSourceActions, InputWheelSourceActions]
 
 class InputPauseAction(TypedDict):
     type: Literal["pause"]
     duration: NotRequired[JsUint]
+
+InputNoneSourceAction = InputPauseAction
 
 class InputKeyDownAction(TypedDict):
     type: Literal["keyDown"]
@@ -1372,9 +1361,12 @@ class InputKeyUpAction(TypedDict):
     type: Literal["keyUp"]
     value: str
 
-class InputPointerUpAction(TypedDict):
-    type: Literal["pointerUp"]
-    button: JsUint
+InputKeySourceAction = Union[InputPauseAction, InputKeyDownAction, InputKeyUpAction]
+
+InputPointerType = Union[Literal["mouse"], Literal["pen"], Literal["touch"]]
+
+class InputPointerParameters(TypedDict):
+    pointer_type: NotRequired[InputPointerType]
 
 class InputPointerCommonProperties(TypedDict):
     width: NotRequired[JsUint]
@@ -1389,12 +1381,18 @@ class InputPointerDownAction(InputPointerCommonProperties):
     type: Literal["pointerDown"]
     button: JsUint
 
+class InputPointerUpAction(TypedDict):
+    type: Literal["pointerUp"]
+    button: JsUint
+
 class InputPointerMoveAction(InputPointerCommonProperties):
     type: Literal["pointerMove"]
     x: float
     y: float
     duration: NotRequired[JsUint]
     origin: NotRequired[InputOrigin]
+
+InputPointerSourceAction = Union[InputPauseAction, InputPointerDownAction, InputPointerUpAction, InputPointerMoveAction]
 
 class InputWheelScrollAction(TypedDict):
     type: Literal["scroll"]
@@ -1404,6 +1402,8 @@ class InputWheelScrollAction(TypedDict):
     delta_y: JsInt
     duration: NotRequired[JsUint]
     origin: NotRequired[InputOrigin]
+
+InputWheelSourceAction = Union[InputPauseAction, InputWheelScrollAction]
 
 InputOrigin = Union[Literal["viewport"], Literal["pointer"], InputElementOrigin]
 
@@ -1420,12 +1420,6 @@ WebExtensionExtension = str
 class WebExtensionInstallParameters(TypedDict):
     extension_data: WebExtensionExtensionData
 
-WebExtensionExtensionData = Union["WebExtensionExtensionArchivePath", "WebExtensionExtensionBase64Encoded", "WebExtensionExtensionPath"]
-
-class WebExtensionExtensionPath(TypedDict):
-    type: Literal["path"]
-    path: str
-
 class WebExtensionExtensionArchivePath(TypedDict):
     type: Literal["archivePath"]
     path: str
@@ -1433,6 +1427,12 @@ class WebExtensionExtensionArchivePath(TypedDict):
 class WebExtensionExtensionBase64Encoded(TypedDict):
     type: Literal["base64"]
     value: str
+
+class WebExtensionExtensionPath(TypedDict):
+    type: Literal["path"]
+    path: str
+
+WebExtensionExtensionData = Union[WebExtensionExtensionArchivePath, WebExtensionExtensionBase64Encoded, WebExtensionExtensionPath]
 
 class WebExtensionUninstallParameters(TypedDict):
     extension: WebExtensionExtension

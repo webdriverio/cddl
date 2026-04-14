@@ -68,7 +68,7 @@ describe('complex types conversion', () => {
         expect(output).toContain('RegExpLocalValue')
         expect(output).toContain('SetLocalValue')
 
-        expect(output).toContain('LocalValue = Union["ArrayLocalValue", "DateLocalValue", "MapLocalValue", "ObjectLocalValue", "RegExpLocalValue", "SetLocalValue"]')
+        expect(output).toContain('LocalValue = Union[ArrayLocalValue, DateLocalValue, MapLocalValue, ObjectLocalValue, RegExpLocalValue, SetLocalValue]')
         expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 
@@ -87,7 +87,7 @@ describe('complex types conversion', () => {
         expect(output).toContain('RegExpLocalValue')
         expect(output).toContain('SetLocalValue')
 
-        expect(output).toContain('LocalValue = Union["ArrayLocalValue", "DateLocalValue", "MapLocalValue", "ObjectLocalValue", "RegExpLocalValue", "SetLocalValue"]')
+        expect(output).toContain('LocalValue = Union[ArrayLocalValue, DateLocalValue, MapLocalValue, ObjectLocalValue, RegExpLocalValue, SetLocalValue]')
         expect(normalizeSnapshotOutput(output)).toMatchSnapshot()
     })
 })

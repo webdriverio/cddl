@@ -803,14 +803,51 @@ function orderAssignments (assignments: Assignment[]): Assignment[] {
 }
 
 function getHardDependencies (assignment: Assignment, assignmentsByName: Map<string, Assignment>): string[] {
+    if (isVariable(assignment)) {
+        const propTypes = Array.isArray(assignment.PropertyType)
+            ? assignment.PropertyType
+            : [assignment.PropertyType]
+        const deps = new Set<string>()
+        for (const t of propTypes) {
+            for (const ref of getTypeReferences(t)) {
+                if (assignmentsByName.has(ref)) {
+                    deps.add(ref)
+                }
+            }
+        }
+        return [...deps]
+    }
+
+    if (isCDDLArray(assignment)) {
+        const arr = assignment as CDDLArray
+        const deps = new Set<string>()
+        for (const val of arr.Values) {
+            const properties = Array.isArray(val) ? val : [val]
+            for (const prop of properties) {
+                const types = Array.isArray(prop.Type) ? prop.Type : [prop.Type]
+                for (const t of types) {
+                    for (const ref of getTypeReferences(t)) {
+                        if (assignmentsByName.has(ref)) {
+                            deps.add(ref)
+                        }
+                    }
+                }
+            }
+        }
+        return [...deps]
+    }
+
     if (!isGroup(assignment)) {
         return []
     }
 
     const deps = new Set<string>()
-    for (const propertyOrChoice of assignment.Properties) {
-        const properties = Array.isArray(propertyOrChoice) ? propertyOrChoice : [propertyOrChoice]
-        for (const property of properties) {
+    const properties = assignment.Properties
+    const hasChoices = properties.some(p => Array.isArray(p))
+
+    for (const propertyOrChoice of properties) {
+        const props = Array.isArray(propertyOrChoice) ? propertyOrChoice : [propertyOrChoice]
+        for (const property of props) {
             if (!isUnNamedProperty(property)) {
                 continue
             }
@@ -821,7 +858,98 @@ function getHardDependencies (assignment: Assignment, assignmentsByName: Map<str
         }
     }
 
+    if (!hasChoices) {
+        const props = properties as Property[]
+
+        if (props.length === 1 && Object.keys(NATIVE_TYPE_MAP).includes(props[0].Name)) {
+            const propType = Array.isArray(props[0].Type) ? props[0].Type : [props[0].Type]
+            for (const t of propType) {
+                for (const ref of getTypeReferences(t)) {
+                    if (assignmentsByName.has(ref)) {
+                        deps.add(ref)
+                    }
+                }
+            }
+        }
+
+        for (const prop of props) {
+            if (isExtensibleRecordProperty(prop)) {
+                const cddlTypes = Array.isArray(prop.Type) ? prop.Type : [prop.Type]
+                for (const t of cddlTypes) {
+                    for (const ref of getTypeReferences(t)) {
+                        if (assignmentsByName.has(ref)) {
+                            deps.add(ref)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     return [...deps]
+}
+
+function getTypeReferences (t: PropertyType): string[] {
+    if (typeof t === 'string') {
+        return []
+    }
+
+    if (isNamedGroupReference(t)) {
+        return [pascalCase((t as unknown as PropertyReference).Value as string)]
+    }
+
+    if (isPropertyReference(t)) {
+        const ref = t as PropertyReference
+        if ((ref.Type === 'group' || ref.Type === 'group_array') && typeof ref.Value === 'string') {
+            return [pascalCase(ref.Value)]
+        }
+        if (ref.Type === 'tag') {
+            const tag = ref.Value as Tag
+            if (!NATIVE_TYPE_MAP[tag.TypePart]) {
+                return [pascalCase(tag.TypePart)]
+            }
+        }
+        return []
+    }
+
+    if (isNativeTypeWithOperator(t)) {
+        if (isNamedGroupReference(t.Type)) {
+            return [pascalCase((t.Type as unknown as PropertyReference).Value as string)]
+        }
+        return []
+    }
+
+    if (isGroup(t) && !isNamedGroupReference(t) && (t as unknown as Group).Properties) {
+        const refs: string[] = []
+        const group = t as unknown as Group
+        for (const prop of group.Properties) {
+            const subProps = Array.isArray(prop) ? prop : [prop]
+            for (const p of subProps) {
+                const types = Array.isArray(p.Type) ? p.Type : [p.Type]
+                for (const subType of types) {
+                    refs.push(...getTypeReferences(subType))
+                }
+            }
+        }
+        return refs
+    }
+
+    if (isCDDLArray(t)) {
+        const refs: string[] = []
+        const arr = t as unknown as CDDLArray
+        for (const val of arr.Values) {
+            const subProps = Array.isArray(val) ? val : [val]
+            for (const prop of subProps) {
+                const types = Array.isArray(prop.Type) ? prop.Type : [prop.Type]
+                for (const subType of types) {
+                    refs.push(...getTypeReferences(subType))
+                }
+            }
+        }
+        return refs
+    }
+
+    return []
 }
 
 function getMixinDependencies (type: Property['Type'], assignmentsByName: Map<string, Assignment>): string[] {

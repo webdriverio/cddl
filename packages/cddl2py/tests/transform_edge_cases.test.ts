@@ -305,7 +305,7 @@ describe('transform edge cases', () => {
         expect(output).toContain('LiteralNull = None')
     })
 
-    it('should quote unresolved forward references in top-level aliases', () => {
+    it('should reorder definitions so that dependencies precede their dependents', () => {
         const output = transform([
             variable('content-block', [
                 groupRef('text-block'),
@@ -320,8 +320,12 @@ describe('transform edge cases', () => {
             group('citation', [property('url', 'tstr')])
         ])
 
-        expect(output).toContain('ContentBlock = Union["TextBlock", "ReasoningBlock"]')
-        expect(output).toContain('Annotation = Union["Citation", ContentBlock]')
+        expect(output).toContain('ContentBlock = Union[TextBlock, ReasoningBlock]')
+        expect(output).toContain('Annotation = Union[Citation, ContentBlock]')
+        expect(output.indexOf('class TextBlock')).toBeLessThan(output.indexOf('ContentBlock = Union'))
+        expect(output.indexOf('class ReasoningBlock')).toBeLessThan(output.indexOf('ContentBlock = Union'))
+        expect(output.indexOf('class Citation')).toBeLessThan(output.indexOf('Annotation = Union'))
+        expect(output.indexOf('ContentBlock = Union')).toBeLessThan(output.indexOf('Annotation = Union'))
     })
 
     it('should emit hard mixin dependencies before dependent classes', () => {
@@ -559,6 +563,51 @@ describe('transform edge cases', () => {
         expect(() => transform([
             variable('bad-reference', { Type: 'mystery', Value: 'oops', Unwrapped: false } as any)
         ])).toThrow('Unknown type')
+    })
+
+    it('should reorder variable aliases before their dependents', () => {
+        const output = transform([
+            variable('alias-a', groupRef('target-group')),
+            group('target-group', [property('x', 'int')])
+        ])
+
+        expect(output.indexOf('class TargetGroup')).toBeLessThan(output.indexOf('AliasA = TargetGroup'))
+        expect(output).toContain('AliasA = TargetGroup')
+    })
+
+    it('should reorder array element types before the array alias', () => {
+        const output = transform([
+            array('my-list', [unnamedProperty(groupRef('item'))]),
+            group('item', [property('id', 'uint')])
+        ])
+
+        expect(output.indexOf('class Item')).toBeLessThan(output.indexOf('MyList = list[Item]'))
+        expect(output).toContain('MyList = list[Item]')
+    })
+
+    it('should reorder extra_items type before the class using it', () => {
+        const output = transform([
+            group('metadata', [
+                property('name', 'text', { Occurrence: { n: 0, m: 1 } }),
+                property('text', groupRef('scalar'), {
+                    Occurrence: { n: 0, m: Infinity }
+                })
+            ]),
+            variable('scalar', ['null', 'bool', 'int'])
+        ])
+
+        expect(output.indexOf('Scalar = ')).toBeLessThan(output.indexOf('class Metadata'))
+        expect(output).toContain('class Metadata(TypedDict, extra_items=Scalar):')
+    })
+
+    it('should still quote references to types that are not in the input', () => {
+        const output = transform([
+            variable('ref-external', groupRef('external-type')),
+            array('list-external', [unnamedProperty(groupRef('missing'))])
+        ])
+
+        expect(output).toContain('RefExternal = "ExternalType"')
+        expect(output).toContain('ListExternal = list["Missing"]')
     })
 
     it('should ignore malformed comment entries when rendering comments', () => {

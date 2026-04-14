@@ -8,8 +8,6 @@ from __future__ import annotations
 from typing import Any, Literal, Union
 from typing_extensions import NotRequired, TypedDict
 
-Message = Union["CommandResponse", "ErrorResponse", "Event"]
-
 Extensible = dict[str, Any]
 
 class CommandResponse(TypedDict):
@@ -23,11 +21,6 @@ class ErrorResponse(TypedDict):
     error: ErrorCode
     message: str
     stacktrace: NotRequired[str]
-
-ResultData = Union["BrowserResult", "BrowsingContextResult", "EmulationResult", "InputResult", "NetworkResult", "ScriptResult", "SessionResult", "StorageResult", "WebExtensionResult"]
-
-class EmptyResult(TypedDict):
-    pass
 
 class BrowsingContextContextCreated(TypedDict):
     method: Literal["browsingContext.contextCreated"]
@@ -216,13 +209,214 @@ class _EventVariant23(_EventFields, ScriptRealmDestroyed):
 
 Event = Union[_EventVariant0, _EventVariant1, _EventVariant2, _EventVariant3, _EventVariant4, _EventVariant5, _EventVariant6, _EventVariant7, _EventVariant8, _EventVariant9, _EventVariant10, _EventVariant11, _EventVariant12, _EventVariant13, _EventVariant14, _EventVariant15, _EventVariant16, _EventVariant17, _EventVariant18, _EventVariant19, _EventVariant20, _EventVariant21, _EventVariant22, _EventVariant23]
 
+Message = Union[CommandResponse, ErrorResponse, Event]
+
+class EmptyResult(TypedDict):
+    pass
+
+BrowserCloseResult = EmptyResult
+
+class BrowserUserContextInfo(TypedDict):
+    user_context: BrowserUserContext
+
+BrowserCreateUserContextResult = BrowserUserContextInfo
+
+class BrowserGetClientWindowsResult(TypedDict):
+    client_windows: list[BrowserClientWindowInfo]
+
+class BrowserGetUserContextsResult(TypedDict):
+    user_contexts: list[BrowserUserContextInfo]
+
+BrowserRemoveUserContextResult = EmptyResult
+
+class BrowserClientWindowInfo(TypedDict):
+    active: bool
+    client_window: BrowserClientWindow
+    height: JsUint
+    state: Union[Literal["fullscreen"], Literal["maximized"], Literal["minimized"], Literal["normal"]]
+    width: JsUint
+    x: JsInt
+    y: JsInt
+
+BrowserSetClientWindowStateResult = BrowserClientWindowInfo
+
+BrowserSetDownloadBehaviorResult = EmptyResult
+
+BrowserResult = Union[BrowserCloseResult, BrowserCreateUserContextResult, BrowserGetClientWindowsResult, BrowserGetUserContextsResult, BrowserRemoveUserContextResult, BrowserSetClientWindowStateResult, BrowserSetDownloadBehaviorResult]
+
+BrowsingContextActivateResult = EmptyResult
+
+class BrowsingContextCaptureScreenshotResult(TypedDict):
+    data: str
+
+BrowsingContextCloseResult = EmptyResult
+
+class BrowsingContextCreateResult(TypedDict):
+    context: BrowsingContextBrowsingContext
+    user_context: NotRequired[BrowserUserContext]
+
+class BrowsingContextGetTreeResult(TypedDict):
+    contexts: BrowsingContextInfoList
+
+BrowsingContextHandleUserPromptResult = EmptyResult
+
+class BrowsingContextLocateNodesResult(TypedDict):
+    nodes: list[ScriptNodeRemoteValue]
+
+class BrowsingContextNavigateResult(TypedDict):
+    navigation: Union[BrowsingContextNavigation, None]
+    url: str
+
+class BrowsingContextPrintResult(TypedDict):
+    data: str
+
+BrowsingContextReloadResult = BrowsingContextNavigateResult
+
+BrowsingContextSetBypassCspResult = EmptyResult
+
+BrowsingContextSetViewportResult = EmptyResult
+
+BrowsingContextTraverseHistoryResult = EmptyResult
+
+BrowsingContextResult = Union[BrowsingContextActivateResult, BrowsingContextCaptureScreenshotResult, BrowsingContextCloseResult, BrowsingContextCreateResult, BrowsingContextGetTreeResult, BrowsingContextHandleUserPromptResult, BrowsingContextLocateNodesResult, BrowsingContextNavigateResult, BrowsingContextPrintResult, BrowsingContextReloadResult, BrowsingContextSetBypassCspResult, BrowsingContextSetViewportResult, BrowsingContextTraverseHistoryResult]
+
+EmulationSetForcedColorsModeThemeOverrideResult = EmptyResult
+
+EmulationSetGeolocationOverrideResult = EmptyResult
+
+EmulationSetLocaleOverrideResult = EmptyResult
+
+EmulationSetScreenOrientationOverrideResult = EmptyResult
+
+EmulationSetScriptingEnabledResult = EmptyResult
+
+EmulationSetScrollbarTypeOverrideResult = EmptyResult
+
+EmulationSetTimezoneOverrideResult = EmptyResult
+
+EmulationSetTouchOverrideResult = EmptyResult
+
+EmulationSetUserAgentOverrideResult = EmptyResult
+
+EmulationResult = Union[EmulationSetForcedColorsModeThemeOverrideResult, EmulationSetGeolocationOverrideResult, EmulationSetLocaleOverrideResult, EmulationSetScreenOrientationOverrideResult, EmulationSetScriptingEnabledResult, EmulationSetScrollbarTypeOverrideResult, EmulationSetTimezoneOverrideResult, EmulationSetTouchOverrideResult, EmulationSetUserAgentOverrideResult]
+
+InputPerformActionsResult = EmptyResult
+
+InputReleaseActionsResult = EmptyResult
+
+InputSetFilesResult = EmptyResult
+
+InputResult = Union[InputPerformActionsResult, InputReleaseActionsResult, InputSetFilesResult]
+
+class NetworkAddDataCollectorResult(TypedDict):
+    collector: NetworkCollector
+
+class NetworkAddInterceptResult(TypedDict):
+    intercept: NetworkIntercept
+
+NetworkContinueRequestResult = EmptyResult
+
+NetworkContinueResponseResult = EmptyResult
+
+NetworkContinueWithAuthResult = EmptyResult
+
+NetworkDisownDataResult = EmptyResult
+
+NetworkFailRequestResult = EmptyResult
+
+class NetworkStringValue(TypedDict):
+    type: Literal["string"]
+    value: str
+
+class NetworkBase64Value(TypedDict):
+    type: Literal["base64"]
+    value: str
+
+NetworkBytesValue = Union[NetworkStringValue, NetworkBase64Value]
+
+NetworkGetDataResult = dict[bytes, NetworkBytesValue]
+
+NetworkProvideResponseResult = EmptyResult
+
+NetworkRemoveDataCollectorResult = EmptyResult
+
+NetworkRemoveInterceptResult = EmptyResult
+
+NetworkSetCacheBehaviorResult = EmptyResult
+
+NetworkSetExtraHeadersResult = EmptyResult
+
+NetworkResult = Union[NetworkAddDataCollectorResult, NetworkAddInterceptResult, NetworkContinueRequestResult, NetworkContinueResponseResult, NetworkContinueWithAuthResult, NetworkDisownDataResult, NetworkFailRequestResult, NetworkGetDataResult, NetworkProvideResponseResult, NetworkRemoveDataCollectorResult, NetworkRemoveInterceptResult, NetworkSetCacheBehaviorResult, NetworkSetExtraHeadersResult]
+
+class ScriptAddPreloadScriptResult(TypedDict):
+    script: ScriptPreloadScript
+
+class ScriptEvaluateResultSuccess(TypedDict):
+    type: Literal["success"]
+    result: ScriptRemoteValue
+    realm: ScriptRealm
+
+class ScriptEvaluateResultException(TypedDict):
+    type: Literal["exception"]
+    exception_details: ScriptExceptionDetails
+    realm: ScriptRealm
+
+ScriptEvaluateResult = Union[ScriptEvaluateResultSuccess, ScriptEvaluateResultException]
+
+ScriptCallFunctionResult = ScriptEvaluateResult
+
+ScriptDisownResult = EmptyResult
+
+class ScriptGetRealmsResult(TypedDict):
+    realms: list[ScriptRealmInfo]
+
+ScriptRemovePreloadScriptResult = EmptyResult
+
+ScriptResult = Union[ScriptAddPreloadScriptResult, ScriptCallFunctionResult, ScriptDisownResult, ScriptEvaluateResult, ScriptGetRealmsResult, ScriptRemovePreloadScriptResult]
+
+SessionEndResult = EmptyResult
+
+class SessionNewResult(TypedDict):
+    session_id: str
+    capabilities: dict[str, Any]
+
+class SessionStatusResult(TypedDict):
+    ready: bool
+    message: str
+
+class SessionSubscribeResult(TypedDict):
+    subscription: SessionSubscription
+
+SessionUnsubscribeResult = EmptyResult
+
+SessionResult = Union[SessionEndResult, SessionNewResult, SessionStatusResult, SessionSubscribeResult, SessionUnsubscribeResult]
+
+class StorageDeleteCookiesResult(TypedDict):
+    partition_key: StoragePartitionKey
+
+class StorageGetCookiesResult(TypedDict):
+    cookies: list[NetworkCookie]
+    partition_key: StoragePartitionKey
+
+class StorageSetCookieResult(TypedDict):
+    partition_key: StoragePartitionKey
+
+StorageResult = Union[StorageDeleteCookiesResult, StorageGetCookiesResult, StorageSetCookieResult]
+
+class WebExtensionInstallResult(TypedDict):
+    extension: WebExtensionExtension
+
+WebExtensionUninstallResult = EmptyResult
+
+WebExtensionResult = Union[WebExtensionInstallResult, WebExtensionUninstallResult]
+
+ResultData = Union[BrowserResult, BrowsingContextResult, EmulationResult, InputResult, NetworkResult, ScriptResult, SessionResult, StorageResult, WebExtensionResult]
+
 JsInt = int
 
 JsUint = int
 
 ErrorCode = Union[Literal["invalid argument"], Literal["invalid selector"], Literal["invalid session id"], Literal["invalid web extension"], Literal["move target out of bounds"], Literal["no such alert"], Literal["no such network collector"], Literal["no such element"], Literal["no such frame"], Literal["no such handle"], Literal["no such history entry"], Literal["no such intercept"], Literal["no such network data"], Literal["no such node"], Literal["no such request"], Literal["no such script"], Literal["no such storage partition"], Literal["no such user context"], Literal["no such web extension"], Literal["session not created"], Literal["unable to capture screen"], Literal["unable to close browser"], Literal["unable to set cookie"], Literal["unable to set file input"], Literal["unavailable network data"], Literal["underspecified storage partition"], Literal["unknown command"], Literal["unknown error"], Literal["unsupported operation"]]
-
-SessionResult = Union["SessionEndResult", "SessionNewResult", "SessionStatusResult", "SessionSubscribeResult", "SessionUnsubscribeResult"]
 
 class SessionCapabilitiesRequest(TypedDict):
     always_match: NotRequired[SessionCapabilityRequest]
@@ -273,60 +467,11 @@ SessionUserPromptHandlerType = Union[Literal["accept"], Literal["dismiss"], Lite
 
 SessionSubscription = str
 
-class SessionStatusResult(TypedDict):
-    ready: bool
-    message: str
-
-class SessionNewResult(TypedDict):
-    session_id: str
-    capabilities: dict[str, Any]
-
-SessionEndResult = EmptyResult
-
-class SessionSubscribeResult(TypedDict):
-    subscription: SessionSubscription
-
-SessionUnsubscribeResult = EmptyResult
-
-BrowserResult = Union["BrowserCloseResult", "BrowserCreateUserContextResult", "BrowserGetClientWindowsResult", "BrowserGetUserContextsResult", "BrowserRemoveUserContextResult", "BrowserSetClientWindowStateResult", "BrowserSetDownloadBehaviorResult"]
-
 BrowserClientWindow = str
-
-class BrowserClientWindowInfo(TypedDict):
-    active: bool
-    client_window: BrowserClientWindow
-    height: JsUint
-    state: Union[Literal["fullscreen"], Literal["maximized"], Literal["minimized"], Literal["normal"]]
-    width: JsUint
-    x: JsInt
-    y: JsInt
 
 BrowserUserContext = str
 
-class BrowserUserContextInfo(TypedDict):
-    user_context: BrowserUserContext
-
-BrowserCloseResult = EmptyResult
-
-BrowserCreateUserContextResult = BrowserUserContextInfo
-
-class BrowserGetClientWindowsResult(TypedDict):
-    client_windows: list[BrowserClientWindowInfo]
-
-class BrowserGetUserContextsResult(TypedDict):
-    user_contexts: list[BrowserUserContextInfo]
-
-BrowserRemoveUserContextResult = EmptyResult
-
-BrowserSetClientWindowStateResult = BrowserClientWindowInfo
-
-BrowserSetDownloadBehaviorResult = EmptyResult
-
-BrowsingContextResult = Union["BrowsingContextActivateResult", "BrowsingContextCaptureScreenshotResult", "BrowsingContextCloseResult", "BrowsingContextCreateResult", "BrowsingContextGetTreeResult", "BrowsingContextHandleUserPromptResult", "BrowsingContextLocateNodesResult", "BrowsingContextNavigateResult", "BrowsingContextPrintResult", "BrowsingContextReloadResult", "BrowsingContextSetBypassCspResult", "BrowsingContextSetViewportResult", "BrowsingContextTraverseHistoryResult"]
-
 BrowsingContextBrowsingContext = str
-
-BrowsingContextInfoList = list["BrowsingContextInfo"]
 
 class BrowsingContextInfo(TypedDict):
     children: Union[BrowsingContextInfoList, None]
@@ -337,7 +482,7 @@ class BrowsingContextInfo(TypedDict):
     user_context: BrowserUserContext
     parent: NotRequired[Union[BrowsingContextBrowsingContext, None]]
 
-BrowsingContextLocator = Union["BrowsingContextAccessibilityLocator", "BrowsingContextCssLocator", "BrowsingContextContextLocator", "BrowsingContextInnerTextLocator", "BrowsingContextXPathLocator"]
+BrowsingContextInfoList = list[BrowsingContextInfo]
 
 class BrowsingContextAccessibilityLocator(TypedDict):
     type: Literal["accessibility"]
@@ -362,6 +507,8 @@ class BrowsingContextXPathLocator(TypedDict):
     type: Literal["xpath"]
     value: str
 
+BrowsingContextLocator = Union[BrowsingContextAccessibilityLocator, BrowsingContextCssLocator, BrowsingContextContextLocator, BrowsingContextInnerTextLocator, BrowsingContextXPathLocator]
+
 BrowsingContextNavigation = str
 
 class BrowsingContextBaseNavigationInfo(TypedDict):
@@ -375,40 +522,6 @@ class BrowsingContextNavigationInfo(BrowsingContextBaseNavigationInfo):
     pass
 
 BrowsingContextUserPromptType = Union[Literal["alert"], Literal["beforeunload"], Literal["confirm"], Literal["prompt"]]
-
-BrowsingContextActivateResult = EmptyResult
-
-class BrowsingContextCaptureScreenshotResult(TypedDict):
-    data: str
-
-BrowsingContextCloseResult = EmptyResult
-
-class BrowsingContextCreateResult(TypedDict):
-    context: BrowsingContextBrowsingContext
-    user_context: NotRequired[BrowserUserContext]
-
-class BrowsingContextGetTreeResult(TypedDict):
-    contexts: BrowsingContextInfoList
-
-BrowsingContextHandleUserPromptResult = EmptyResult
-
-class BrowsingContextLocateNodesResult(TypedDict):
-    nodes: list[ScriptNodeRemoteValue]
-
-class BrowsingContextNavigateResult(TypedDict):
-    navigation: Union[BrowsingContextNavigation, None]
-    url: str
-
-class BrowsingContextPrintResult(TypedDict):
-    data: str
-
-BrowsingContextReloadResult = BrowsingContextNavigateResult
-
-BrowsingContextSetBypassCspResult = EmptyResult
-
-BrowsingContextSetViewportResult = EmptyResult
-
-BrowsingContextTraverseHistoryResult = EmptyResult
 
 class BrowsingContextHistoryUpdatedParameters(TypedDict):
     context: BrowsingContextBrowsingContext
@@ -444,31 +557,9 @@ class BrowsingContextUserPromptOpenedParameters(TypedDict):
     user_context: NotRequired[BrowserUserContext]
     default_value: NotRequired[str]
 
-EmulationResult = Union["EmulationSetForcedColorsModeThemeOverrideResult", "EmulationSetGeolocationOverrideResult", "EmulationSetLocaleOverrideResult", "EmulationSetScreenOrientationOverrideResult", "EmulationSetScriptingEnabledResult", "EmulationSetScrollbarTypeOverrideResult", "EmulationSetTimezoneOverrideResult", "EmulationSetTouchOverrideResult", "EmulationSetUserAgentOverrideResult"]
-
-EmulationSetForcedColorsModeThemeOverrideResult = EmptyResult
-
-EmulationSetGeolocationOverrideResult = EmptyResult
-
-EmulationSetLocaleOverrideResult = EmptyResult
-
 EmulationSetNetworkConditionsResult = EmptyResult
 
 EmulationSetScreenSettingsOverrideResult = EmptyResult
-
-EmulationSetScreenOrientationOverrideResult = EmptyResult
-
-EmulationSetUserAgentOverrideResult = EmptyResult
-
-EmulationSetScriptingEnabledResult = EmptyResult
-
-EmulationSetScrollbarTypeOverrideResult = EmptyResult
-
-EmulationSetTimezoneOverrideResult = EmptyResult
-
-EmulationSetTouchOverrideResult = EmptyResult
-
-NetworkResult = Union["NetworkAddDataCollectorResult", "NetworkAddInterceptResult", "NetworkContinueRequestResult", "NetworkContinueResponseResult", "NetworkContinueWithAuthResult", "NetworkDisownDataResult", "NetworkFailRequestResult", "NetworkGetDataResult", "NetworkProvideResponseResult", "NetworkRemoveDataCollectorResult", "NetworkRemoveInterceptResult", "NetworkSetCacheBehaviorResult", "NetworkSetExtraHeadersResult"]
 
 class NetworkAuthChallenge(TypedDict):
     scheme: str
@@ -483,16 +574,6 @@ class NetworkBaseParameters(TypedDict):
     timestamp: JsUint
     user_context: NotRequired[Union[BrowserUserContext, None]]
     intercepts: NotRequired[list[NetworkIntercept]]
-
-NetworkBytesValue = Union["NetworkStringValue", "NetworkBase64Value"]
-
-class NetworkStringValue(TypedDict):
-    type: Literal["string"]
-    value: str
-
-class NetworkBase64Value(TypedDict):
-    type: Literal["base64"]
-    value: str
 
 NetworkCollector = str
 
@@ -572,34 +653,6 @@ class NetworkResponseData(TypedDict):
     content: NetworkResponseContent
     auth_challenges: NotRequired[list[NetworkAuthChallenge]]
 
-class NetworkAddDataCollectorResult(TypedDict):
-    collector: NetworkCollector
-
-class NetworkAddInterceptResult(TypedDict):
-    intercept: NetworkIntercept
-
-NetworkContinueRequestResult = EmptyResult
-
-NetworkContinueResponseResult = EmptyResult
-
-NetworkContinueWithAuthResult = EmptyResult
-
-NetworkDisownDataResult = EmptyResult
-
-NetworkFailRequestResult = EmptyResult
-
-NetworkGetDataResult = dict[bytes, NetworkBytesValue]
-
-NetworkProvideResponseResult = EmptyResult
-
-NetworkRemoveDataCollectorResult = EmptyResult
-
-NetworkRemoveInterceptResult = EmptyResult
-
-NetworkSetCacheBehaviorResult = EmptyResult
-
-NetworkSetExtraHeadersResult = EmptyResult
-
 class NetworkAuthRequiredParameters(NetworkBaseParameters):
     response: NetworkResponseData
 
@@ -615,8 +668,6 @@ class NetworkResponseCompletedParameters(NetworkBaseParameters):
 class NetworkResponseStartedParameters(NetworkBaseParameters):
     response: NetworkResponseData
 
-ScriptResult = Union["ScriptAddPreloadScriptResult", "ScriptCallFunctionResult", "ScriptDisownResult", "ScriptEvaluateResult", "ScriptGetRealmsResult", "ScriptRemovePreloadScriptResult"]
-
 ScriptChannel = str
 
 class ScriptChannelValue(TypedDict):
@@ -627,18 +678,6 @@ class ScriptChannelProperties(TypedDict):
     channel: ScriptChannel
     serialization_options: NotRequired[ScriptSerializationOptions]
     ownership: NotRequired[ScriptResultOwnership]
-
-ScriptEvaluateResult = Union["ScriptEvaluateResultSuccess", "ScriptEvaluateResultException"]
-
-class ScriptEvaluateResultSuccess(TypedDict):
-    type: Literal["success"]
-    result: ScriptRemoteValue
-    realm: ScriptRealm
-
-class ScriptEvaluateResultException(TypedDict):
-    type: Literal["exception"]
-    exception_details: ScriptExceptionDetails
-    realm: ScriptRealm
 
 class ScriptExceptionDetails(TypedDict):
     column_number: JsUint
@@ -651,45 +690,15 @@ ScriptHandle = str
 
 ScriptInternalId = str
 
-ScriptLocalValue = Union["ScriptRemoteReference", "ScriptPrimitiveProtocolValue", ScriptChannelValue, "ScriptArrayLocalValue", "ScriptDateLocalValue", "ScriptMapLocalValue", "ScriptObjectLocalValue", "ScriptRegExpLocalValue", "ScriptSetLocalValue"]
+class ScriptSharedReference(TypedDict):
+    shared_id: ScriptSharedId
+    handle: NotRequired[ScriptHandle]
 
-ScriptListLocalValue = list[ScriptLocalValue]
+class ScriptRemoteObjectReference(TypedDict):
+    handle: ScriptHandle
+    shared_id: NotRequired[ScriptSharedId]
 
-class ScriptArrayLocalValue(TypedDict):
-    type: Literal["array"]
-    value: ScriptListLocalValue
-
-class ScriptDateLocalValue(TypedDict):
-    type: Literal["date"]
-    value: str
-
-ScriptMappingLocalValue = list[Union[ScriptLocalValue, str]]
-
-class ScriptMapLocalValue(TypedDict):
-    type: Literal["map"]
-    value: ScriptMappingLocalValue
-
-class ScriptObjectLocalValue(TypedDict):
-    type: Literal["object"]
-    value: ScriptMappingLocalValue
-
-class ScriptRegExpValue(TypedDict):
-    pattern: str
-    flags: NotRequired[str]
-
-class ScriptRegExpLocalValue(TypedDict):
-    type: Literal["regexp"]
-    value: ScriptRegExpValue
-
-class ScriptSetLocalValue(TypedDict):
-    type: Literal["set"]
-    value: ScriptListLocalValue
-
-ScriptPreloadScript = str
-
-ScriptRealm = str
-
-ScriptPrimitiveProtocolValue = Union["ScriptUndefinedValue", "ScriptNullValue", "ScriptStringValue", "ScriptNumberValue", "ScriptBooleanValue", "ScriptBigIntValue"]
+ScriptRemoteReference = Union[ScriptSharedReference, ScriptRemoteObjectReference]
 
 class ScriptUndefinedValue(TypedDict):
     type: Literal["undefined"]
@@ -700,8 +709,6 @@ class ScriptNullValue(TypedDict):
 class ScriptStringValue(TypedDict):
     type: Literal["string"]
     value: str
-
-ScriptSpecialNumber = Union[Literal["NaN"], Literal["-0"], Literal["Infinity"], Literal["-Infinity"]]
 
 class ScriptNumberValue(TypedDict):
     type: Literal["number"]
@@ -715,7 +722,47 @@ class ScriptBigIntValue(TypedDict):
     type: Literal["bigint"]
     value: str
 
-ScriptRealmInfo = Union["ScriptWindowRealmInfo", "ScriptDedicatedWorkerRealmInfo", "ScriptSharedWorkerRealmInfo", "ScriptServiceWorkerRealmInfo", "ScriptWorkerRealmInfo", "ScriptPaintWorkletRealmInfo", "ScriptAudioWorkletRealmInfo", "ScriptWorkletRealmInfo"]
+ScriptPrimitiveProtocolValue = Union[ScriptUndefinedValue, ScriptNullValue, ScriptStringValue, ScriptNumberValue, ScriptBooleanValue, ScriptBigIntValue]
+
+class ScriptArrayLocalValue(TypedDict):
+    type: Literal["array"]
+    value: ScriptListLocalValue
+
+class ScriptDateLocalValue(TypedDict):
+    type: Literal["date"]
+    value: str
+
+class ScriptMapLocalValue(TypedDict):
+    type: Literal["map"]
+    value: ScriptMappingLocalValue
+
+class ScriptObjectLocalValue(TypedDict):
+    type: Literal["object"]
+    value: ScriptMappingLocalValue
+
+class ScriptRegExpLocalValue(TypedDict):
+    type: Literal["regexp"]
+    value: ScriptRegExpValue
+
+class ScriptSetLocalValue(TypedDict):
+    type: Literal["set"]
+    value: ScriptListLocalValue
+
+ScriptLocalValue = Union[ScriptRemoteReference, ScriptPrimitiveProtocolValue, ScriptChannelValue, ScriptArrayLocalValue, ScriptDateLocalValue, ScriptMapLocalValue, ScriptObjectLocalValue, ScriptRegExpLocalValue, ScriptSetLocalValue]
+
+ScriptListLocalValue = list[ScriptLocalValue]
+
+ScriptMappingLocalValue = list[Union[ScriptLocalValue, str]]
+
+class ScriptRegExpValue(TypedDict):
+    pattern: str
+    flags: NotRequired[str]
+
+ScriptPreloadScript = str
+
+ScriptRealm = str
+
+ScriptSpecialNumber = Union[Literal["NaN"], Literal["-0"], Literal["Infinity"], Literal["-Infinity"]]
 
 class ScriptBaseRealmInfo(TypedDict):
     realm: ScriptRealm
@@ -749,23 +796,9 @@ class ScriptAudioWorkletRealmInfo(ScriptBaseRealmInfo):
 class ScriptWorkletRealmInfo(ScriptBaseRealmInfo):
     type: Literal["worklet"]
 
+ScriptRealmInfo = Union[ScriptWindowRealmInfo, ScriptDedicatedWorkerRealmInfo, ScriptSharedWorkerRealmInfo, ScriptServiceWorkerRealmInfo, ScriptWorkerRealmInfo, ScriptPaintWorkletRealmInfo, ScriptAudioWorkletRealmInfo, ScriptWorkletRealmInfo]
+
 ScriptRealmType = Union[Literal["window"], Literal["dedicated-worker"], Literal["shared-worker"], Literal["service-worker"], Literal["worker"], Literal["paint-worklet"], Literal["audio-worklet"], Literal["worklet"]]
-
-ScriptRemoteReference = Union["ScriptSharedReference", "ScriptRemoteObjectReference"]
-
-class ScriptSharedReference(TypedDict):
-    shared_id: ScriptSharedId
-    handle: NotRequired[ScriptHandle]
-
-class ScriptRemoteObjectReference(TypedDict):
-    handle: ScriptHandle
-    shared_id: NotRequired[ScriptSharedId]
-
-ScriptRemoteValue = Union[ScriptPrimitiveProtocolValue, "ScriptSymbolRemoteValue", "ScriptArrayRemoteValue", "ScriptObjectRemoteValue", "ScriptFunctionRemoteValue", "ScriptRegExpRemoteValue", "ScriptDateRemoteValue", "ScriptMapRemoteValue", "ScriptSetRemoteValue", "ScriptWeakMapRemoteValue", "ScriptWeakSetRemoteValue", "ScriptGeneratorRemoteValue", "ScriptErrorRemoteValue", "ScriptProxyRemoteValue", "ScriptPromiseRemoteValue", "ScriptTypedArrayRemoteValue", "ScriptArrayBufferRemoteValue", "ScriptNodeListRemoteValue", "ScriptHtmlCollectionRemoteValue", "ScriptNodeRemoteValue", "ScriptWindowProxyRemoteValue"]
-
-ScriptListRemoteValue = list[ScriptRemoteValue]
-
-ScriptMappingRemoteValue = list[Union[ScriptRemoteValue, str]]
 
 class ScriptSymbolRemoteValue(TypedDict):
     type: Literal["symbol"]
@@ -868,6 +901,18 @@ class ScriptNodeRemoteValue(TypedDict):
     internal_id: NotRequired[ScriptInternalId]
     value: NotRequired[ScriptNodeProperties]
 
+class ScriptWindowProxyRemoteValue(TypedDict):
+    type: Literal["window"]
+    value: ScriptWindowProxyProperties
+    handle: NotRequired[ScriptHandle]
+    internal_id: NotRequired[ScriptInternalId]
+
+ScriptRemoteValue = Union[ScriptPrimitiveProtocolValue, ScriptSymbolRemoteValue, ScriptArrayRemoteValue, ScriptObjectRemoteValue, ScriptFunctionRemoteValue, ScriptRegExpRemoteValue, ScriptDateRemoteValue, ScriptMapRemoteValue, ScriptSetRemoteValue, ScriptWeakMapRemoteValue, ScriptWeakSetRemoteValue, ScriptGeneratorRemoteValue, ScriptErrorRemoteValue, ScriptProxyRemoteValue, ScriptPromiseRemoteValue, ScriptTypedArrayRemoteValue, ScriptArrayBufferRemoteValue, ScriptNodeListRemoteValue, ScriptHtmlCollectionRemoteValue, ScriptNodeRemoteValue, ScriptWindowProxyRemoteValue]
+
+ScriptListRemoteValue = list[ScriptRemoteValue]
+
+ScriptMappingRemoteValue = list[Union[ScriptRemoteValue, str]]
+
 class ScriptNodeProperties(TypedDict):
     node_type: JsUint
     child_node_count: JsUint
@@ -878,12 +923,6 @@ class ScriptNodeProperties(TypedDict):
     namespace_uri: NotRequired[str]
     node_value: NotRequired[str]
     shadow_root: NotRequired[Union[ScriptNodeRemoteValue, None]]
-
-class ScriptWindowProxyRemoteValue(TypedDict):
-    type: Literal["window"]
-    value: ScriptWindowProxyProperties
-    handle: NotRequired[ScriptHandle]
-    internal_id: NotRequired[ScriptInternalId]
 
 class ScriptWindowProxyProperties(TypedDict):
     context: BrowsingContextBrowsingContext
@@ -911,18 +950,6 @@ class ScriptSource(TypedDict):
     context: NotRequired[BrowsingContextBrowsingContext]
     user_context: NotRequired[BrowserUserContext]
 
-class ScriptAddPreloadScriptResult(TypedDict):
-    script: ScriptPreloadScript
-
-ScriptDisownResult = EmptyResult
-
-ScriptCallFunctionResult = ScriptEvaluateResult
-
-class ScriptGetRealmsResult(TypedDict):
-    realms: list[ScriptRealmInfo]
-
-ScriptRemovePreloadScriptResult = EmptyResult
-
 class ScriptMessageParameters(TypedDict):
     channel: ScriptChannel
     data: ScriptRemoteValue
@@ -931,25 +958,11 @@ class ScriptMessageParameters(TypedDict):
 class ScriptRealmDestroyedParameters(TypedDict):
     realm: ScriptRealm
 
-StorageResult = Union["StorageDeleteCookiesResult", "StorageGetCookiesResult", "StorageSetCookieResult"]
-
 class StoragePartitionKey(TypedDict):
     user_context: NotRequired[str]
     source_origin: NotRequired[str]
 
-class StorageGetCookiesResult(TypedDict):
-    cookies: list[NetworkCookie]
-    partition_key: StoragePartitionKey
-
-class StorageSetCookieResult(TypedDict):
-    partition_key: StoragePartitionKey
-
-class StorageDeleteCookiesResult(TypedDict):
-    partition_key: StoragePartitionKey
-
 LogLevel = Union[Literal["debug"], Literal["info"], Literal["warn"], Literal["error"]]
-
-LogEntry = Union["LogGenericLogEntry", "LogConsoleLogEntry", "LogJavascriptLogEntry"]
 
 class LogBaseLogEntry(TypedDict):
     level: LogLevel
@@ -969,13 +982,7 @@ class LogConsoleLogEntry(LogBaseLogEntry):
 class LogJavascriptLogEntry(LogBaseLogEntry):
     type: Literal["javascript"]
 
-InputResult = Union["InputPerformActionsResult", "InputReleaseActionsResult", "InputSetFilesResult"]
-
-InputPerformActionsResult = EmptyResult
-
-InputReleaseActionsResult = EmptyResult
-
-InputSetFilesResult = EmptyResult
+LogEntry = Union[LogGenericLogEntry, LogConsoleLogEntry, LogJavascriptLogEntry]
 
 class InputFileDialogInfo(TypedDict):
     context: BrowsingContextBrowsingContext
@@ -983,13 +990,6 @@ class InputFileDialogInfo(TypedDict):
     element: NotRequired[ScriptSharedReference]
     multiple: bool
 
-WebExtensionResult = Union["WebExtensionInstallResult", "WebExtensionUninstallResult"]
-
 WebExtensionExtension = str
-
-class WebExtensionInstallResult(TypedDict):
-    extension: WebExtensionExtension
-
-WebExtensionUninstallResult = EmptyResult
 "
 `;
