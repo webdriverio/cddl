@@ -41,7 +41,7 @@
     "checks:all": "run-s compile test cli-examples"
   },
   "devDependencies": {
-    "@release-it/conventional-changelog": "^10.0.6",
+    "@release-it/conventional-changelog": "^11.0.0",
     "@types/node": "^25.5.0",
     "@types/yargs": "^17.0.35",
     "@vitest/coverage-v8": "^4.1.0",
