@@ -83,8 +83,46 @@ importers:
         specifier: ^17.0.35
         version: 17.0.35
 
+  packages/cddl2kotlin:
+    dependencies:
+      camelcase:
+        specifier: ^9.0.0
+        version: 9.0.0
+      cddl:
+        specifier: workspace:*
+        version: link:../cddl
+      yargs:
+        specifier: ^18.0.0
+        version: 18.0.0
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.9.2
+      '@types/yargs':
+        specifier: ^17.0.35
+        version: 17.0.35
+
   packages/cddl2py:
     dependencies:
+      cddl:
+        specifier: workspace:*
+        version: link:../cddl
+      yargs:
+        specifier: ^18.0.0
+        version: 18.0.0
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.9.2
+      '@types/yargs':
+        specifier: ^17.0.35
+        version: 17.0.35
+
+  packages/cddl2swift:
+    dependencies:
+      camelcase:
+        specifier: ^9.0.0
+        version: 9.0.0
       cddl:
         specifier: workspace:*
         version: link:../cddl

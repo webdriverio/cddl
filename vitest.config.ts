@@ -35,6 +35,18 @@ export default defineConfig({
                     functions: 100.0,
                     statements: 88.0,
                     branches: 83.5,
+                },
+                'packages/cddl2swift/**/*': {
+                    lines: 78.0,
+                    functions: 91.0,
+                    statements: 79.0,
+                    branches: 64.0,
+                },
+                'packages/cddl2kotlin/**/*': {
+                    lines: 79.0,
+                    functions: 92.0,
+                    statements: 80.0,
+                    branches: 65.0,
                 }
             }
         }

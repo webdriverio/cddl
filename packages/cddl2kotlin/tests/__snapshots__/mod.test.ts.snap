@@ -1,0 +1,102 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`cddl2kotlin CLI > should generate correct types for test.cddl 1`] = `
+[
+  [
+    "// compiled with https://www.npmjs.com/package/cddl2kotlin
+
+sealed interface Message {
+    data class CommandResponseValue(val value: CommandResponse) : Message
+    data class ErrorResponseValue(val value: ErrorResponse) : Message
+    data class EventValue(val value: Event) : Message
+}
+
+data class ErrorResponse(
+    val id: JsUint? = null,
+    val error: ErrorCode,
+    val message: String,
+    val stacktrace: String? = null
+)
+
+sealed interface ResultData {
+    data class BrowsingContextResultValue(val value: BrowsingContextResult) : ResultData
+    data class EmptyResultValue(val value: EmptyResult) : ResultData
+    data class NetworkResultValue(val value: NetworkResult) : ResultData
+    data class ScriptResultValue(val value: ScriptResult) : ResultData
+    data class SessionResultValue(val value: SessionResult) : ResultData
+}
+
+enum class ErrorCode(val value: String) {
+    INVALID_ARGUMENT("invalid argument"),
+    INVALID_SESSION_ID("invalid session id"),
+    NO_SUCH_ALERT("no such alert"),
+    NO_SUCH_FRAME("no such frame"),
+    NO_SUCH_HANDLE("no such handle"),
+    NO_SUCH_NODE("no such node"),
+    NO_SUCH_SCRIPT("no such script"),
+    SESSION_NOT_CREATED("session not created"),
+    UNKNOWN_COMMAND("unknown command"),
+    UNKNOWN_ERROR("unknown error"),
+    UNSUPPORTED_OPERATION("unsupported operation");
+}
+
+typealias JsInt = Long
+
+typealias JsUint = Long
+
+typealias Handle = String
+
+typealias SharedId = String
+
+data class UndefinedValue(
+    val type: String
+)
+
+data class NullValue(
+    val type: Any?
+)
+
+data class StringValue(
+    val type: String,
+    val value: String
+)
+
+enum class SpecialNumber(val value: String) {
+    NAN("NaN"),
+    _0("-0"),
+    INFINITY("Infinity"),
+    INFINITY1("-Infinity");
+}
+
+data class NumberValue(
+    val type: String,
+    val value: Any?
+)
+
+data class SessionCapabilitiesRequest(
+    val alwaysMatch: SessionCapabilityRequest? = null,
+    val firstMatch: List<SessionCapabilityRequest>? = null,
+    val nested: Map<String, Any?>
+)
+
+data class SomeGroup(
+    val optional: String? = null, // this is not leading
+    val orientation: String? = null,
+    val scale: Long? = null,
+    val shrinkToFit: Boolean? = null,
+    val shrinkToFitP: Boolean? = null,
+    val bottom: Double? = null, // this is the pageRanges param
+    val pageRanges: List<Any?>? = null,
+    val foo: String? = null,
+    val pointerType: InputPointerType? = null
+)
+
+typealias ScriptListLocalValue = List<ScriptLocalValue>
+
+typealias ScriptMappingLocalValue = List<List<Any?>>
+
+typealias Extensible = Map<String, Any?>
+",
+  ],
+]
+`;
