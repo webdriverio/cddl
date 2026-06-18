@@ -1,78 +1,80 @@
 name: NPM Publish
 
 on:
-  workflow_dispatch:
-    inputs:
-      package:
-        description: 'Which package to release?'
-        required: true
-        type: choice
-        default: 'all'
-        options:
-          - all
-          - cddl
-          - cddl2ts
-          - cddl2java
-          - cddl2py
-      releaseType:
-        description: "Release type - major, minor or patch"
-        required: true
-        type: choice
-        default: 'patch'
-        options:
-          - patch
-          - minor
-          - major
+    workflow_dispatch:
+        inputs:
+            package:
+                description: "Which package to release?"
+                required: true
+                type: choice
+                default: "all"
+                options:
+                    - all
+                    - cddl
+                    - cddl2ts
+                    - cddl2java
+                    - cddl2py
+                    - cddl2swift
+                    - cddl2kotlin
+            releaseType:
+                description: "Release type - major, minor or patch"
+                required: true
+                type: choice
+                default: "patch"
+                options:
+                    - patch
+                    - minor
+                    - major
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-        with:
-          node-version: 24.x
-          cache: 'pnpm'
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Validates compiling, typechecks, unit tests and CLI tests
-        run: pnpm run checks:all
-  release:
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
-    steps:
-      - name: Clone Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-            fetch-depth: 0 # Required to fetch all tags for release-it
-      - name: Setup PNPM
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
-      - name: Setup Node version
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-        with:
-          node-version: 24.x
-          cache: 'pnpm'
-          registry-url: https://registry.npmjs.org/
-      - name: Setup Git
-        run: |
-          git config --global user.email "bot@webdriver.io"
-          git config --global user.name "WebdriverIO Release Bot"
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Build package
-        run: pnpm run build
-        env:
-          NODE_ENV: production
-      - name: Release
-        run: |
-          pnpm run release:ci:${{github.event.inputs.package}} -- ${{ github.event.inputs.releaseType }}
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          NPM_CONFIG_PROVENANCE: true
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+            - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+            - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+              with:
+                  node-version: 24.x
+                  cache: "pnpm"
+            - name: Install Dependencies
+              run: pnpm install --frozen-lockfile
+            - name: Validates compiling, typechecks, unit tests and CLI tests
+              run: pnpm run checks:all
+    release:
+        needs: test
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+            id-token: write
+        steps:
+            - name: Clone Repository
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                  fetch-depth: 0 # Required to fetch all tags for release-it
+            - name: Setup PNPM
+              uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+            - name: Setup Node version
+              uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+              with:
+                  node-version: 24.x
+                  cache: "pnpm"
+                  registry-url: https://registry.npmjs.org/
+            - name: Setup Git
+              run: |
+                  git config --global user.email "bot@webdriver.io"
+                  git config --global user.name "WebdriverIO Release Bot"
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+            - name: Build package
+              run: pnpm run build
+              env:
+                  NODE_ENV: production
+            - name: Release
+              run: |
+                  pnpm run release:ci:${{github.event.inputs.package}} -- ${{ github.event.inputs.releaseType }}
+              env:
+                  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+                  NPM_CONFIG_PROVENANCE: true
