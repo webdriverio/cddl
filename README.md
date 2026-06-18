@@ -16,6 +16,15 @@ __Note:__ this is __work in progress__, feel free to have a look at the code or 
 
 ## Install
 
+This monorepo ships a parser plus a set of language transformers:
+
+- [`cddl`](packages/cddl/README.md) – parser & validator
+- [`cddl2ts`](packages/cddl2ts/README.md) – generate TypeScript definitions
+- [`cddl2py`](packages/cddl2py/README.md) – generate Python (`TypedDict`/Pydantic) definitions
+- [`cddl2java`](packages/cddl2java/README.md) – generate Java classes
+- [`cddl2swift`](packages/cddl2swift/README.md) – generate Swift definitions
+- [`cddl2kotlin`](packages/cddl2kotlin/README.md) – generate Kotlin definitions
+
 To install one of the packages run:
 
 ```sh

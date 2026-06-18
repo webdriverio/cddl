@@ -1,0 +1,98 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`transform > snapshot tests with parsed CDDL > should transform test.cddl correctly 1`] = `
+"// compiled with https://www.npmjs.com/package/cddl2swift
+
+public enum Message {
+    case commandResponse(CommandResponse)
+    case errorResponse(ErrorResponse)
+    case event(Event)
+}
+
+public struct ErrorResponse {
+    public var id: JsUint?
+    public var error: ErrorCode
+    public var message: String
+    public var stacktrace: String?
+}
+
+public enum ResultData {
+    case browsingContextResult(BrowsingContextResult)
+    case emptyResult(EmptyResult)
+    case networkResult(NetworkResult)
+    case scriptResult(ScriptResult)
+    case sessionResult(SessionResult)
+}
+
+public enum ErrorCode: String, Codable {
+    case invalidArgument = "invalid argument"
+    case invalidSessionId = "invalid session id"
+    case noSuchAlert = "no such alert"
+    case noSuchFrame = "no such frame"
+    case noSuchHandle = "no such handle"
+    case noSuchNode = "no such node"
+    case noSuchScript = "no such script"
+    case sessionNotCreated = "session not created"
+    case unknownCommand = "unknown command"
+    case unknownError = "unknown error"
+    case unsupportedOperation = "unsupported operation"
+}
+
+public typealias JsInt = Int
+
+public typealias JsUint = Int
+
+public typealias Handle = String
+
+public typealias SharedId = String
+
+public struct UndefinedValue {
+    public var type: String
+}
+
+public struct NullValue {
+    public var type: Any?
+}
+
+public struct StringValue {
+    public var type: String
+    public var value: String
+}
+
+public enum SpecialNumber: String, Codable {
+    case naN = "NaN"
+    case _0 = "-0"
+    case infinity = "Infinity"
+    case infinity1 = "-Infinity"
+}
+
+public struct NumberValue {
+    public var type: String
+    public var value: Any
+}
+
+public struct SessionCapabilitiesRequest {
+    public var alwaysMatch: SessionCapabilityRequest?
+    public var firstMatch: [SessionCapabilityRequest]?
+    public var nested: [String: Any]
+}
+
+public struct SomeGroup {
+    public var optional: String? // this is not leading
+    public var orientation: String?
+    public var scale: Int?
+    public var shrinkToFit: Bool?
+    public var shrinkToFitP: Bool?
+    public var bottom: Double? // this is the pageRanges param
+    public var pageRanges: [Any]?
+    public var foo: String?
+    public var pointerType: InputPointerType?
+}
+
+public typealias ScriptListLocalValue = [ScriptLocalValue]
+
+public typealias ScriptMappingLocalValue = [[Any]]
+
+public typealias Extensible = [String: Any?]
+"
+`;
