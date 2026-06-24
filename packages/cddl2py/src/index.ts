@@ -584,7 +584,8 @@ function resolveType (t: PropertyType, ctx: Context, options: ResolveTypeOptions
         return mapped
     }
 
-    if (isPropertyReference(t) && (t as PropertyReference).Value === 'null') {
+    if (isPropertyReference(t) && (t as PropertyReference).Value === 'null' && !isLiteralWithValue(t)) {
+        // a bare `null` reference is the null type; a quoted "null" is a string literal
         return 'None'
     }
 

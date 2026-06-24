@@ -7303,7 +7303,11 @@ exports[`webdriver local cddl > can parse local.cddl 1`] = `
           "n": 1,
         },
         "Type": [
-          "null",
+          {
+            "Type": "literal",
+            "Unwrapped": false,
+            "Value": "null",
+          },
         ],
       },
     ],

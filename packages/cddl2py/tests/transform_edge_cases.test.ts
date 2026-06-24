@@ -291,7 +291,8 @@ describe('transform edge cases', () => {
             variable('mapped-tag-type', tagRef('tstr')),
             variable('custom-tag-type', tagRef('custom-tag')),
             variable('range-type', rangeRef()),
-            variable('literal-null', literal(null))
+            variable('literal-null', literal(null)),
+            variable('literal-null-string', literal('null'))
         ])
 
         expect(output).toContain('TupleType = Tuple[int, str]')
@@ -303,6 +304,8 @@ describe('transform edge cases', () => {
         expect(output).toContain('CustomTagType = "CustomTag"')
         expect(output).toContain('RangeType = int')
         expect(output).toContain('LiteralNull = None')
+        // a quoted "null" is a string literal, not None
+        expect(output).toContain('LiteralNullString = Literal["null"]')
     })
 
     it('should reorder definitions so that dependencies precede their dependents', () => {

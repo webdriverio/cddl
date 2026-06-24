@@ -648,7 +648,11 @@ export default class Parser {
             this.nextToken() // eat ~
         }
 
-        switch (this.curToken.Literal) {
+        /**
+         * a quoted string is always a literal, even if its text matches a
+         * reserved keyword like "null" or "bool"
+         */
+        switch (this.curToken.Type === Tokens.STRING ? Tokens.STRING : this.curToken.Literal) {
             case Type.ANY:
             case Type.BOOL:
             case Type.INT:
@@ -667,7 +671,13 @@ export default class Parser {
                 type = this.curToken.Literal
                 break
             default: {
-                if (BOOLEAN_LITERALS.includes(this.curToken.Literal)) {
+                if (this.curToken.Type === Tokens.STRING) {
+                    type = {
+                        Type: 'literal' as PropertyReferenceType,
+                        Value: this.curToken.Literal,
+                        Unwrapped: isUnwrapped
+                    }
+                } else if (BOOLEAN_LITERALS.includes(this.curToken.Literal)) {
                     type = {
                         Type: 'literal' as PropertyReferenceType,
                         Value: this.curToken.Literal === 'true',
@@ -682,12 +692,6 @@ export default class Parser {
                 } else if (this.curToken.Type === Tokens.IDENT) {
                     type = {
                         Type: 'group' as PropertyReferenceType,
-                        Value: this.curToken.Literal,
-                        Unwrapped: isUnwrapped
-                    }
-                } else if (this.curToken.Type === Tokens.STRING) {
-                    type = {
-                        Type: 'literal' as PropertyReferenceType,
                         Value: this.curToken.Literal,
                         Unwrapped: isUnwrapped
                     }

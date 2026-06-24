@@ -24,7 +24,7 @@ export interface UndefinedValue {
 }
 
 export interface NullValue {
-  type: null;
+  type: "null";
 }
 
 export interface StringValue {

@@ -376,7 +376,8 @@ function resolveType (t: PropertyType, ctx: Context): string {
         throw new Error(`Unknown native type with operator: ${JSON.stringify(t)}`)
     }
 
-    if (isPropertyReference(t) && (t as PropertyReference).Value === 'null') {
+    if (isPropertyReference(t) && (t as PropertyReference).Value === 'null' && !isLiteralWithValue(t)) {
+        // a bare `null` reference is the null type; a quoted "null" is a string literal
         return NULL_TYPE
     }
 

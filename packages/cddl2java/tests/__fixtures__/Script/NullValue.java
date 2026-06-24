@@ -23,17 +23,17 @@ public class NullValue implements PrimitiveProtocolValue {
     /**
      * Creates a new NullValue instance
      */
-    public NullValue(Object type) {
-        this.type = type;
+    public NullValue() {
+        this.type = "null";
     }
 
-    private final Object type;
+    private final String type;
 
     /**
      * Gets the type property
-     * @return Object value
+     * @return String value
      */
-    public Object getType() {
+    public String getType() {
         return this.type;
     }
 

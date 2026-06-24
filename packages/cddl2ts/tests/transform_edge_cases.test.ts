@@ -285,7 +285,8 @@ describe('transform edge cases', () => {
                 Operator: { Type: 'default', Value: literal('mouse') }
             }),
             variable('bool-literal', literal(true)),
-            variable('null-literal', literal(null))
+            variable('null-literal', literal(null)),
+            variable('null-string-literal', literal('null'))
         ])
 
         expect(output).toContain('export type TupleType = [number, string];')
@@ -297,6 +298,8 @@ describe('transform edge cases', () => {
         expect(output).toContain('export type PointerType = PointerValue;')
         expect(output).toContain('export type BoolLiteral = true;')
         expect(output).toContain('export type NullLiteral = null;')
+        // a quoted "null" is a string literal, not the null type
+        expect(output).toContain('export type NullStringLiteral = "null";')
     })
 
     it('should include optional properties and default tags in object docs', () => {

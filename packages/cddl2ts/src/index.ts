@@ -680,7 +680,8 @@ function parseUnionType (t: PropertyType | Assignment, options: TransformSetting
         return NATIVE_TYPES[(t as any).Type]
     } else if (isNativeTypeWithOperator(t) && NATIVE_TYPES[(t.Type as any).Type]) {
         return NATIVE_TYPES[(t.Type as any).Type]
-    } else if (isPropertyReference(t) && t.Value === 'null') {
+    } else if (isPropertyReference(t) && t.Value === 'null' && !isLiteralWithValue(t)) {
+        // a bare `null` reference is the null type; a quoted "null" is a string literal
         return b.tsNullKeyword()
     } else if (isGroup(t)) {
         /**

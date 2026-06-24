@@ -36,7 +36,7 @@ class UndefinedValue(BaseModel):
     type: Literal["undefined"]
 
 class NullValue(BaseModel):
-    type: None
+    type: Literal["null"]
 
 class StringValue(BaseModel):
     type: Literal["string"]
@@ -108,7 +108,7 @@ class UndefinedValue(TypedDict):
     type: Literal["undefined"]
 
 class NullValue(TypedDict):
-    type: None
+    type: Literal["null"]
 
 class StringValue(TypedDict):
     type: Literal["string"]
