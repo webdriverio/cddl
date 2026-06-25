@@ -97,7 +97,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: ^25.5.0
-        version: 25.9.2
+        version: 25.9.3
       '@types/yargs':
         specifier: ^17.0.35
         version: 17.0.35
@@ -132,7 +132,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: ^25.5.0
-        version: 25.9.2
+        version: 25.9.3
       '@types/yargs':
         specifier: ^17.0.35
         version: 17.0.35
