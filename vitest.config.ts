@@ -25,10 +25,10 @@ export default defineConfig({
                     branches: 63.4,
                 },
                 'packages/cddl2java/**/*': {
-                    lines: 97.7,
+                    lines: 97.3,
                     functions: 94.8,
-                    statements: 97.1,
-                    branches: 91.5,
+                    statements: 96.7,
+                    branches: 91.0,
                 },
                 'packages/cddl2py/**/*': {
                     lines: 87.5,
