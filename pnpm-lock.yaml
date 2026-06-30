@@ -71,7 +71,7 @@ importers:
         version: link:../cddl
       recast:
         specifier: ^0.23.11
-        version: 0.23.11
+        version: 0.23.12
       yargs:
         specifier: ^18.0.0
         version: 18.0.0
@@ -150,7 +150,7 @@ importers:
         version: link:../cddl
       recast:
         specifier: ^0.23.11
-        version: 0.23.11
+        version: 0.23.12
       yargs:
         specifier: ^18.0.0
         version: 18.0.0
@@ -1589,8 +1589,8 @@ packages:
     resolution: {integrity: sha512-9u/XQ1pvrQtYyMpZe7DXKv2p5CNvyVwzUB6uhLAnQwHMSgKMBR62lc7AHljaeteeHXn11XTAaLLUVZYVZyuRBQ==}
     engines: {node: '>= 20.19.0'}
 
-  recast@0.23.11:
-    resolution: {integrity: sha512-YTUo+Flmw4ZXiWfQKGcwwc11KnoRAYgzAE2E7mXKCjSviTKShtxBsN6YUUBB2gtaBzKzeKunxhUwNHQuRryhWA==}
+  recast@0.23.12:
+    resolution: {integrity: sha512-dEWRjcINDu/F4l2dYx57ugBtD7HV9KXESyxhzw/MqWLeglJrsjJKqACPyUPg+6AF8mIgm+Zi0dZ3ACoIg+QtpA==}
     engines: {node: '>= 4'}
 
   release-it-pnpm@4.6.6:
@@ -3359,7 +3359,7 @@ snapshots:
 
   readdirp@5.0.0: {}
 
-  recast@0.23.11:
+  recast@0.23.12:
     dependencies:
       ast-types: 0.16.1
       esprima: 4.0.1
