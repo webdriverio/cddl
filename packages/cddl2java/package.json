@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/yargs": "^17.0.35",
-    "@types/node": "^25.5.0"
+    "@types/node": "^26.0.1"
   },
   "dependencies": {
     "@babel/parser": "^7.29.0",

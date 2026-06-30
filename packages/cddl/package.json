@@ -30,7 +30,7 @@
     "release:ci": "pnpm release --ci --npm.skipChecks"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "^26.0.1",
     "@types/yargs": "^17.0.35"
   },
   "dependencies": {

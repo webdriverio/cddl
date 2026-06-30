@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^11.0.0",
-    "@types/node": "^25.5.0",
+    "@types/node": "^26.0.1",
     "@types/yargs": "^17.0.35",
     "@vitest/coverage-v8": "^4.1.0",
     "conventional-changelog-conventionalcommits": "^9.3.0",
