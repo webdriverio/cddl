@@ -51,7 +51,7 @@ data class UndefinedValue(
 )
 
 data class NullValue(
-    val type: Any?
+    val type: String
 )
 
 data class StringValue(

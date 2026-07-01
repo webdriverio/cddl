@@ -131,6 +131,25 @@ describe('transform', () => {
             const output = transform([assignment])
             expect(output).toContain('val `object`: String')
         })
+
+        it('should treat a quoted "null" as a String literal, not a nullable type', () => {
+            const assignment: Group = {
+                Type: 'group',
+                Name: 'null-value',
+                IsChoiceAddition: false,
+                Properties: [
+                    { HasCut: true, Occurrence: { n: 1, m: 1 }, Name: 'type', Type: [{ Type: 'literal', Value: 'null', Unwrapped: false }], Comments: [] },
+                    { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: 'value', Type: ['tstr', 'null'], Comments: [] }
+                ] as any,
+                Comments: []
+            }
+            const output = transform([assignment])
+            expect(output).toContain('data class NullValue(')
+            // quoted "null" is the string literal type
+            expect(output).toContain('val type: String,')
+            // a bare `null` in a union still makes the field nullable
+            expect(output).toContain('val value: String?')
+        })
     })
 
     describe('arrays', () => {

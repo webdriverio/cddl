@@ -968,7 +968,7 @@ export interface ScriptUndefinedValue {
 }
 
 export interface ScriptNullValue {
-  type: null;
+  type: "null";
 }
 
 export interface ScriptStringValue {

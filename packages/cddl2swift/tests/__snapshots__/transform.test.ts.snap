@@ -51,7 +51,7 @@ public struct UndefinedValue {
 }
 
 public struct NullValue {
-    public var type: Any?
+    public var type: String
 }
 
 public struct StringValue {
