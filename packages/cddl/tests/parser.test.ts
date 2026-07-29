@@ -61,6 +61,24 @@ describe('parser', () => {
         vi.restoreAllMocks()
     })
 
+    it('preserves float-ness of whole-valued float literals so (0.0..1.0) differs from (0..1)', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('root = {\n  float_range: (0.0..1.0),\n  int_range: (0..1),\n}\n')
+        const p = new Parser('foo.cddl')
+        const [group] = p.parse() as any[]
+
+        const [floatRange, intRange] = group.Properties.map(
+            (prop: any) => prop.Type[0].Type.Value
+        )
+
+        expect(floatRange.Min).toEqual({ Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true })
+        expect(floatRange.Max).toEqual({ Type: 'literal', Value: 1, Unwrapped: false, IsFloat: true })
+        expect(intRange.Min).toEqual({ Type: 'literal', Value: 0, Unwrapped: false })
+        expect(intRange.Max).toEqual({ Type: 'literal', Value: 1, Unwrapped: false })
+        expect(intRange.Min.IsFloat).toBeUndefined()
+
+        vi.restoreAllMocks()
+    })
+
     it('parses RFC 9165 regexp operators on text strings', () => {
         vi.spyOn(fs, 'readFileSync').mockReturnValue('channel = tstr .regexp "custom:.+"\n')
         const p = new Parser('foo.cddl')

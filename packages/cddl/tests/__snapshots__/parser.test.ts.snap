@@ -2057,6 +2057,7 @@ exports[`parser > can parse operators 1`] = `
             "Operator": {
               "Type": "default",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 1,
@@ -2068,11 +2069,13 @@ exports[`parser > can parse operators 1`] = `
               "Value": {
                 "Inclusive": true,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 2,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 0.1,
@@ -2135,6 +2138,7 @@ exports[`parser > can parse operators 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 1,
@@ -2145,6 +2149,7 @@ exports[`parser > can parse operators 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -2300,6 +2305,7 @@ exports[`parser > can parse operators 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 1.5,
@@ -2313,11 +2319,13 @@ exports[`parser > can parse operators 1`] = `
               "Value": {
                 "Inclusive": true,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 2,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 1,
@@ -2340,6 +2348,7 @@ exports[`parser > can parse operators 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 1,
@@ -2366,11 +2375,13 @@ exports[`parser > can parse operators 1`] = `
               "Value": {
                 "Inclusive": false,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 360,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 0,
@@ -2418,11 +2429,13 @@ exports[`parser > can parse operators 1`] = `
               "Value": {
                 "Inclusive": false,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 360,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 0,
@@ -2450,6 +2463,7 @@ exports[`parser > can parse operators 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 1,
@@ -2657,6 +2671,7 @@ exports[`parser > can parse ranges 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 1,
@@ -2668,11 +2683,13 @@ exports[`parser > can parse ranges 1`] = `
           "Value": {
             "Inclusive": true,
             "Max": {
+              "IsFloat": true,
               "Type": "literal",
               "Unwrapped": false,
               "Value": 2,
             },
             "Min": {
+              "IsFloat": true,
               "Type": "literal",
               "Unwrapped": false,
               "Value": 0.1,
@@ -2990,6 +3007,7 @@ exports[`parser > should correctly parse CDDL file 1`] = `
         },
         "Type": [
           {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 0.5724646875815566,

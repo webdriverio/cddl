@@ -168,6 +168,9 @@ export type PropertyReference = {
     Value: string | number | boolean | Group | Array | Range | Tag
     Unwrapped: boolean
     Operator?: Operator
+    // `true` when a numeric literal was written as a float (e.g. `1.0`), so a
+    // whole-valued float range `(0.0..1.0)` stays distinct from `(0..1)`
+    IsFloat?: boolean
 }
 
 export interface NativeTypeWithOperator {
