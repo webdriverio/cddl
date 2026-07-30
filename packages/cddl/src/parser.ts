@@ -699,7 +699,8 @@ export default class Parser {
                     type = {
                         Type: 'literal' as PropertyReferenceType,
                         Value: parseNumberValue(this.curToken),
-                        Unwrapped: isUnwrapped
+                        Unwrapped: isUnwrapped,
+                        ...(this.curToken.Type === Tokens.FLOAT ? { IsFloat: true } : {})
                     }
                 } else if (this.curToken.Type === Tokens.HASH) {
                     this.nextToken()

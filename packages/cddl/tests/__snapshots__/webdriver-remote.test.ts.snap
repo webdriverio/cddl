@@ -3314,11 +3314,13 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Value": {
               "Inclusive": true,
               "Max": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 1,
               },
               "Min": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -4288,6 +4290,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 1,
@@ -4301,11 +4304,13 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
               "Value": {
                 "Inclusive": true,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 2,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 0.1,
@@ -4367,6 +4372,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 1,
@@ -4377,6 +4383,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -4397,6 +4404,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 1,
@@ -4407,6 +4415,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -4427,6 +4436,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 1,
@@ -4437,6 +4447,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -4457,6 +4468,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 1,
@@ -4467,6 +4479,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -4495,6 +4508,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 27.94,
@@ -4505,6 +4519,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0.0352,
@@ -4525,6 +4540,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 21.59,
@@ -4535,6 +4551,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0.0352,
@@ -4863,6 +4880,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "gt",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -5569,11 +5587,13 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Value": {
               "Inclusive": true,
               "Max": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 90,
               },
               "Min": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": -90,
@@ -5597,11 +5617,13 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Value": {
               "Inclusive": true,
               "Max": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 180,
               },
               "Min": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": -180,
@@ -5621,6 +5643,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "Operator": {
           "Type": "default",
           "Value": {
+            "IsFloat": true,
             "Type": "literal",
             "Unwrapped": false,
             "Value": 1,
@@ -5631,6 +5654,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -5674,6 +5698,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -5704,11 +5729,13 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
               "Value": {
                 "Inclusive": false,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 360,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 0,
@@ -5736,6 +5763,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
             "Operator": {
               "Type": "ge",
               "Value": {
+                "IsFloat": true,
                 "Type": "literal",
                 "Unwrapped": false,
                 "Value": 0,
@@ -15698,11 +15726,13 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
               "Value": {
                 "Inclusive": true,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 1,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 0,
@@ -15728,11 +15758,13 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
               "Value": {
                 "Inclusive": true,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 1,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": -1,
@@ -15800,11 +15832,13 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
               "Value": {
                 "Inclusive": true,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 1.5707963267948966,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 0,
@@ -15830,11 +15864,13 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
               "Value": {
                 "Inclusive": true,
                 "Max": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 6.283185307179586,
                 },
                 "Min": {
+                  "IsFloat": true,
                   "Type": "literal",
                   "Unwrapped": false,
                   "Value": 0,
