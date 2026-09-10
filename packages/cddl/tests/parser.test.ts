@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import { describe, it, expect, vi } from 'vitest'
 
 import Parser from '../src/parser.js'
-import type { Group, Property } from '../src/ast.js'
+import type { Group, Property, Array as CddlArray } from '../src/ast.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
@@ -161,6 +161,98 @@ describe('parser', () => {
             [{ Type: 'literal', Value: true, Unwrapped: false }],
             [{ Type: 'literal', Value: false, Unwrapped: false }]
         ])
+
+        vi.restoreAllMocks()
+    })
+
+    it('parses an operator on an unnamed member inside an array', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('envelope = [ bstr .size 3, bstr ]\n')
+        const p = new Parser('foo.cddl')
+
+        expect(() => p.parse()).not.toThrow()
+
+        vi.restoreAllMocks()
+    })
+
+    it('produces the expected AST shape for an operator on an unnamed array member, including the second, undecorated member', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('envelope = [ bstr .size 3, bstr ]\n')
+        const p = new Parser('foo.cddl')
+
+        const values = (p.parse()[0] as CddlArray).Values as Property[]
+        expect(values).toEqual([
+            {
+                HasCut: false,
+                Occurrence: { n: 1, m: 1 },
+                Name: '',
+                Type: [{
+                    Type: 'bstr',
+                    Operator: {
+                        Type: 'size',
+                        Value: { Type: 'literal', Value: 3, Unwrapped: false }
+                    }
+                }],
+                Comments: []
+            },
+            {
+                HasCut: false,
+                Occurrence: { n: 1, m: 1 },
+                Name: '',
+                Type: 'bstr',
+                Comments: []
+            }
+        ])
+
+        vi.restoreAllMocks()
+    })
+
+    it('parses an operator on a later, non-first unnamed array member', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('envelope = [ bstr, bstr .size 5 ]\n')
+        const p = new Parser('foo.cddl')
+
+        const values = (p.parse()[0] as CddlArray).Values as Property[]
+        expect(values).toEqual([
+            {
+                HasCut: false,
+                Occurrence: { n: 1, m: 1 },
+                Name: '',
+                Type: 'bstr',
+                Comments: []
+            },
+            {
+                HasCut: false,
+                Occurrence: { n: 1, m: 1 },
+                Name: '',
+                Type: [{
+                    Type: 'bstr',
+                    Operator: {
+                        Type: 'size',
+                        Value: { Type: 'literal', Value: 5, Unwrapped: false }
+                    }
+                }],
+                Comments: []
+            }
+        ])
+
+        vi.restoreAllMocks()
+    })
+
+    it('parses a paren-wrapped single member with an operator, assigned directly to a name', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('ip4 = (bstr .size 4)\n')
+        const p = new Parser('foo.cddl')
+
+        expect(p.parse()).toEqual([{
+            Type: 'variable',
+            Name: 'ip4',
+            IsChoiceAddition: false,
+            PropertyType: {
+                Type: 'bstr',
+                Operator: {
+                    Type: 'size',
+                    Value: { Type: 'literal', Value: 4, Unwrapped: false }
+                }
+            },
+            Comments: []
+        }])
 
         vi.restoreAllMocks()
     })
