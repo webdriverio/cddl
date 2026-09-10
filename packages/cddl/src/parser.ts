@@ -193,21 +193,36 @@ export default class Parser {
                 ...(operator ? { Operator: operator } : {})
             } as NativeTypeWithOperator
 
-            this.nextToken() // eat closing token
-            if (groupName) {
-                const variable: Variable = {
-                    Type: 'variable',
-                    Name: groupName,
-                    IsChoiceAddition: isChoiceAddition,
-                    PropertyType: prop,
-                    Operator: this.parseOperator(),
+            /**
+             * this branch exists for the single-element case, e.g. `ip4 = (float .ge 0.0)`, where the operator's value is immediately followed by the closing token. If a comma follows instead, e.g. `[ bstr .size 3, bstr ]`, there are more elements still to come -- seed the general array/group loop below with this first element rather than assuming we are already done.
+             */
+            if (this.curToken.Type === Tokens.COMMA) {
+                valuesOrProperties.push({
+                    HasCut: false,
+                    Occurrence: DEFAULT_OCCURRENCE,
+                    Name: '',
+                    Type: [prop],
                     Comments: []
+                })
+                this.nextToken() // eat comma
+            } else {
+                this.nextToken() // eat closing token
+                if (groupName) {
+                    const trailingOperator = this.isOperator() ? this.parseOperator() : undefined
+                    const variable: Variable = {
+                        Type: 'variable',
+                        Name: groupName,
+                        IsChoiceAddition: isChoiceAddition,
+                        PropertyType: prop,
+                        ...(trailingOperator ? { Operator: trailingOperator } : {}),
+                        Comments: []
+                    }
+
+                    return variable
                 }
 
-                return variable
+                return [prop]
             }
-
-            return [prop]
         }
 
         while (!closingTokens.includes(this.curToken.Type)) {
@@ -311,6 +326,33 @@ export default class Parser {
             }
 
             propertyName = this.parsePropertyName()
+
+            /**
+             * an unnamed member decorated with an operator, e.g. `[ bstr .size 3, bstr ]` -- there is no colon here, so this must be handled before the colon-expecting path below ever sees it
+             */
+            if (this.isOperator()) {
+                const operator = this.parseOperator()
+                const baseType = PREDEFINED_IDENTIFIER.includes(propertyName)
+                    ? { Type: propertyName as Type }
+                    : {
+                        Type: 'group' as PropertyReferenceType,
+                        Value: propertyName,
+                        Unwrapped: isUnwrapped
+                    }
+
+                valuesOrProperties.push({
+                    HasCut: hasCut,
+                    Occurrence: occurrence,
+                    Name: '',
+                    Type: [{ ...baseType, Operator: operator }],
+                    Comments: []
+                })
+
+                if (this.curToken.Type === Tokens.COMMA) {
+                    this.nextToken()
+                }
+                continue
+            }
 
             /**
              * if `,` is found we have a group reference and jump to the next line
