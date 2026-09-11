@@ -27,6 +27,23 @@ describe('lexer', () => {
         }
     })
 
+    it('should resolve a backslash-escaped character inside a string literal to that literal character (RFC 8610 SESC)', () => {
+        const input = String.raw`"[0-9a-f]{64}\\+[0-9a-f]{64}" "she said \"hi\"" "a\\b" "escaped plus \+ is just a plus"`
+        const tests = [
+            [Tokens.STRING, '[0-9a-f]{64}\\+[0-9a-f]{64}'],
+            [Tokens.STRING, 'she said "hi"'],
+            [Tokens.STRING, 'a\\b'],
+            [Tokens.STRING, 'escaped plus + is just a plus']
+        ]
+
+        const l = new Lexer(input)
+        for (const [Type, Literal] of tests) {
+            const token = l.nextToken()
+            expect(token.Type).toBe(Type)
+            expect(token.Literal).toBe(Literal)
+        }
+    })
+
     it('should read identifiers and comments', () => {
         const input = '   headers,       ; Headers for the recipient'
         const tests = [
