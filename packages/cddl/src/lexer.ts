@@ -190,14 +190,25 @@ export default class Lexer {
     }
 
     private readString (): string {
-        const position = this.position
+        let result = ''
 
         this.readChar() // eat "
         while (this.ch && String.fromCharCode(this.ch) !== Tokens.QUOT) {
-            this.readChar() // eat any character until "
+            // RFC 8610 SESC: a backslash escapes the single character that follows it, representing that character literally -- CDDL text strings have no JSON-style named escapes (\n, \t, \uXXXX and so on), the backslash exists only so a quote or a backslash itself can appear inside the literal. Consuming the escaped character here, rather than leaving both characters in the output verbatim, is what makes `\\+` in source read back as a single literal backslash followed by a plus instead of two backslashes -- the previous raw-slice implementation left the escape unresolved, so a caller re-embedding the value (e.g. building a RegExp source string from a `.regexp` control operator's value) double-escaped it.
+            if (String.fromCharCode(this.ch) === '\\') {
+                this.readChar() // eat the backslash
+                if (this.ch) {
+                    result += String.fromCharCode(this.ch)
+                    this.readChar() // eat the escaped character
+                }
+                continue
+            }
+
+            result += String.fromCharCode(this.ch)
+            this.readChar()
         }
 
-        return this.input.slice(position + 1, this.position).trim()
+        return result.trim()
     }
 
     private readNumberOrFloat (): string {
