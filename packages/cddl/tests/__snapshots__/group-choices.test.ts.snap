@@ -345,7 +345,7 @@ exports[`Group Choice Parsing > Type Choice (/) > should parse inline array alte
         "HasCut": true,
         "Name": "index",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -374,7 +374,7 @@ exports[`Group Choice Parsing > Type Choice (/) > should parse inline array alte
         "HasCut": true,
         "Name": "ttl",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [

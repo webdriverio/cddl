@@ -930,7 +930,7 @@ export default class Parser {
          */
         if (this.curToken.Type === Tokens.QUEST || this.curToken.Type === Tokens.ASTERISK || this.curToken.Type === Tokens.PLUS) {
             const n = this.curToken.Type === Tokens.PLUS ? 1 : 0
-            let m = Infinity
+            let m = this.curToken.Type === Tokens.QUEST ? 1 : Infinity
 
             /**
              * check if there is a max definition

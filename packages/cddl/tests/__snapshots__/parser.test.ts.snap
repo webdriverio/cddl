@@ -70,7 +70,7 @@ exports[`parser > can parse arrays 1`] = `
         "HasCut": false,
         "Name": "",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -475,7 +475,7 @@ exports[`parser > can parse choices 1`] = `
         "HasCut": true,
         "Name": "number",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -822,7 +822,7 @@ exports[`parser > can parse comments 1`] = `
         "HasCut": true,
         "Name": "uses-ball",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -840,7 +840,7 @@ exports[`parser > can parse comments 1`] = `
         "HasCut": true,
         "Name": "involves-throwing",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1162,7 +1162,7 @@ exports[`parser > can parse compositions 1`] = `
         "HasCut": true,
         "Name": "optional-key",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1180,7 +1180,7 @@ exports[`parser > can parse compositions 1`] = `
         "HasCut": true,
         "Name": "optional-key2",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1198,7 +1198,7 @@ exports[`parser > can parse compositions 1`] = `
         "HasCut": true,
         "Name": "optional-key3",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1455,7 +1455,7 @@ exports[`parser > can parse compositions 1`] = `
         "HasCut": true,
         "Name": "optional-key",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1467,7 +1467,7 @@ exports[`parser > can parse compositions 1`] = `
         "HasCut": true,
         "Name": "optional-key2",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1479,7 +1479,7 @@ exports[`parser > can parse compositions 1`] = `
         "HasCut": true,
         "Name": "optional-key3",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1617,7 +1617,7 @@ exports[`parser > can parse occurrences 1`] = `
         "HasCut": true,
         "Name": "optional",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1998,7 +1998,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "optional",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2020,7 +2020,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "orientation",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -2049,7 +2049,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "scale",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2090,7 +2090,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "shrinkToFit",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2112,7 +2112,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "shrinkToFitP",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -2132,7 +2132,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "bottom",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -2299,7 +2299,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "range",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -2340,7 +2340,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "nullable",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2364,7 +2364,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "rangeOrNull",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2397,7 +2397,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "choiceWithPostFixOperator",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -2414,7 +2414,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "anotherChoice",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -2451,7 +2451,7 @@ exports[`parser > can parse operators 1`] = `
         "HasCut": true,
         "Name": "yetAnotherChoice",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -2826,7 +2826,7 @@ exports[`parser > should correctly parse CDDL file 1`] = `
         "HasCut": true,
         "Name": "description",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2844,7 +2844,7 @@ exports[`parser > should correctly parse CDDL file 1`] = `
         "HasCut": true,
         "Name": "fail",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2884,7 +2884,7 @@ exports[`parser > should correctly parse CDDL file 1`] = `
         "HasCut": true,
         "Name": "intermediates",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3002,7 +3002,7 @@ exports[`parser > should correctly parse CDDL file 1`] = `
         "HasCut": true,
         "Name": "rating",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [

@@ -382,7 +382,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "alwaysMatch",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -398,7 +398,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "firstMatch",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -440,7 +440,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "acceptInsecureCerts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -452,7 +452,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "browserName",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -464,7 +464,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "browserVersion",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -476,7 +476,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "platformName",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -488,7 +488,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "proxy",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -504,7 +504,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "unhandledPromptBehavior",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -722,7 +722,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "httpProxy",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -734,7 +734,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sslProxy",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -746,7 +746,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": false,
         "Name": "",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -762,7 +762,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "noProxy",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -954,7 +954,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "alert",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -970,7 +970,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "beforeUnload",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -986,7 +986,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "confirm",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1002,7 +1002,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "default",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1018,7 +1018,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "file",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1034,7 +1034,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "prompt",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1118,7 +1118,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1152,7 +1152,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1877,7 +1877,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "acceptInsecureCerts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1889,7 +1889,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "proxy",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -1905,7 +1905,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "unhandledPromptBehavior",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2236,7 +2236,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "width",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2252,7 +2252,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "height",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2268,7 +2268,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "x",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2284,7 +2284,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "y",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2365,7 +2365,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2790,7 +2790,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
                 "HasCut": true,
                 "Name": "name",
                 "Occurrence": {
-                  "m": Infinity,
+                  "m": 1,
                   "n": 0,
                 },
                 "Type": [
@@ -2802,7 +2802,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
                 "HasCut": true,
                 "Name": "role",
                 "Occurrence": {
-                  "m": Infinity,
+                  "m": 1,
                   "n": 0,
                 },
                 "Type": [
@@ -2950,7 +2950,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "ignoreCase",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2962,7 +2962,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "matchType",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -2983,7 +2983,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "maxDepth",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3223,7 +3223,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "origin",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -3252,7 +3252,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "format",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3268,7 +3268,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "clip",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3304,7 +3304,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "quality",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3528,7 +3528,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "promptUnload",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3632,7 +3632,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "referenceContext",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3648,7 +3648,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "background",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3670,7 +3670,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContext",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3734,7 +3734,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "maxDepth",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3750,7 +3750,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "root",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3830,7 +3830,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "accept",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3842,7 +3842,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userText",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3934,7 +3934,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "maxNodeCount",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3960,7 +3960,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "serializationOptions",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -3976,7 +3976,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "startNodes",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4086,7 +4086,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "wait",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4166,7 +4166,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "background",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4188,7 +4188,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "margin",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4204,7 +4204,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "orientation",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -4233,7 +4233,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "page",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4249,7 +4249,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "pageRanges",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4284,7 +4284,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "scale",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -4325,7 +4325,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "shrinkToFit",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4366,7 +4366,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "bottom",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -4398,7 +4398,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "left",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -4430,7 +4430,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "right",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -4462,7 +4462,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "top",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -4502,7 +4502,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "height",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -4534,7 +4534,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "width",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -4630,7 +4630,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "ignoreCache",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4642,7 +4642,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "wait",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4723,7 +4723,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4757,7 +4757,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4839,7 +4839,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "context",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4855,7 +4855,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "viewport",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4872,7 +4872,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "devicePixelRatio",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -4896,7 +4896,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -5281,7 +5281,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -5315,7 +5315,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -5501,7 +5501,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -5535,7 +5535,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -5637,7 +5637,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "accuracy",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -5669,7 +5669,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "altitude",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -5686,7 +5686,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "altitudeAccuracy",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -5714,7 +5714,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "heading",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -5751,7 +5751,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "speed",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -5864,7 +5864,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -5898,7 +5898,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -5997,7 +5997,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6031,7 +6031,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6207,7 +6207,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6241,7 +6241,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6426,7 +6426,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6460,7 +6460,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6555,7 +6555,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6589,7 +6589,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6688,7 +6688,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6722,7 +6722,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6826,7 +6826,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6860,7 +6860,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6955,7 +6955,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -6989,7 +6989,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7098,7 +7098,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7132,7 +7132,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7664,7 +7664,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "expiry",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7840,7 +7840,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "domain",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7852,7 +7852,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "httpOnly",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7864,7 +7864,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "expiry",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7876,7 +7876,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "maxAge",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7892,7 +7892,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "path",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7904,7 +7904,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sameSite",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7920,7 +7920,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "secure",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7974,7 +7974,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "protocol",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7986,7 +7986,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "hostname",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -7998,7 +7998,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "port",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8010,7 +8010,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "pathname",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8022,7 +8022,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "search",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8168,7 +8168,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "collectorType",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8194,7 +8194,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8228,7 +8228,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8344,7 +8344,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8378,7 +8378,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "urlPatterns",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8499,7 +8499,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "body",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8515,7 +8515,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "cookies",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8549,7 +8549,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "headers",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8583,7 +8583,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "method",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8595,7 +8595,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "url",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8671,7 +8671,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "cookies",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8705,7 +8705,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "credentials",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8721,7 +8721,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "headers",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8755,7 +8755,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "reasonPhrase",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -8767,7 +8767,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "statusCode",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9189,7 +9189,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "collector",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9205,7 +9205,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "disown",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9307,7 +9307,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "body",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9323,7 +9323,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "cookies",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9357,7 +9357,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "headers",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9391,7 +9391,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "reasonPhrase",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9403,7 +9403,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "statusCode",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9616,7 +9616,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9732,7 +9732,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9766,7 +9766,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9969,7 +9969,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "serializationOptions",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -9985,7 +9985,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "ownership",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -10579,7 +10579,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "flags",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11046,7 +11046,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11102,7 +11102,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sharedId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11350,7 +11350,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11366,7 +11366,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11406,7 +11406,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11422,7 +11422,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11438,7 +11438,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "value",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11478,7 +11478,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11494,7 +11494,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11510,7 +11510,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "value",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11550,7 +11550,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11566,7 +11566,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11606,7 +11606,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11622,7 +11622,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11662,7 +11662,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11678,7 +11678,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11718,7 +11718,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11734,7 +11734,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11750,7 +11750,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "value",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11790,7 +11790,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11806,7 +11806,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11822,7 +11822,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "value",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11862,7 +11862,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11878,7 +11878,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11918,7 +11918,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11934,7 +11934,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11974,7 +11974,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -11990,7 +11990,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12030,7 +12030,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12046,7 +12046,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12086,7 +12086,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12102,7 +12102,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12142,7 +12142,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12158,7 +12158,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12198,7 +12198,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12214,7 +12214,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12254,7 +12254,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12270,7 +12270,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12310,7 +12310,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12326,7 +12326,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12342,7 +12342,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "value",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12382,7 +12382,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12398,7 +12398,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12414,7 +12414,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "value",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12454,7 +12454,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sharedId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12470,7 +12470,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12486,7 +12486,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12502,7 +12502,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "value",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12558,7 +12558,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "attributes",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12589,7 +12589,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "children",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12623,7 +12623,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "localName",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12635,7 +12635,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "mode",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12656,7 +12656,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "namespaceURI",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12668,7 +12668,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "nodeValue",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12680,7 +12680,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "shadowRoot",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12737,7 +12737,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "handle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12753,7 +12753,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "internalId",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -12819,7 +12819,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "maxDomDepth",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -12844,7 +12844,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "maxObjectDepth",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -12865,7 +12865,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "includeShadowTree",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Operator": {
@@ -13062,7 +13062,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sandbox",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13152,7 +13152,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "arguments",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13186,7 +13186,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "contexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13220,7 +13220,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContexts",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13254,7 +13254,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sandbox",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13452,7 +13452,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "arguments",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13486,7 +13486,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "resultOwnership",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13502,7 +13502,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "serializationOptions",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13518,7 +13518,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "this",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13534,7 +13534,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userActivation",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13644,7 +13644,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "resultOwnership",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13660,7 +13660,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "serializationOptions",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13676,7 +13676,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userActivation",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13746,7 +13746,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "context",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13762,7 +13762,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "type",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13904,7 +13904,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContext",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13916,7 +13916,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sourceOrigin",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -13992,7 +13992,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "name",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14004,7 +14004,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "value",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14020,7 +14020,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "domain",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14032,7 +14032,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "path",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14044,7 +14044,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "size",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14060,7 +14060,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "httpOnly",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14072,7 +14072,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "secure",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14084,7 +14084,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sameSite",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14100,7 +14100,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "expiry",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14196,7 +14196,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "userContext",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14208,7 +14208,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sourceOrigin",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14262,7 +14262,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "filter",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14278,7 +14278,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "partition",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14382,7 +14382,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "path",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14394,7 +14394,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "httpOnly",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14406,7 +14406,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "secure",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14418,7 +14418,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "sameSite",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14434,7 +14434,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "expiry",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14490,7 +14490,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "partition",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14554,7 +14554,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "filter",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -14570,7 +14570,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "partition",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15018,7 +15018,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "parameters",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15099,7 +15099,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "pointerType",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15265,7 +15265,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "duration",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15497,7 +15497,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "duration",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15513,7 +15513,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "origin",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15633,7 +15633,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "duration",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15649,7 +15649,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "origin",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15683,7 +15683,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "width",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15699,7 +15699,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "height",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15715,7 +15715,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "pressure",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15747,7 +15747,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "tangentialPressure",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15785,7 +15785,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "twist",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15821,7 +15821,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "altitudeAngle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [
@@ -15853,7 +15853,7 @@ exports[`webdriver remote cddl > can parse remote.cddl 1`] = `
         "HasCut": true,
         "Name": "azimuthAngle",
         "Occurrence": {
-          "m": Infinity,
+          "m": 1,
           "n": 0,
         },
         "Type": [

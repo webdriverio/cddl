@@ -29,6 +29,19 @@ describe('parser', () => {
         })
     }
 
+    it('parses the question-mark occurrence as zero-or-one', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('root = { ? optional: tstr, * repeated: tstr, + requiredRepeated: tstr }\n')
+        const p = new Parser('foo.cddl')
+        const [group] = p.parse() as Group[]
+        const [optional, repeated, requiredRepeated] = group.Properties as Property[]
+
+        expect(optional.Occurrence).toEqual({ n: 0, m: 1 })
+        expect(repeated.Occurrence).toEqual({ n: 0, m: Infinity })
+        expect(requiredRepeated.Occurrence).toEqual({ n: 1, m: Infinity })
+
+        vi.restoreAllMocks()
+    })
+
     it('throws if group identifier is missing', () => {
         vi.spyOn(fs, 'readFileSync').mockReturnValue('=')
         const p = new Parser('foo.cddl')
