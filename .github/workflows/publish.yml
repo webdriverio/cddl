@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Pinned like prepare/release-* below, so a dispatch from another branch can't skip testing main.
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: 'main'
       - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
@@ -62,7 +62,7 @@ jobs:
       dependents: ${{ steps.set.outputs.dependents }}
     steps:
       - name: Clone Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: 'main'
           fetch-depth: 0
@@ -119,7 +119,7 @@ jobs:
       id-token: write
     steps:
       - name: Clone Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: 'main'
           fetch-depth: 0 # Required to fetch all tags for release-it
@@ -164,7 +164,7 @@ jobs:
       id-token: write
     steps:
       - name: Clone Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: 'main'
           fetch-depth: 0 # Required to fetch all tags for release-it
