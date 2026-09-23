@@ -23,6 +23,10 @@
   "bin": {
     "cddl2ts": "./bin/cddl2ts.js"
   },
+  "files": [
+    "build",
+    "bin"
+  ],
   "scripts": {
     "release": "release-it --config .release-it.ts --VV",
     "release:ci": "pnpm release --ci --npm.skipChecks",
