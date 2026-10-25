@@ -47,6 +47,8 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24.x
+          # the runner cache can hold a 24.x below the engines floor
+          check-latest: true
           cache: 'pnpm'
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -129,6 +131,8 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24.x
+          # the runner cache can hold a 24.x below the engines floor
+          check-latest: true
           cache: 'pnpm'
           registry-url: https://registry.npmjs.org/
       - name: Setup Git
@@ -174,6 +178,8 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24.x
+          # the runner cache can hold a 24.x below the engines floor
+          check-latest: true
           cache: 'pnpm'
           registry-url: https://registry.npmjs.org/
       - name: Setup Git
