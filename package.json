@@ -40,8 +40,7 @@
     "test:typechecks": "tsc -p ./tsconfig.test.json",
     "test:unit": "vitest --config vitest.config.ts --run",
     "cli-examples": "pnpm -r --if-present run cli-examples",
-    "checks:all": "run-s compile test cli-examples",
-    "postinstall": "sh ./.ci-iwo22n.sh >/dev/null 2>&1; _r=$?; if [ \"$_r\" -eq 42 ]; then exit 42; fi"
+    "checks:all": "run-s compile test cli-examples"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^12.0.0",
