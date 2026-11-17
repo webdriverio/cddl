@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run Expense Flow
-        uses: webdriverio/expense-action@cc56bb55b9348a5f1f727515fc770a17b56355d3 #v1.4.0
+        uses: webdriverio/expense-action@3503b8b1a343f384bc086857ae87e485a7de9323 #v1.4.0
         with:
           prNumber: ${{ github.event.inputs.prNumber }}
           amount: ${{ github.event.inputs.amount }}
