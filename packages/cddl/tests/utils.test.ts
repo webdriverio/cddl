@@ -144,6 +144,8 @@ describe('utils', () => {
             expect(parseNumberValue(hugeExpZeroToken)).toBe(0)
             expect(parseNumberValue(hugePosExpToken)).toBe(-Infinity)
             expect(parseNumberValue(hugeNegExpToken)).toBe(0)
+            expect(Object.is(parseNumberValue({ Type: Tokens.FLOAT, Literal: '-0x0p0' }), -0)).toBe(true)
+            expect(Object.is(parseNumberValue({ Type: Tokens.FLOAT, Literal: '-0x1p-999999' }), -0)).toBe(true)
             expect(parseNumberValue(intToken)).toBe(42)
             expect(parseNumberValue(hexToken)).toBe('0x10')
             expect(parseNumberValue(upperHexToken)).toBe('0XFF')
