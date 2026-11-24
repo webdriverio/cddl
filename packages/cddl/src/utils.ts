@@ -47,8 +47,20 @@ function parseHexFloat (literal: string): number {
     const [mantissaStr, exponentStr] = normalized.split(/[pP]/)
     const [intPart, fracPart] = mantissaStr.split('.')
     const fracValue = fracPart ? parseInt(fracPart, 16) / (16 ** fracPart.length) : 0
-    const magnitude = (parseInt(intPart, 16) + fracValue) * (2 ** parseInt(exponentStr, 10))
-    return isNegative ? -magnitude : magnitude
+    let result = parseInt(intPart, 16) + fracValue
+    let exp = parseInt(exponentStr, 10)
+    // Scale in <=512-bit steps so `2 ** exp` cannot underflow to 0 or overflow to Infinity
+    // before multiplying by the mantissa (e.g. `0x4p-1076` == `Number.MIN_VALUE`)
+    while (exp > 512 && Number.isFinite(result) && result !== 0) {
+        result *= 2 ** 512
+        exp -= 512
+    }
+    while (exp < -512 && result !== 0) {
+        result *= 2 ** -512
+        exp += 512
+    }
+    result *= 2 ** exp
+    return isNegative ? -result : result
 }
 
 export function parseNumberValue (token: Token): string | number {

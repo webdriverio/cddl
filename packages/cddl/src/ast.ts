@@ -84,6 +84,9 @@ export type Property = {
     Type: PropertyType | PropertyType[]
     Comments: Comment[]
     Operator?: Operator
+    // Structured key expression preserved for non-identifier map keys (e.g.
+    // numeric/byte literals, ranges, generics, or operator-qualified keys)
+    KeyType?: PropertyType
 }
 
 export enum Type {
@@ -165,6 +168,7 @@ export interface Operator {
     Value: PropertyType
 }
 
+export type ByteEncoding = 'utf8' | 'hex' | 'b64'
 export type PropertyReferenceType = 'literal' | 'group' | 'group_array' | 'array' | 'range' | 'tag'
 export type PropertyReference = {
     Type: PropertyReferenceType
@@ -175,6 +179,10 @@ export type PropertyReference = {
     // `true` when a numeric literal was written as a float (e.g. `1.0`), so a
     // whole-valued float range `(0.0..1.0)` stays distinct from `(0..1)`
     IsFloat?: boolean
+    // Set on RFC 8610 byte string literals (`'...'`, `h'...'`, `b64'...'`) so consumers
+    // can distinguish them from quoted text strings (`"..."`)
+    IsByteString?: boolean
+    ByteEncoding?: ByteEncoding
 }
 
 export interface NativeTypeWithOperator {

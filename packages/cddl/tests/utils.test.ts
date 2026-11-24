@@ -118,6 +118,10 @@ describe('utils', () => {
             const hexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x1.8p1' }
             const negHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '-0x1.8p-2' }
             const intHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x1p0' }
+            const subnormalHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x4p-1076' }
+            const maxHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x0.8p1024' }
+            const infHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x1p999999' }
+            const underflowHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x1p-999999' }
             const intToken: Token = { Type: Tokens.INT, Literal: '42' }
             const hexToken: Token = { Type: Tokens.INT, Literal: '0x10' }
             const upperHexToken: Token = { Type: Tokens.INT, Literal: '0XFF' }
@@ -128,6 +132,10 @@ describe('utils', () => {
             expect(parseNumberValue(hexFloatToken)).toBe(3)
             expect(parseNumberValue(negHexFloatToken)).toBe(-0.375)
             expect(parseNumberValue(intHexFloatToken)).toBe(1)
+            expect(parseNumberValue(subnormalHexFloatToken)).toBe(Number.MIN_VALUE)
+            expect(parseNumberValue(maxHexFloatToken)).toBe(2 ** 1023)
+            expect(parseNumberValue(infHexFloatToken)).toBe(Infinity)
+            expect(parseNumberValue(underflowHexFloatToken)).toBe(0)
             expect(parseNumberValue(intToken)).toBe(42)
             expect(parseNumberValue(hexToken)).toBe('0x10')
             expect(parseNumberValue(upperHexToken)).toBe('0XFF')

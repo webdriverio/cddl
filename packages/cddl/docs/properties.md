@@ -14,6 +14,7 @@ export type Property = {
     Type: PropertyType | PropertyType[]
     Comments: Comment[]
     Operator?: Operator
+    KeyType?: PropertyType
 }
 ```
 
@@ -24,6 +25,7 @@ Where:
 - `Type`: The type(s) of the property
 - `Comments`: An array of comments associated with the property
 - `Operator`: An optional operator modifying the property
+- `KeyType`: Optional structured key expression preserved for non-identifier map keys (numeric/byte literals, ranges, generics, tags, or operator-qualified keys)
 
 ## Property Names
 

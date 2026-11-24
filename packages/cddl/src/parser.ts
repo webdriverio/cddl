@@ -8,7 +8,8 @@ import { parseNumberValue } from './utils.js'
 import {
     Type, PropertyName, PropertyType, PropertyReferenceType,
     Variable, RangePropertyReference, Occurrence, Assignment,
-    Comment, Group, OperatorType, NativeTypeWithOperator, Operator
+    Comment, Group, OperatorType, NativeTypeWithOperator, Operator,
+    ByteEncoding, PropertyReference
 } from './ast.js'
 
 const NIL_TOKEN: Token = { Type: Tokens.ILLEGAL, Literal: '' }
@@ -272,6 +273,7 @@ export default class Parser {
             let isUnwrapped = false
             let hasCut = false
             let propertyName = ''
+            let keyType: PropertyType | undefined
 
             const occurrence = this.parseOccurrences()
 
@@ -304,51 +306,62 @@ export default class Parser {
                 this.curToken.Literal === Tokens.LPAREN
             ) {
                 const innerGroup = this.parseAssignmentValue() as Group
-                const prop = {
-                    HasCut: false,
-                    Occurrence: occurrence,
-                    Name: '',
-                    Type: innerGroup,
-                    Comments: []
-                }
-
-                if (isChoice) {
-                    (valuesOrProperties[valuesOrProperties.length - 1] as Property[]).push(prop)
+                if (this.isAtMemberKeySeparator()) {
+                    keyType = innerGroup as PropertyType
+                    propertyName = Array.isArray(innerGroup)
+                        ? `(${(innerGroup as PropertyType[]).map((item) => this.formatPropertyKeyName(item)).join(' / ')})`
+                        : this.formatPropertyKeyName(innerGroup as PropertyType)
                 } else {
-                    valuesOrProperties.push(prop)
-                }
-
-                if (this.curToken.Type === Tokens.COMMA) {
-                    this.nextToken()
-                    isChoice = false
-                }
-
-                if (this.curToken.Type === Tokens.SLASH && this.peekToken.Type !== Tokens.SLASH) {
-                    if (!isChoice) {
-                        const last = valuesOrProperties.pop() as Property
-                        valuesOrProperties.push([last])
-                        isChoice = true
+                    const prop = {
+                        HasCut: false,
+                        Occurrence: occurrence,
+                        Name: '',
+                        Type: innerGroup,
+                        Comments: []
                     }
-                    this.nextToken()
-                }
-                continue
-            }
 
-            /**
-             * check if we are in an array and a new item is indicated
-             */
-            if (this.curToken.Literal === Tokens.COMMA && closingTokens[0] === Tokens.RBRACK) {
+                    if (isChoice) {
+                        (valuesOrProperties[valuesOrProperties.length - 1] as Property[]).push(prop)
+                    } else {
+                        valuesOrProperties.push(prop)
+                    }
+
+                    if (this.curToken.Type === Tokens.COMMA) {
+                        this.nextToken()
+                        isChoice = false
+                    }
+
+                    if (this.curToken.Type === Tokens.SLASH && this.peekToken.Type !== Tokens.SLASH) {
+                        if (!isChoice) {
+                            const last = valuesOrProperties.pop() as Property
+                            valuesOrProperties.push([last])
+                            isChoice = true
+                        }
+                        this.nextToken()
+                    }
+                    continue
+                }
+            } else if (this.curToken.Literal === Tokens.COMMA && closingTokens[0] === Tokens.RBRACK) {
+                /**
+                 * check if we are in an array and a new item is indicated
+                 */
                 this.nextToken()
                 continue
-            }
+            } else {
 
             const isSimpleNameEntry = (this.curToken.Type === Tokens.IDENT || this.curToken.Type === Tokens.STRING) &&
                 this.peekToken.Type !== Tokens.LT &&
                 !(this.peekToken.Type === Tokens.DOT && this.peekBelowToken.Type === Tokens.DOT)
 
             if (this.isDirectMemberKey()) {
-                propertyName = this.curToken.Literal
-                this.nextToken()
+                if (this.curToken.Type === Tokens.IDENT || this.curToken.Type === Tokens.STRING) {
+                    propertyName = this.curToken.Literal
+                    this.nextToken()
+                } else {
+                    keyType = this.parsePropertyType()
+                    this.advanceAfterPropertyType()
+                    propertyName = this.formatPropertyKeyName(keyType)
+                }
             } else if (isSimpleNameEntry) {
                 propertyName = this.parsePropertyName()
 
@@ -358,36 +371,41 @@ export default class Parser {
                  */
                 if (this.isOperator()) {
                     const operator = this.parseOperator()
-                    if (!this.isAtMemberKeySeparator()) {
-                        const baseType = PREDEFINED_IDENTIFIER.includes(propertyName)
-                            ? { Type: propertyName as Type }
-                            : {
-                                Type: 'group' as PropertyReferenceType,
-                                Value: propertyName,
-                                Unwrapped: isUnwrapped
-                            }
-
+                    const baseType = PREDEFINED_IDENTIFIER.includes(propertyName)
+                        ? { Type: propertyName as Type }
+                        : {
+                            Type: 'group' as PropertyReferenceType,
+                            Value: propertyName,
+                            Unwrapped: isUnwrapped
+                        }
+                    const typeWithOp: PropertyType = { ...baseType, Operator: operator }
+                    if (this.isAtMemberKeySeparator()) {
+                        keyType = typeWithOp
+                        propertyName = this.formatPropertyKeyName(typeWithOp)
+                    } else {
                         valuesOrProperties.push({
                             HasCut: hasCut,
                             Occurrence: occurrence,
                             Name: '',
-                            Type: [{ ...baseType, Operator: operator }],
+                            Type: [typeWithOp],
                             Comments: []
                         })
 
                         if (this.curToken.Type === Tokens.COMMA) {
                             this.nextToken()
+                            isChoice = false
                         }
                         continue
                     }
                 }
             } else {
-                let parsedType = this.attachTrailingOperator(this.parsePropertyType())
+                const parsedType = this.parsePropertyTypeWithOperator()
                 if (isUnwrapped && typeof parsedType === 'object' && 'Unwrapped' in parsedType) {
                     parsedType.Unwrapped = true
                 }
 
                 if (this.isAtMemberKeySeparator()) {
+                    keyType = parsedType
                     propertyName = this.formatPropertyKeyName(parsedType)
                 } else if (this.curToken.Type === Tokens.SLASH && this.peekToken.Type === Tokens.SLASH) {
                     const prop: Property = {
@@ -408,7 +426,9 @@ export default class Parser {
                     continue
                 } else {
                     const typeChoices = this.collectTypeChoices(parsedType)
-                    if (this.pushUnnamedMember(valuesOrProperties, closingTokens, occurrence, hasCut, typeChoices)) {
+                    const res = this.pushUnnamedMember(valuesOrProperties, closingTokens, occurrence, hasCut, typeChoices, isChoice)
+                    isChoice = res.nextIsChoice
+                    if (res.shouldContinue) {
                         continue
                     }
                     break
@@ -427,10 +447,16 @@ export default class Parser {
                         Unwrapped: isUnwrapped
                     }]
 
-                if (this.pushUnnamedMember(valuesOrProperties, closingTokens, occurrence, hasCut, resolvedType)) {
+                const hadComma = this.curToken.Type === Tokens.COMMA
+                const res = this.pushUnnamedMember(valuesOrProperties, closingTokens, occurrence, hasCut, resolvedType, false)
+                if (hadComma) {
+                    isChoice = false
+                }
+                if (res.shouldContinue) {
                     continue
                 }
                 break
+            }
             }
 
             /**
@@ -536,13 +562,14 @@ export default class Parser {
             const trailingComment = this.parseComment()
             trailingComment && comments.push(trailingComment)
 
-            const prop = {
+            const prop: Property = {
                 HasCut: hasCut,
                 Occurrence: occurrence,
                 Name: propertyName,
                 Type: propertyType,
                 Comments: comments,
-                ...(operator ? { Operator: operator } : {})
+                ...(operator ? { Operator: operator } : {}),
+                ...(keyType ? { KeyType: keyType } : {})
             }
 
             if (isChoice) {
@@ -714,6 +741,8 @@ export default class Parser {
             this.nextToken() // eat ~
         }
 
+        const alreadyAdvanced = this.curToken.Literal === Tokens.LBRACE || this.curToken.Literal === Tokens.LBRACK
+
         /**
          * a quoted string or byte string is always a literal, even if its text
          * matches a reserved keyword like "null" or "bool"
@@ -740,12 +769,14 @@ export default class Parser {
                 type = this.curToken.Literal
                 break
             default: {
-                if (this.curToken.Type === Tokens.STRING || this.curToken.Type === Tokens.BYTES) {
+                if (this.curToken.Type === Tokens.STRING) {
                     type = {
                         Type: 'literal' as PropertyReferenceType,
                         Value: this.curToken.Literal,
                         Unwrapped: isUnwrapped
                     }
+                } else if (this.curToken.Type === Tokens.BYTES) {
+                    type = this.parseByteStringLiteral(this.curToken.Literal, isUnwrapped)
                 } else if (BOOLEAN_LITERALS.includes(this.curToken.Literal)) {
                     type = {
                         Type: 'literal' as PropertyReferenceType,
@@ -807,6 +838,7 @@ export default class Parser {
          * check if type continue as a range
          */
         if (
+            !alreadyAdvanced &&
             this.peekToken.Type === Tokens.DOT &&
             this.nextToken() &&
             this.peekToken.Type === Tokens.DOT
@@ -1020,6 +1052,29 @@ export default class Parser {
             (this.curToken.Type === Tokens.ASSIGN && this.peekToken.Type === Tokens.GT)
     }
 
+    private parseByteStringLiteral (literal: string, isUnwrapped = false): PropertyReference {
+        const lower = literal.toLowerCase()
+        let encoding: ByteEncoding = 'utf8'
+        let prefixLen = 1
+        if (lower.startsWith("h'")) {
+            encoding = 'hex'
+            prefixLen = 2
+        } else if (lower.startsWith("b64'")) {
+            encoding = 'b64'
+            prefixLen = 4
+        }
+        const value = literal.endsWith("'") && literal.length > prefixLen
+            ? literal.slice(prefixLen, -1)
+            : literal.slice(prefixLen)
+        return {
+            Type: 'literal',
+            Value: value,
+            Unwrapped: isUnwrapped,
+            IsByteString: true,
+            ByteEncoding: encoding
+        }
+    }
+
     private advanceAfterPropertyType (): void {
         // parsePropertyType leaves curToken on its last token unless range lookahead already moved onto "."
         if (this.curToken.Type !== Tokens.DOT) {
@@ -1027,8 +1082,13 @@ export default class Parser {
         }
     }
 
-    private attachTrailingOperator (type: PropertyType): PropertyType {
-        this.advanceAfterPropertyType()
+    private parsePropertyTypeWithOperator (): PropertyType {
+        // parseAssignmentValue for `{...}`/`[...]` already consumes the closing delimiter
+        const alreadyAdvanced = this.curToken.Literal === Tokens.LBRACE || this.curToken.Literal === Tokens.LBRACK
+        const type = this.parsePropertyType()
+        if (!alreadyAdvanced) {
+            this.advanceAfterPropertyType()
+        }
         if (!this.isOperator()) {
             return type
         }
@@ -1038,14 +1098,18 @@ export default class Parser {
             : { ...(type as object), Operator: operator }) as PropertyType
     }
 
+    private skipComments (): void {
+        while ((this.curToken.Type as TokenType) === Tokens.COMMENT) {
+            this.parseComment()
+        }
+    }
+
     private collectTypeChoices (firstType: PropertyType): PropertyType[] {
         const choices: PropertyType[] = [firstType]
         while (this.curToken.Type === Tokens.SLASH && this.peekToken.Type !== Tokens.SLASH) {
             this.nextToken() // eat /
-            while ((this.curToken.Type as TokenType) === Tokens.COMMENT) {
-                this.parseComment()
-            }
-            choices.push(this.attachTrailingOperator(this.parsePropertyType()))
+            this.skipComments()
+            choices.push(this.parsePropertyTypeWithOperator())
         }
         return choices
     }
@@ -1055,8 +1119,9 @@ export default class Parser {
         closingTokens: string[],
         occurrence: Occurrence,
         hasCut: boolean,
-        type: PropertyType | PropertyType[]
-    ): boolean {
+        type: PropertyType | PropertyType[],
+        appendToActiveChoice: boolean
+    ): { shouldContinue: boolean, nextIsChoice: boolean } {
         const tokenType = this.curToken.Type
         let comment: Comment | undefined
 
@@ -1067,32 +1132,47 @@ export default class Parser {
             comment = this.parseComment()
         }
 
-        valuesOrProperties.push({
+        const prop: Property = {
             HasCut: hasCut,
             Occurrence: occurrence,
             Name: '',
             Type: type,
             Comments: comment ? [comment] : []
-        })
+        }
+
+        if (appendToActiveChoice) {
+            (valuesOrProperties[valuesOrProperties.length - 1] as Property[]).push(prop)
+        } else {
+            valuesOrProperties.push(prop)
+        }
+
+        const nextIsChoice = appendToActiveChoice && tokenType !== Tokens.COMMA
 
         if (this.curToken.Literal === Tokens.COMMA || this.curToken.Literal === closingTokens[0]) {
             if (this.curToken.Literal === Tokens.COMMA) {
                 this.nextToken()
             }
-            return true
+            return { shouldContinue: true, nextIsChoice }
         }
 
-        return tokenType === Tokens.COMMA
+        return { shouldContinue: tokenType === Tokens.COMMA, nextIsChoice }
     }
 
     private formatPropertyKeyName (type: PropertyType): string {
         if (typeof type === 'string') {
             return type
         }
-        if ('Operator' in type && type.Operator && !('Value' in type)) {
-            return this.formatPropertyKeyName(type.Type)
+        if ('Operator' in type && type.Operator) {
+            const base = 'Value' in type
+                ? this.formatPropertyKeyName({ ...(type as object), Operator: undefined } as PropertyType)
+                : this.formatPropertyKeyName(type.Type)
+            return `${base} .${type.Operator.Type} ${this.formatPropertyKeyName(type.Operator.Value)}`
         }
         if (type.Type === 'literal') {
+            if (type.IsByteString) {
+                const prefix = type.ByteEncoding === 'hex' ? 'h' : type.ByteEncoding === 'b64' ? 'b64' : ''
+                return `${prefix}'${type.Value}'`
+            }
             return String(type.Value)
         }
         if (type.Type === 'group' && 'Value' in type) {
@@ -1108,13 +1188,17 @@ export default class Parser {
             const op = range.Inclusive ? '..' : '...'
             return `${formatEndpoint(range.Min)}${op}${formatEndpoint(range.Max)}`
         }
-        const tag = (type as { Value: { NumericPart: number, TypePart: PropertyType } }).Value
-        return `#${tag.NumericPart}(${this.formatPropertyKeyName(tag.TypePart)})`
+        if (type.Type === 'tag' && 'Value' in type) {
+            const tag = type.Value as { NumericPart: number, TypePart: PropertyType }
+            return `#${tag.NumericPart}(${this.formatPropertyKeyName(tag.TypePart)})`
+        }
+        return type.Type === 'array' ? '[...]' : '{...}'
     }
 
     private parseGenericParameters (): string[] {
         const params: string[] = []
         this.nextToken() // eat "<"
+        this.skipComments()
 
         while (true) {
             if (this.curToken.Type !== Tokens.IDENT) {
@@ -1122,9 +1206,11 @@ export default class Parser {
             }
             params.push(this.curToken.Literal)
             this.nextToken()
+            this.skipComments()
 
             if ((this.curToken.Type as TokenType) === Tokens.COMMA) {
                 this.nextToken()
+                this.skipComments()
                 continue
             }
             break
@@ -1141,12 +1227,15 @@ export default class Parser {
         const args: PropertyType[] = []
         this.nextToken() // eat IDENT
         this.nextToken() // eat "<"
+        this.skipComments()
 
         while (true) {
-            args.push(this.attachTrailingOperator(this.parsePropertyType()))
+            args.push(this.parsePropertyTypeWithOperator())
+            this.skipComments()
 
             if ((this.curToken.Type as TokenType) === Tokens.COMMA) {
                 this.nextToken()
+                this.skipComments()
                 continue
             }
             break

@@ -7,6 +7,7 @@ Property references in CDDL allow referring to previously defined types, groups,
 In the AST, a property reference is represented by the following structure:
 
 ```typescript
+export type ByteEncoding = 'utf8' | 'hex' | 'b64'
 export type PropertyReferenceType = 'literal' | 'group' | 'group_array' | 'array' | 'range' | 'tag'
 
 export type PropertyReference = {
@@ -16,6 +17,8 @@ export type PropertyReference = {
     Operator?: Operator
     GenericArguments?: PropertyType[]
     IsFloat?: boolean
+    IsByteString?: boolean
+    ByteEncoding?: ByteEncoding
 }
 ```
 
@@ -29,6 +32,8 @@ Where:
   decimal point, e.g. `1.0`. It exists to distinguish a whole-valued float from a plain integer -
   both have a `Value` of `1`, which `Number.isInteger` alone can't tell apart. See
   [Ranges](./ranges.md#range-with-floating-point-values) for how this shows up on a range's `Min`/`Max`.
+- `IsByteString`: Set (to `true`) on RFC 8610 byte string literals (`'...'`, `h'...'`, `b64'...'`) to distinguish them from quoted text strings (`"..."`).
+- `ByteEncoding`: Encoding of a byte string literal (`'utf8'`, `'hex'`, or `'b64'`).
 
 ## Reference Types
 
@@ -359,6 +364,24 @@ AST representation of the `pair<int>` reference:
   "Value": "pair",
   "Unwrapped": false,
   "GenericArguments": ["int"]
+}
+```
+
+### Byte String Literal
+
+```cddl
+b = h'0102'
+```
+
+AST representation of the byte string literal:
+
+```json
+{
+  "Type": "literal",
+  "Value": "0102",
+  "Unwrapped": false,
+  "IsByteString": true,
+  "ByteEncoding": "hex"
 }
 ```
 

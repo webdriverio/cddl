@@ -357,7 +357,13 @@ describe('parser', () => {
                 HasCut: false,
                 Occurrence: { n: 1, m: 1 },
                 Name: '',
-                Type: [{ Type: 'literal', Value: "h'0102'", Unwrapped: false }],
+                Type: [{
+                    Type: 'literal',
+                    Value: '0102',
+                    Unwrapped: false,
+                    IsByteString: true,
+                    ByteEncoding: 'hex'
+                }],
                 Comments: []
             },
             {
@@ -421,30 +427,98 @@ describe('parser', () => {
         vi.spyOn(fs, 'readFileSync').mockReturnValue(
             'm1 = { 0 : int, -1 => tstr, h\'0102\' : bool }\n' +
             'm2 = { * 3 .. 255 => int, * 0...10 ^ => tstr }\n' +
-            'm3 = { * pair<tstr .regexp ".*", 0> => any, * #6.32(tstr) => int, * bstr .size 3 => int, * min-k .. max-k => bool }\n' +
-            'choices = ( pair<int> // pair<tstr> // x: int )\n'
+            'm3 = { * pair<tstr .regexp ".*", 0> => any, * #6.32(tstr) => int, * bstr .size 3 => int, * min-k .. max-k => bool, * [int] => tstr, * { a: int } => bool }\n' +
+            'choices = ( pair<int> // pair<tstr> )\n' +
+            'choicesWithNext = ( pair<int> // pair<tstr>, x: int )\n' +
+            'legacyChoiceWithNext = ( attire // attireBlock, x: int )\n'
         )
         const p = new Parser('foo.cddl')
 
-        const [m1, m2, m3, choices] = p.parse() as Group[]
+        const [m1, m2, m3, choices, choicesWithNext, legacyChoiceWithNext] = p.parse() as Group[]
         expect(m1.Properties).toEqual([
-            { HasCut: true, Occurrence: { n: 1, m: 1 }, Name: '0', Type: ['int'], Comments: [] },
-            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '-1', Type: ['tstr'], Comments: [] },
-            { HasCut: true, Occurrence: { n: 1, m: 1 }, Name: "h'0102'", Type: ['bool'], Comments: [] }
+            {
+                HasCut: true,
+                Occurrence: { n: 1, m: 1 },
+                Name: '0',
+                KeyType: { Type: 'literal', Value: 0, Unwrapped: false },
+                Type: ['int'],
+                Comments: []
+            },
+            {
+                HasCut: false,
+                Occurrence: { n: 1, m: 1 },
+                Name: '-1',
+                KeyType: { Type: 'literal', Value: -1, Unwrapped: false },
+                Type: ['tstr'],
+                Comments: []
+            },
+            {
+                HasCut: true,
+                Occurrence: { n: 1, m: 1 },
+                Name: "h'0102'",
+                KeyType: { Type: 'literal', Value: '0102', Unwrapped: false, IsByteString: true, ByteEncoding: 'hex' },
+                Type: ['bool'],
+                Comments: []
+            }
         ])
 
         expect(m2.Properties).toEqual([
-            { HasCut: false, Occurrence: { n: 0, m: Infinity }, Name: '3..255', Type: ['int'], Comments: [] },
-            { HasCut: true, Occurrence: { n: 0, m: Infinity }, Name: '0...10', Type: ['tstr'], Comments: [] }
+            {
+                HasCut: false,
+                Occurrence: { n: 0, m: Infinity },
+                Name: '3..255',
+                KeyType: {
+                    Type: 'range',
+                    Value: {
+                        Inclusive: true,
+                        Min: { Type: 'literal', Value: 3, Unwrapped: false },
+                        Max: { Type: 'literal', Value: 255, Unwrapped: false }
+                    },
+                    Unwrapped: false
+                },
+                Type: ['int'],
+                Comments: []
+            },
+            {
+                HasCut: true,
+                Occurrence: { n: 0, m: Infinity },
+                Name: '0...10',
+                KeyType: {
+                    Type: 'range',
+                    Value: {
+                        Inclusive: false,
+                        Min: { Type: 'literal', Value: 0, Unwrapped: false },
+                        Max: { Type: 'literal', Value: 10, Unwrapped: false }
+                    },
+                    Unwrapped: false
+                },
+                Type: ['tstr'],
+                Comments: []
+            }
         ])
 
         expect((m3.Properties as Property[]).map((prop) => prop.Name)).toEqual([
-            'pair<tstr, 0>',
+            'pair<tstr .regexp .*, 0>',
             '#6.32(tstr)',
-            'bstr',
-            'min-k..max-k'
+            'bstr .size 3',
+            'min-k..max-k',
+            '[...]',
+            '{...}'
         ])
-        expect((choices.Properties[0] as Property[])).toHaveLength(3)
+        expect((m3.Properties[2] as Property).KeyType).toEqual({
+            Type: 'bstr',
+            Operator: {
+                Type: 'size',
+                Value: { Type: 'literal', Value: 3, Unwrapped: false }
+            }
+        })
+
+        expect(choices.Properties).toHaveLength(1)
+        expect(choices.Properties[0]).toHaveLength(2)
+        expect(choicesWithNext.Properties).toHaveLength(2)
+        expect(choicesWithNext.Properties[0]).toHaveLength(2)
+        expect((choicesWithNext.Properties[1] as Property).Name).toBe('x')
+        expect((legacyChoiceWithNext.Properties[2] as Property).Name).toBe('x')
 
         vi.restoreAllMocks()
     })
@@ -565,17 +639,67 @@ describe('parser', () => {
                 Type: 'variable',
                 Name: 'b',
                 IsChoiceAddition: false,
-                PropertyType: [{ Type: 'literal', Value: "h'0102'", Unwrapped: false }],
+                PropertyType: [{
+                    Type: 'literal',
+                    Value: '0102',
+                    Unwrapped: false,
+                    IsByteString: true,
+                    ByteEncoding: 'hex'
+                }],
                 Comments: []
             },
             {
                 Type: 'variable',
                 Name: 'b2',
                 IsChoiceAddition: false,
-                PropertyType: [{ Type: 'literal', Value: "b64'AQID'", Unwrapped: false }],
+                PropertyType: [{
+                    Type: 'literal',
+                    Value: 'AQID',
+                    Unwrapped: false,
+                    IsByteString: true,
+                    ByteEncoding: 'b64'
+                }],
                 Comments: []
             }
         ])
+
+        vi.restoreAllMocks()
+    })
+
+    it('parses inline arrays/maps, raw byte strings, and comments inside generic lists', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue(
+            'box< ; param comment\n' +
+            '  t ; trailing\n' +
+            '> = [t]\n' +
+            'inlineArr = box<[int]>\n' +
+            'inlineMap = box<{ a: tstr }>\n' +
+            'commentedArgs = map< ; open\n' +
+            '  tstr ; key\n' +
+            '  , ; sep\n' +
+            '  int ; val\n' +
+            '>\n' +
+            'rawBytes = \'hello\'\n' +
+            'textBytes = "h\'0102\'"\n'
+        )
+        const p = new Parser('foo.cddl')
+
+        const [box, inlineArr, inlineMap, commentedArgs, rawBytes, textBytes] = p.parse() as any[]
+        expect(box.GenericParameters).toEqual(['t'])
+        expect(inlineArr.PropertyType[0].GenericArguments[0].Type).toBe('array')
+        expect(inlineMap.PropertyType[0].GenericArguments[0].Type).toBe('group')
+        expect(commentedArgs.PropertyType[0].GenericArguments).toEqual(['tstr', 'int'])
+        expect(rawBytes.PropertyType[0]).toEqual({
+            Type: 'literal',
+            Value: 'hello',
+            Unwrapped: false,
+            IsByteString: true,
+            ByteEncoding: 'utf8'
+        })
+        expect(textBytes.PropertyType[0]).toEqual({
+            Type: 'literal',
+            Value: "h'0102'",
+            Unwrapped: false
+        })
 
         vi.restoreAllMocks()
     })
