@@ -122,6 +122,10 @@ describe('utils', () => {
             const maxHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x0.8p1024' }
             const infHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x1p999999' }
             const underflowHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x1p-999999' }
+            const hugeMantissaHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: `0x${'f'.repeat(256)}p-${'9'.repeat(400)}` }
+            const hugeExpZeroToken: Token = { Type: Tokens.FLOAT, Literal: `0x0p${'9'.repeat(400)}` }
+            const hugePosExpToken: Token = { Type: Tokens.FLOAT, Literal: `-0x1p${'9'.repeat(400)}` }
+            const hugeNegExpToken: Token = { Type: Tokens.FLOAT, Literal: `0x1p-${'9'.repeat(400)}` }
             const intToken: Token = { Type: Tokens.INT, Literal: '42' }
             const hexToken: Token = { Type: Tokens.INT, Literal: '0x10' }
             const upperHexToken: Token = { Type: Tokens.INT, Literal: '0XFF' }
@@ -136,6 +140,10 @@ describe('utils', () => {
             expect(parseNumberValue(maxHexFloatToken)).toBe(2 ** 1023)
             expect(parseNumberValue(infHexFloatToken)).toBe(Infinity)
             expect(parseNumberValue(underflowHexFloatToken)).toBe(0)
+            expect(parseNumberValue(hugeMantissaHexFloatToken)).toBe(Infinity)
+            expect(parseNumberValue(hugeExpZeroToken)).toBe(0)
+            expect(parseNumberValue(hugePosExpToken)).toBe(-Infinity)
+            expect(parseNumberValue(hugeNegExpToken)).toBe(0)
             expect(parseNumberValue(intToken)).toBe(42)
             expect(parseNumberValue(hexToken)).toBe('0x10')
             expect(parseNumberValue(upperHexToken)).toBe('0XFF')

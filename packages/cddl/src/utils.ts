@@ -49,18 +49,25 @@ function parseHexFloat (literal: string): number {
     const fracValue = fracPart ? parseInt(fracPart, 16) / (16 ** fracPart.length) : 0
     let result = parseInt(intPart, 16) + fracValue
     let exp = parseInt(exponentStr, 10)
+    if (!Number.isFinite(result) || result === 0) {
+        return isNegative && result !== 0 ? -result : result
+    }
+    if (!Number.isFinite(exp)) {
+        const magnitude = exp > 0 ? Infinity : 0
+        return isNegative && magnitude !== 0 ? -magnitude : magnitude
+    }
     // Scale in <=512-bit steps so `2 ** exp` cannot underflow to 0 or overflow to Infinity
     // before multiplying by the mantissa (e.g. `0x4p-1076` == `Number.MIN_VALUE`)
     while (exp > 512 && Number.isFinite(result) && result !== 0) {
         result *= 2 ** 512
         exp -= 512
     }
-    while (exp < -512 && result !== 0) {
+    while (exp < -512 && Number.isFinite(result) && result !== 0) {
         result *= 2 ** -512
         exp += 512
     }
     result *= 2 ** exp
-    return isNegative ? -result : result
+    return isNegative && result !== 0 ? -result : result
 }
 
 export function parseNumberValue (token: Token): string | number {
