@@ -10,6 +10,7 @@ In the AST, an array is represented by the following structure:
 export type Array = {
     Type: 'array'
     Name: string
+    GenericParameters?: string[]
     Values: (Property|Property[])[]
     Comments: Comment[]
 }
@@ -18,6 +19,7 @@ export type Array = {
 Where:
 - `Type`: Always set to 'array' to identify this node as an array
 - `Name`: The name of the array
+- `GenericParameters`: Optional list of generic parameter names (e.g. `["t"]` for `pair<t> = [t, t]`)
 - `Values`: An array of properties or property choice arrays that define the elements of the array
 - `Comments`: An array of comments associated with the array
 

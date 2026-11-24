@@ -85,4 +85,48 @@ describe('lexer', () => {
         expect(l.getLine(1)).toBe('bar')
         expect(l.getLocationInfo()).toBe('foo\n ^\n |\n')
     })
+
+    it('should tokenize hex floats, scientific exponents, and hex/binary integers without consuming ranges', () => {
+        const input = '0x1.8p1 -0x1.8p-2 0x1p0 0xdead 1e5 1.5e-2 0x1..0xff 0b1010'
+        const tests = [
+            [Tokens.FLOAT, '0x1.8p1'],
+            [Tokens.FLOAT, '-0x1.8p-2'],
+            [Tokens.FLOAT, '0x1p0'],
+            [Tokens.NUMBER, '0xdead'],
+            [Tokens.FLOAT, '1e5'],
+            [Tokens.FLOAT, '1.5e-2'],
+            [Tokens.NUMBER, '0x1'],
+            [Tokens.DOT, '.'],
+            [Tokens.DOT, '.'],
+            [Tokens.NUMBER, '0xff'],
+            [Tokens.NUMBER, '0b1010']
+        ]
+
+        const l = new Lexer(input)
+        for (const [Type, Literal] of tests) {
+            const token = l.nextToken()
+            expect(token.Type).toBe(Type)
+            expect(token.Literal).toBe(Literal)
+        }
+    })
+
+    it('should tokenize RFC 8610 byte string literals with qualifiers and escapes', () => {
+        const input = String.raw`h'0102' H'0a 0b' b64'AQID' B64'AA==' 'raw' 'it\'s\\ok' 'unterminated`
+        const tests = [
+            [Tokens.BYTES, "h'0102'"],
+            [Tokens.BYTES, "H'0a 0b'"],
+            [Tokens.BYTES, "b64'AQID'"],
+            [Tokens.BYTES, "B64'AA=='"],
+            [Tokens.BYTES, "'raw'"],
+            [Tokens.BYTES, "'it's\\ok'"],
+            [Tokens.BYTES, "'unterminated"]
+        ]
+
+        const l = new Lexer(input)
+        for (const [Type, Literal] of tests) {
+            const token = l.nextToken()
+            expect(token.Type).toBe(Type)
+            expect(token.Literal).toBe(Literal)
+        }
+    })
 })

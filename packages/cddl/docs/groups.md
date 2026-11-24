@@ -10,6 +10,7 @@ In the AST, a group is represented by the following structure:
 export type Group = {
     Type: 'group'
     Name: string
+    GenericParameters?: string[]
     IsChoiceAddition: boolean
     Properties: (Property|Property[])[]
     Comments: Comment[]
@@ -19,6 +20,7 @@ export type Group = {
 Where:
 - `Type`: Always set to 'group' to identify this node as a group
 - `Name`: The name of the group
+- `GenericParameters`: Optional list of generic parameter names (e.g. `["k", "v"]` for `map<k, v> = { ... }`)
 - `IsChoiceAddition`: A boolean indicating if this group is a choice addition (using the `/=` operator)
 - `Properties`: An array of property definitions or property choice arrays
 - `Comments`: An array of comments associated with the group

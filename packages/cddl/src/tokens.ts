@@ -22,6 +22,7 @@ export enum Tokens {
     INT = 'INT',
     COMMENT = 'COMMENT',
     STRING = 'STRING',
+    BYTES = 'BYTES',
     NUMBER = 'NUMBER',
     FLOAT = 'FLOAT',
 
