@@ -18,6 +18,7 @@ import {
     isAlphabeticCharacter,
     isCDDLArray,
     isDigit,
+    isHexDigit,
     isGroup,
     isLetter,
     isFloatRange,
@@ -93,8 +94,15 @@ describe('utils', () => {
             expect(isDigit('1')).toBe(true)
             expect(isDigit('0')).toBe(true)
             expect(isDigit('a')).toBe(false)
+            expect(isDigit('\t')).toBe(false)
+            expect(isDigit('')).toBe(false)
             expect(isDigit(Tokens.NL)).toBe(false)
             expect(isDigit(Tokens.SPACE)).toBe(false)
+
+            expect(isHexDigit('9')).toBe(true)
+            expect(isHexDigit('f')).toBe(true)
+            expect(isHexDigit('F')).toBe(true)
+            expect(isHexDigit('g')).toBe(false)
 
             expect(hasSpecialNumberCharacter(Tokens.MINUS.charCodeAt(0))).toBe(true)
             expect(hasSpecialNumberCharacter(Tokens.DOT.charCodeAt(0))).toBe(true)
@@ -105,16 +113,26 @@ describe('utils', () => {
     })
 
     describe('number parsing helpers', () => {
-        it('should parse floats, integers and prefixed numbers', () => {
+        it('should parse floats, integers, hex floats, and prefixed numbers', () => {
             const floatToken: Token = { Type: Tokens.FLOAT, Literal: '12.5' }
+            const hexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x1.8p1' }
+            const negHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '-0x1.8p-2' }
+            const intHexFloatToken: Token = { Type: Tokens.FLOAT, Literal: '0x1p0' }
             const intToken: Token = { Type: Tokens.INT, Literal: '42' }
             const hexToken: Token = { Type: Tokens.INT, Literal: '0x10' }
+            const upperHexToken: Token = { Type: Tokens.INT, Literal: '0XFF' }
             const binaryToken: Token = { Type: Tokens.INT, Literal: '0b10' }
+            const upperBinaryToken: Token = { Type: Tokens.INT, Literal: '0B10' }
 
             expect(parseNumberValue(floatToken)).toBe(12.5)
+            expect(parseNumberValue(hexFloatToken)).toBe(3)
+            expect(parseNumberValue(negHexFloatToken)).toBe(-0.375)
+            expect(parseNumberValue(intHexFloatToken)).toBe(1)
             expect(parseNumberValue(intToken)).toBe(42)
             expect(parseNumberValue(hexToken)).toBe('0x10')
+            expect(parseNumberValue(upperHexToken)).toBe('0XFF')
             expect(parseNumberValue(binaryToken)).toBe('0b10')
+            expect(parseNumberValue(upperBinaryToken)).toBe('0B10')
         })
     })
 

@@ -21,7 +21,15 @@ export function isAlphabeticCharacter (ch: string): boolean {
 }
 
 export function isDigit (ch: string): boolean {
-    return !isNaN(ch as unknown as number) && ch !== Tokens.NL && ch !== Tokens.SPACE
+    return typeof ch === 'string' && ch.length === 1 && ch >= '0' && ch <= '9'
+}
+
+export function isHexDigit (ch: string): boolean {
+    return typeof ch === 'string' && ch.length === 1 && (
+        (ch >= '0' && ch <= '9') ||
+        (ch >= 'a' && ch <= 'f') ||
+        (ch >= 'A' && ch <= 'F')
+    )
 }
 
 export function hasSpecialNumberCharacter (ch: number) {
@@ -33,14 +41,29 @@ export function hasSpecialNumberCharacter (ch: number) {
     )
 }
 
+function parseHexFloat (literal: string): number {
+    const isNegative = literal.startsWith('-')
+    const normalized = literal.replace(/^-?0[xX]/, '')
+    const [mantissaStr, exponentStr] = normalized.split(/[pP]/)
+    const [intPart, fracPart] = mantissaStr.split('.')
+    const fracValue = fracPart ? parseInt(fracPart, 16) / (16 ** fracPart.length) : 0
+    const magnitude = (parseInt(intPart, 16) + fracValue) * (2 ** parseInt(exponentStr, 10))
+    return isNegative ? -magnitude : magnitude
+}
+
 export function parseNumberValue (token: Token): string | number {
     if (token.Type === Tokens.FLOAT) {
+        if (/^-?0[xX]/.test(token.Literal)) {
+            return parseHexFloat(token.Literal)
+        }
         return parseFloat(token.Literal)
     }
 
     if (
         token.Literal.includes('x') ||
-        token.Literal.includes('b')
+        token.Literal.includes('X') ||
+        token.Literal.includes('b') ||
+        token.Literal.includes('B')
     ) {
         return token.Literal
     }

@@ -11,6 +11,7 @@
 export type Group = {
     Type: 'group'
     Name: string
+    GenericParameters?: string[]
     IsChoiceAddition: boolean
     Properties: (Property|Property[])[]
     Comments: Comment[]
@@ -27,6 +28,7 @@ export type Group = {
 export type Array = {
     Type: 'array'
     Name: string
+    GenericParameters?: string[]
     Values: (Property|Property[])[]
     Comments: Comment[]
 }
@@ -51,6 +53,7 @@ export type Tag = {
 export type Variable = {
     Type: 'variable'
     Name: string
+    GenericParameters?: string[]
     IsChoiceAddition: boolean
     PropertyType: PropertyType | PropertyType[]
     Operator?: Operator
@@ -168,6 +171,7 @@ export type PropertyReference = {
     Value: string | number | boolean | Group | Array | Range | Tag
     Unwrapped: boolean
     Operator?: Operator
+    GenericArguments?: PropertyType[]
     // `true` when a numeric literal was written as a float (e.g. `1.0`), so a
     // whole-valued float range `(0.0..1.0)` stays distinct from `(0..1)`
     IsFloat?: boolean

@@ -10,6 +10,7 @@ In the AST, a variable is represented by the following structure:
 export type Variable = {
     Type: 'variable'
     Name: string
+    GenericParameters?: string[]
     IsChoiceAddition: boolean
     PropertyType: PropertyType | PropertyType[]
     Operator?: Operator
@@ -20,6 +21,7 @@ export type Variable = {
 Where:
 - `Type`: Always set to 'variable' to identify this node as a variable
 - `Name`: The name of the variable
+- `GenericParameters`: Optional list of generic parameter names (e.g. `["a", "b"]` for `either<a, b> = a / b`)
 - `IsChoiceAddition`: A boolean indicating if this variable is a choice addition (using the `/=` operator)
 - `PropertyType`: The type or array of types assigned to the variable
 - `Operator`: An optional operator that modifies the variable's type

@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import Lexer from './lexer.js'
 import { Property } from './ast.js'
-import { Token, Tokens } from './tokens.js';
+import { Token, TokenType, Tokens } from './tokens.js';
 import { PREDEFINED_IDENTIFIER, BOOLEAN_LITERALS } from './constants.js'
 import { parseNumberValue } from './utils.js'
 import {
@@ -69,14 +69,22 @@ export default class Parser {
          * groupName =
          * groupName /=
          * groupName //=
+         * groupName<T, U> =
          */
-        if (this.curToken.Type !== Tokens.IDENT || !(this.peekToken.Type === Tokens.ASSIGN || this.peekToken.Type === Tokens.SLASH)) {
+        if (
+            this.curToken.Type !== Tokens.IDENT ||
+            !(this.peekToken.Type === Tokens.ASSIGN || this.peekToken.Type === Tokens.SLASH || this.peekToken.Type === Tokens.LT)
+        ) {
             throw this.parserError(`group identifier expected, received "${JSON.stringify(this.curToken)}"`)
         }
 
         let isChoiceAddition = false
         const groupName = this.curToken.Literal
         this.nextToken() // eat group identifier
+
+        const genericParameters = (this.curToken.Type as TokenType) === Tokens.LT
+            ? this.parseGenericParameters()
+            : undefined
 
         // @ts-ignore
         if (this.curToken.Type === Tokens.SLASH) {
@@ -89,6 +97,10 @@ export default class Parser {
             this.nextToken() // eat `/`
         }
 
+        if ((this.curToken.Type as TokenType) !== Tokens.ASSIGN) {
+            throw this.parserError(`Expected "=" after "${groupName}"`)
+        }
+
         this.nextToken() // eat `=`
         const assignmentValue = this.parseAssignmentValue(groupName, isChoiceAddition) as Assignment
 
@@ -98,6 +110,9 @@ export default class Parser {
             comment && comments.push(comment)
         }
         assignmentValue.Comments = comments
+        if (genericParameters) {
+            assignmentValue.GenericParameters = genericParameters
+        }
         return assignmentValue
     }
 
@@ -327,87 +342,94 @@ export default class Parser {
                 continue
             }
 
-            propertyName = this.parsePropertyName()
+            const isSimpleNameEntry = (this.curToken.Type === Tokens.IDENT || this.curToken.Type === Tokens.STRING) &&
+                this.peekToken.Type !== Tokens.LT &&
+                !(this.peekToken.Type === Tokens.DOT && this.peekBelowToken.Type === Tokens.DOT)
 
-            /**
-             * an unnamed member decorated with an operator, e.g. `[ bstr .size 3, bstr ]` -- there is no colon here, so this must be handled before the colon-expecting path below ever sees it
-             */
-            if (this.isOperator()) {
-                const operator = this.parseOperator()
-                const baseType = PREDEFINED_IDENTIFIER.includes(propertyName)
-                    ? { Type: propertyName as Type }
-                    : {
-                        Type: 'group' as PropertyReferenceType,
-                        Value: propertyName,
-                        Unwrapped: isUnwrapped
+            if (this.isDirectMemberKey()) {
+                propertyName = this.curToken.Literal
+                this.nextToken()
+            } else if (isSimpleNameEntry) {
+                propertyName = this.parsePropertyName()
+
+                /**
+                 * an unnamed member decorated with an operator, e.g. `[ bstr .size 3, bstr ]` --
+                 * unless followed by `^` or `=>` as a map member key.
+                 */
+                if (this.isOperator()) {
+                    const operator = this.parseOperator()
+                    if (!this.isAtMemberKeySeparator()) {
+                        const baseType = PREDEFINED_IDENTIFIER.includes(propertyName)
+                            ? { Type: propertyName as Type }
+                            : {
+                                Type: 'group' as PropertyReferenceType,
+                                Value: propertyName,
+                                Unwrapped: isUnwrapped
+                            }
+
+                        valuesOrProperties.push({
+                            HasCut: hasCut,
+                            Occurrence: occurrence,
+                            Name: '',
+                            Type: [{ ...baseType, Operator: operator }],
+                            Comments: []
+                        })
+
+                        if (this.curToken.Type === Tokens.COMMA) {
+                            this.nextToken()
+                        }
+                        continue
                     }
-
-                valuesOrProperties.push({
-                    HasCut: hasCut,
-                    Occurrence: occurrence,
-                    Name: '',
-                    Type: [{ ...baseType, Operator: operator }],
-                    Comments: []
-                })
-
-                if (this.curToken.Type === Tokens.COMMA) {
-                    this.nextToken()
                 }
-                continue
+            } else {
+                let parsedType = this.attachTrailingOperator(this.parsePropertyType())
+                if (isUnwrapped && typeof parsedType === 'object' && 'Unwrapped' in parsedType) {
+                    parsedType.Unwrapped = true
+                }
+
+                if (this.isAtMemberKeySeparator()) {
+                    propertyName = this.formatPropertyKeyName(parsedType)
+                } else if (this.curToken.Type === Tokens.SLASH && this.peekToken.Type === Tokens.SLASH) {
+                    const prop: Property = {
+                        HasCut: hasCut,
+                        Occurrence: occurrence,
+                        Name: '',
+                        Type: parsedType,
+                        Comments: comments
+                    }
+                    if (isChoice) {
+                        (valuesOrProperties[valuesOrProperties.length - 1] as Property[]).push(prop)
+                    } else {
+                        isChoice = true
+                        valuesOrProperties.push([prop])
+                    }
+                    this.nextToken() // eat /
+                    this.nextToken() // eat /
+                    continue
+                } else {
+                    const typeChoices = this.collectTypeChoices(parsedType)
+                    if (this.pushUnnamedMember(valuesOrProperties, closingTokens, occurrence, hasCut, typeChoices)) {
+                        continue
+                    }
+                    break
+                }
             }
 
             /**
              * if `,` is found we have a group reference and jump to the next line
              */
             if (this.curToken.Type === Tokens.COMMA || closingTokens.includes(this.curToken.Type)) {
-                const tokenType = this.curToken.Type
-                let parsedComments = false
-                let comment: Comment | undefined
+                const resolvedType: PropertyType | PropertyType[] = PREDEFINED_IDENTIFIER.includes(propertyName)
+                    ? propertyName
+                    : [{
+                        Type: 'group' as PropertyReferenceType,
+                        Value: propertyName,
+                        Unwrapped: isUnwrapped
+                    }]
 
-                /**
-                 * check if line has a comment
-                 */
-                if (this.curToken.Type === Tokens.COMMA && this.peekToken.Type === Tokens.COMMENT) {
-                    this.nextToken()
-                    comment = this.parseComment()
-                    parsedComments = true
-                }
-
-                valuesOrProperties.push({
-                    HasCut: hasCut,
-                    Occurrence: occurrence,
-                    Name: '',
-                    Type: PREDEFINED_IDENTIFIER.includes(propertyName)
-                        ? propertyName
-                        : [{
-                            Type: 'group' as PropertyReferenceType,
-                            Value: propertyName,
-                            Unwrapped: isUnwrapped
-                        }],
-                    Comments: comment ? [comment] : []
-                })
-
-                if (this.curToken.Literal === Tokens.COMMA || this.curToken.Literal === closingTokens[0]) {
-                    if (this.curToken.Literal === Tokens.COMMA) {
-                        this.nextToken()
-                    }
+                if (this.pushUnnamedMember(valuesOrProperties, closingTokens, occurrence, hasCut, resolvedType)) {
                     continue
                 }
-
-                if (!parsedComments) {
-                    this.nextToken()
-                }
-
-                /**
-                 * only continue if next token contains a comma
-                 */
-                if (tokenType === Tokens.COMMA) {
-                    continue
-                }
-
-                /**
-                 * otherwise break
-                 */
                 break
             }
 
@@ -693,10 +715,13 @@ export default class Parser {
         }
 
         /**
-         * a quoted string is always a literal, even if its text matches a
-         * reserved keyword like "null" or "bool"
+         * a quoted string or byte string is always a literal, even if its text
+         * matches a reserved keyword like "null" or "bool"
          */
-        switch (this.curToken.Type === Tokens.STRING ? Tokens.STRING : this.curToken.Literal) {
+        const switchKey = this.curToken.Type === Tokens.STRING || this.curToken.Type === Tokens.BYTES
+            ? this.curToken.Type
+            : this.curToken.Literal
+        switch (switchKey) {
             case Type.ANY:
             case Type.BOOL:
             case Type.INT:
@@ -715,7 +740,7 @@ export default class Parser {
                 type = this.curToken.Literal
                 break
             default: {
-                if (this.curToken.Type === Tokens.STRING) {
+                if (this.curToken.Type === Tokens.STRING || this.curToken.Type === Tokens.BYTES) {
                     type = {
                         Type: 'literal' as PropertyReferenceType,
                         Value: this.curToken.Literal,
@@ -734,10 +759,12 @@ export default class Parser {
                     }
                     type = val
                 } else if (this.curToken.Type === Tokens.IDENT) {
+                    const name = this.curToken.Literal
                     type = {
                         Type: 'group' as PropertyReferenceType,
-                        Value: this.curToken.Literal,
-                        Unwrapped: isUnwrapped
+                        Value: name,
+                        Unwrapped: isUnwrapped,
+                        ...(this.peekToken.Type === Tokens.LT ? { GenericArguments: this.parseGenericArguments() } : {})
                     }
                 } else if (this.curToken.Type === Tokens.NUMBER || this.curToken.Type === Tokens.FLOAT) {
                     type = {
@@ -761,12 +788,13 @@ export default class Parser {
                         },
                         Unwrapped: isUnwrapped
                     }
-                } else if (this.curToken.Literal === Tokens.LPAREN && this.peekToken.Type === Tokens.NUMBER) {
+                } else if (this.curToken.Literal === Tokens.LPAREN && (this.peekToken.Type === Tokens.NUMBER || this.peekToken.Type === Tokens.FLOAT)) {
                     this.nextToken()
                     type = {
                         Type: 'literal' as PropertyReferenceType,
                         Value: parseNumberValue(this.curToken),
-                        Unwrapped: isUnwrapped
+                        Unwrapped: isUnwrapped,
+                        ...(this.curToken.Type === Tokens.FLOAT ? { IsFloat: true } : {})
                     }
                     isGroupedRange = true
                 } else {
@@ -955,6 +983,182 @@ export default class Parser {
         return propertyTypes
     }
 
+    private isOccurrenceUpperBound (followingToken: Token): boolean {
+        return ![
+            Tokens.DOT,
+            Tokens.COLON,
+            Tokens.CARET,
+            Tokens.ASSIGN,
+            Tokens.COMMA,
+            Tokens.RBRACK,
+            Tokens.RBRACE,
+            Tokens.RPAREN,
+            Tokens.SLASH,
+            Tokens.EOF
+        ].includes(followingToken.Type as Tokens)
+    }
+
+    private isDirectMemberKey (): boolean {
+        const isKeyToken = [
+            Tokens.IDENT,
+            Tokens.STRING,
+            Tokens.NUMBER,
+            Tokens.FLOAT,
+            Tokens.BYTES
+        ].includes(this.curToken.Type as Tokens)
+        if (!isKeyToken) {
+            return false
+        }
+        return this.peekToken.Type === Tokens.COLON ||
+            this.peekToken.Type === Tokens.CARET ||
+            (this.peekToken.Type === Tokens.ASSIGN && this.peekBelowToken.Type === Tokens.GT)
+    }
+
+    private isAtMemberKeySeparator (): boolean {
+        return this.curToken.Type === Tokens.CARET ||
+            this.curToken.Type === Tokens.COLON ||
+            (this.curToken.Type === Tokens.ASSIGN && this.peekToken.Type === Tokens.GT)
+    }
+
+    private advanceAfterPropertyType (): void {
+        // parsePropertyType leaves curToken on its last token unless range lookahead already moved onto "."
+        if (this.curToken.Type !== Tokens.DOT) {
+            this.nextToken()
+        }
+    }
+
+    private attachTrailingOperator (type: PropertyType): PropertyType {
+        this.advanceAfterPropertyType()
+        if (!this.isOperator()) {
+            return type
+        }
+        const operator = this.parseOperator()
+        return (typeof type === 'string'
+            ? { Type: type as Type, Operator: operator }
+            : { ...(type as object), Operator: operator }) as PropertyType
+    }
+
+    private collectTypeChoices (firstType: PropertyType): PropertyType[] {
+        const choices: PropertyType[] = [firstType]
+        while (this.curToken.Type === Tokens.SLASH && this.peekToken.Type !== Tokens.SLASH) {
+            this.nextToken() // eat /
+            while ((this.curToken.Type as TokenType) === Tokens.COMMENT) {
+                this.parseComment()
+            }
+            choices.push(this.attachTrailingOperator(this.parsePropertyType()))
+        }
+        return choices
+    }
+
+    private pushUnnamedMember (
+        valuesOrProperties: (Property | Property[])[],
+        closingTokens: string[],
+        occurrence: Occurrence,
+        hasCut: boolean,
+        type: PropertyType | PropertyType[]
+    ): boolean {
+        const tokenType = this.curToken.Type
+        let comment: Comment | undefined
+
+        if (this.curToken.Type === Tokens.COMMA && this.peekToken.Type === Tokens.COMMENT) {
+            this.nextToken()
+            comment = this.parseComment()
+        } else if (this.curToken.Type === Tokens.COMMENT) {
+            comment = this.parseComment()
+        }
+
+        valuesOrProperties.push({
+            HasCut: hasCut,
+            Occurrence: occurrence,
+            Name: '',
+            Type: type,
+            Comments: comment ? [comment] : []
+        })
+
+        if (this.curToken.Literal === Tokens.COMMA || this.curToken.Literal === closingTokens[0]) {
+            if (this.curToken.Literal === Tokens.COMMA) {
+                this.nextToken()
+            }
+            return true
+        }
+
+        return tokenType === Tokens.COMMA
+    }
+
+    private formatPropertyKeyName (type: PropertyType): string {
+        if (typeof type === 'string') {
+            return type
+        }
+        if ('Operator' in type && type.Operator && !('Value' in type)) {
+            return this.formatPropertyKeyName(type.Type)
+        }
+        if (type.Type === 'literal') {
+            return String(type.Value)
+        }
+        if (type.Type === 'group' && 'Value' in type) {
+            const args = type.GenericArguments?.map((arg) => this.formatPropertyKeyName(arg))
+            return args ? `${type.Value}<${args.join(', ')}>` : String(type.Value)
+        }
+        if (type.Type === 'range') {
+            const range = type.Value as { Inclusive: boolean, Min: RangePropertyReference, Max: RangePropertyReference }
+            const formatEndpoint = (endpoint: RangePropertyReference): string =>
+                typeof endpoint === 'object' && endpoint !== null && 'Value' in endpoint
+                    ? String((endpoint as { Value: unknown }).Value)
+                    : String(endpoint)
+            const op = range.Inclusive ? '..' : '...'
+            return `${formatEndpoint(range.Min)}${op}${formatEndpoint(range.Max)}`
+        }
+        const tag = (type as { Value: { NumericPart: number, TypePart: PropertyType } }).Value
+        return `#${tag.NumericPart}(${this.formatPropertyKeyName(tag.TypePart)})`
+    }
+
+    private parseGenericParameters (): string[] {
+        const params: string[] = []
+        this.nextToken() // eat "<"
+
+        while (true) {
+            if (this.curToken.Type !== Tokens.IDENT) {
+                throw this.parserError(`Expected generic parameter identifier, received "${JSON.stringify(this.curToken)}"`)
+            }
+            params.push(this.curToken.Literal)
+            this.nextToken()
+
+            if ((this.curToken.Type as TokenType) === Tokens.COMMA) {
+                this.nextToken()
+                continue
+            }
+            break
+        }
+
+        if ((this.curToken.Type as TokenType) !== Tokens.GT) {
+            throw this.parserError(`Expected ">" to close generic parameter list, received "${JSON.stringify(this.curToken)}"`)
+        }
+        this.nextToken() // eat ">"
+        return params
+    }
+
+    private parseGenericArguments (): PropertyType[] {
+        const args: PropertyType[] = []
+        this.nextToken() // eat IDENT
+        this.nextToken() // eat "<"
+
+        while (true) {
+            args.push(this.attachTrailingOperator(this.parsePropertyType()))
+
+            if ((this.curToken.Type as TokenType) === Tokens.COMMA) {
+                this.nextToken()
+                continue
+            }
+            break
+        }
+
+        if ((this.curToken.Type as TokenType) !== Tokens.GT) {
+            throw this.parserError(`Expected ">" to close generic argument list, received "${JSON.stringify(this.curToken)}"`)
+        }
+        // Leave curToken on ">" so parsePropertyType()'s trailing-token invariant holds
+        return args
+    }
+
     private parseOccurrences () {
         let occurrence = DEFAULT_OCCURRENCE
 
@@ -977,9 +1181,9 @@ export default class Parser {
             let m = this.curToken.Type === Tokens.QUEST ? 1 : Infinity
 
             /**
-             * check if there is a max definition
+             * check if there is a max definition (only when followed by a member/type, not ":", "=>", "..", etc.)
              */
-            if (this.peekToken.Type === Tokens.NUMBER) {
+            if (this.peekToken.Type === Tokens.NUMBER && this.isOccurrenceUpperBound(this.peekBelowToken)) {
                 m = parseInt(this.peekToken.Literal, 10)
                 this.nextToken()
             }
@@ -1004,7 +1208,7 @@ export default class Parser {
             /**
              * check if there is a max definition
              */
-            if (this.curToken.Type === Tokens.NUMBER) {
+            if (this.curToken.Type === Tokens.NUMBER && this.isOccurrenceUpperBound(this.peekToken)) {
                 m = parseInt(this.curToken.Literal, 10)
                 this.nextToken()
             }
