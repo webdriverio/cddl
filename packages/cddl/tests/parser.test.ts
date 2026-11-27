@@ -448,10 +448,12 @@ describe('parser', () => {
             'with-choice = ( 0 // 1 // 2 )',
             'with-choice-then-entry = ( 0 // 1, 2 )',
             'generic-inline-op = pair<[int] .within allowed>',
+            'generic-choice-op = box<(int / tstr) .within tstr>',
+            'generic-nested-op = box<(float .ge 0.0) .default 1.0>',
         ].join('\n') + '\n'
         vi.spyOn(fs, 'readFileSync').mockReturnValue(src)
         const p = new Parser('foo.cddl')
-        const [, withOp, withInlineArr, withInlineMap, withChoice, withChoiceThenEntry, genericInlineOp] = p.parse() as any[]
+        const [, withOp, withInlineArr, withInlineMap, withChoice, withChoiceThenEntry, genericInlineOp, genericChoiceOp, genericNestedOp] = p.parse() as any[]
 
         expect(withOp.Values[0].Type[0]).toEqual({
             Type: { Type: 'literal', Value: 0, Unwrapped: false },
@@ -469,9 +471,9 @@ describe('parser', () => {
         })
         expect(withInlineMap.Values).toHaveLength(2)
         expect(withInlineMap.Values[0].Type[1].Type).toBe('group')
-        expect(withInlineMap.Values[1].Type).toHaveLength(3)
-        expect(withInlineMap.Values[1].Type[2]).toMatchObject({
-            Type: 'tstr',
+        expect(withInlineMap.Values[1].Type).toHaveLength(2)
+        expect(withInlineMap.Values[1].Type[1]).toEqual({
+            Type: ['int', 'tstr'],
             Operator: { Type: 'default', Value: { Type: 'literal', Value: 0, Unwrapped: false } }
         })
         expect(withChoice.Properties).toHaveLength(1)
@@ -483,6 +485,17 @@ describe('parser', () => {
         expect(genericInlineOp.PropertyType[0].GenericArguments[0]).toMatchObject({
             Type: { Type: 'array' },
             Operator: { Type: 'within', Value: { Type: 'group', Value: 'allowed', Unwrapped: false } }
+        })
+        expect(genericChoiceOp.PropertyType[0].GenericArguments[0]).toEqual({
+            Type: ['int', 'tstr'],
+            Operator: { Type: 'within', Value: 'tstr' }
+        })
+        expect(genericNestedOp.PropertyType[0].GenericArguments[0]).toEqual({
+            Type: {
+                Type: 'float',
+                Operator: { Type: 'ge', Value: { Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true } }
+            },
+            Operator: { Type: 'default', Value: { Type: 'literal', Value: 1, Unwrapped: false, IsFloat: true } }
         })
 
         vi.restoreAllMocks()

@@ -98,10 +98,8 @@ export default class Parser {
         if (!operator) {
             return Array.isArray(val) ? val : [val]
         }
-        if (Array.isArray(val)) {
-            return [...val.slice(0, -1), { Type: val[val.length - 1], Operator: operator } as NativeTypeWithOperator]
-        }
-        return [{ Type: val as NativeTypeWithOperator['Type'], Operator: operator }]
+        const target = Array.isArray(val) && val.length === 1 ? val[0] : val
+        return [{ Type: target as NativeTypeWithOperator['Type'], Operator: operator }]
     }
 
     private parseGenericArguments (): (PropertyType | PropertyType[])[] {
