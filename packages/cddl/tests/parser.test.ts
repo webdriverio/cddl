@@ -328,7 +328,7 @@ describe('parser', () => {
             { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: 'tstr', Comments: [] },
             { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: [{ Type: 'literal', Value: -1, Unwrapped: false }], Comments: [] },
             { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: [{ Type: 'literal', Value: 3, Unwrapped: false, IsFloat: true }], Comments: [] },
-            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: [{ Type: 'literal', Value: "h'0102'", Unwrapped: false }], Comments: [] },
+            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: [{ Type: 'literal', Value: "h'0102'", Unwrapped: false, IsBytes: true }], Comments: [] },
             {
                 HasCut: false,
                 Occurrence: { n: 1, m: 1 },
@@ -439,14 +439,17 @@ describe('parser', () => {
         vi.restoreAllMocks()
     })
 
-    it('parses array entries with operators, choices, and group choices', () => {
+    it('parses array entries with operators, inline choices, and multi-way group choices', () => {
         const src = [
             'with-op = [ 0 .default 1, 0 / 1 .default 2 ]',
-            'with-choice = ( 0 // 1 )',
+            'with-inline-arr = [ 0 / [int] ]',
+            'with-inline-map = [ 0 / { a: int }, 0 / (int / tstr) ]',
+            'with-choice = ( 0 // 1 // 2 )',
+            'with-choice-then-entry = ( 0 // 1, 2 )',
         ].join('\n') + '\n'
         vi.spyOn(fs, 'readFileSync').mockReturnValue(src)
         const p = new Parser('foo.cddl')
-        const [withOp, withChoice] = p.parse() as any[]
+        const [withOp, withInlineArr, withInlineMap, withChoice, withChoiceThenEntry] = p.parse() as any[]
 
         expect(withOp.Values[0].Type[0]).toEqual({
             Type: { Type: 'literal', Value: 0, Unwrapped: false },
@@ -456,7 +459,44 @@ describe('parser', () => {
             Type: { Type: 'literal', Value: 1, Unwrapped: false },
             Operator: { Type: 'default', Value: { Type: 'literal', Value: 2, Unwrapped: false } }
         })
-        expect(withChoice.Properties[0]).toHaveLength(2)
+        expect(withInlineArr.Values).toHaveLength(1)
+        expect(withInlineArr.Values[0].Type).toHaveLength(2)
+        expect(withInlineArr.Values[0].Type[1].Type).toBe('array')
+        expect(withInlineMap.Values).toHaveLength(2)
+        expect(withInlineMap.Values[0].Type[1].Type).toBe('group')
+        expect(withInlineMap.Values[1].Type).toHaveLength(3)
+        expect(withChoice.Properties).toHaveLength(1)
+        expect(withChoice.Properties[0]).toHaveLength(3)
+        expect(withChoice.Properties[0].map((entry: any) => entry.Type[0].Value)).toEqual([0, 1, 2])
+        expect(withChoiceThenEntry.Properties).toHaveLength(2)
+        expect(withChoiceThenEntry.Properties[0]).toHaveLength(2)
+        expect(withChoiceThenEntry.Properties[1].Type[0].Value).toBe(2)
+
+        vi.restoreAllMocks()
+    })
+
+    it('allows comments inside generic parameter and argument lists', () => {
+        const src = [
+            'pair< ; lead',
+            '  t, ; parameter',
+            '  u ; end',
+            '> = [t, u]',
+            'n = pair< ; lead',
+            '  int, ; argument',
+            '  tstr ; end',
+            '>',
+        ].join('\n') + '\n'
+        vi.spyOn(fs, 'readFileSync').mockReturnValue(src)
+        const p = new Parser('foo.cddl')
+        const [pair, n] = p.parse() as any[]
+
+        expect(pair).toMatchObject({ Type: 'array', Name: 'pair', GenericParameters: ['t', 'u'] })
+        expect(n.PropertyType[0]).toEqual({
+            Type: 'group',
+            Value: 'pair',
+            Unwrapped: false,
+            GenericArguments: ['int', 'tstr']
+        })
 
         vi.restoreAllMocks()
     })
@@ -470,8 +510,8 @@ describe('parser', () => {
         }
     })
 
-    it('parses hex float and byte string literals (§3.1, Appendix B)', () => {
-        vi.spyOn(fs, 'readFileSync').mockReturnValue("f = 0x1.8p1\nb = h'0102'\nb64 = b64'AQID'\nraw = 'abc'\n")
+    it('parses hex float and byte string literals distinct from text strings (§3.1, Appendix B)', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue("f = 0x1.8p1\nb = h'0102'\nb64 = b64'AQID'\nraw = 'abc'\ntxt = \"h'0102'\"\n")
         const p = new Parser('foo.cddl')
 
         expect(p.parse()).toEqual([
@@ -486,21 +526,28 @@ describe('parser', () => {
                 Type: 'variable',
                 Name: 'b',
                 IsChoiceAddition: false,
-                PropertyType: [{ Type: 'literal', Value: "h'0102'", Unwrapped: false }],
+                PropertyType: [{ Type: 'literal', Value: "h'0102'", Unwrapped: false, IsBytes: true }],
                 Comments: []
             },
             {
                 Type: 'variable',
                 Name: 'b64',
                 IsChoiceAddition: false,
-                PropertyType: [{ Type: 'literal', Value: "b64'AQID'", Unwrapped: false }],
+                PropertyType: [{ Type: 'literal', Value: "b64'AQID'", Unwrapped: false, IsBytes: true }],
                 Comments: []
             },
             {
                 Type: 'variable',
                 Name: 'raw',
                 IsChoiceAddition: false,
-                PropertyType: [{ Type: 'literal', Value: "'abc'", Unwrapped: false }],
+                PropertyType: [{ Type: 'literal', Value: "'abc'", Unwrapped: false, IsBytes: true }],
+                Comments: []
+            },
+            {
+                Type: 'variable',
+                Name: 'txt',
+                IsChoiceAddition: false,
+                PropertyType: [{ Type: 'literal', Value: "h'0102'", Unwrapped: false }],
                 Comments: []
             }
         ])

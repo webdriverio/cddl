@@ -98,4 +98,14 @@ describe('literal transformation direct', () => {
         expect(output).toContain('bytes: NetworkBytesValue;')
         expect(output).not.toContain('export type NetworkGetDataResult = Record')
     })
+
+    it('should map byte-string literals to Uint8Array while keeping text literals as string types', () => {
+        const output = transform([
+            variable('byte-lit', { Type: 'literal', Value: "h'0102'", Unwrapped: false, IsBytes: true }),
+            variable('text-lit', { Type: 'literal', Value: "h'0102'", Unwrapped: false })
+        ])
+
+        expect(output).toContain('export type ByteLit = Uint8Array;')
+        expect(output).toContain('export type TextLit = "h\'0102\'";')
+    })
 })

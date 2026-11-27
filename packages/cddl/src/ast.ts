@@ -174,6 +174,9 @@ export type PropertyReference = {
     // `true` when a numeric literal was written as a float (e.g. `1.0`), so a
     // whole-valued float range `(0.0..1.0)` stays distinct from `(0..1)`
     IsFloat?: boolean
+    // `true` when a literal came from a byte-string literal (`h'...'`, `b64'...'`, `'...'`)
+    // rather than a text string (`"..."`)
+    IsBytes?: boolean
     GenericArguments?: (PropertyType | PropertyType[])[]
 }
 

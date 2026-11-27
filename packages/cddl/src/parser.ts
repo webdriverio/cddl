@@ -61,18 +61,27 @@ export default class Parser {
         return true
     }
 
+    private skipComments () {
+        while ((this.curToken.Type as string) === Tokens.COMMENT) {
+            this.parseComment()
+        }
+    }
+
     private parseGenericParameters (): string[] {
         const params: string[] = []
         this.nextToken() // eat <
-        while (this.curToken.Type !== Tokens.GT) {
-            if (this.curToken.Type !== Tokens.IDENT) {
+        this.skipComments()
+        while ((this.curToken.Type as string) !== Tokens.GT) {
+            if ((this.curToken.Type as string) !== Tokens.IDENT) {
                 throw this.parserError(`Expected generic parameter identifier, received ${this.curToken.Type}(${this.curToken.Literal})`)
             }
             params.push(this.curToken.Literal)
             this.nextToken()
+            this.skipComments()
             const nextType: string = this.curToken.Type
             if (nextType === Tokens.COMMA) {
                 this.nextToken()
+                this.skipComments()
                 continue
             }
             if (nextType !== Tokens.GT) {
@@ -86,9 +95,11 @@ export default class Parser {
     private parseGenericArguments (): (PropertyType | PropertyType[])[] {
         const args: (PropertyType | PropertyType[])[] = []
         this.nextToken() // eat <
-        while (this.curToken.Type !== Tokens.GT) {
+        this.skipComments()
+        while ((this.curToken.Type as string) !== Tokens.GT) {
             const argTypes: PropertyType[] = []
             while (true) {
+                this.skipComments()
                 if (
                     this.curToken.Type === Tokens.LBRACE ||
                     this.curToken.Type === Tokens.LBRACK ||
@@ -109,6 +120,7 @@ export default class Parser {
                     }
                     argTypes.push(item)
                 }
+                this.skipComments()
                 if ((this.curToken.Type as string) === Tokens.SLASH && this.peekToken.Type !== Tokens.SLASH) {
                     this.nextToken() // eat /
                     continue
@@ -116,8 +128,10 @@ export default class Parser {
                 break
             }
             args.push(argTypes.length === 1 ? argTypes[0] : argTypes)
+            this.skipComments()
             if ((this.curToken.Type as string) === Tokens.COMMA) {
                 this.nextToken() // eat ,
+                this.skipComments()
                 continue
             }
             if ((this.curToken.Type as string) !== Tokens.GT) {
@@ -463,16 +477,32 @@ export default class Parser {
 
                     while (this.curToken.Type === Tokens.SLASH && this.peekToken.Type !== Tokens.SLASH) {
                         this.nextToken()
-                        let alt: PropertyType = this.parsePropertyType()
-                        if (this.isOperator()) {
-                            alt = { Type: alt, Operator: this.parseOperator() } as NativeTypeWithOperator
-                        } else if (this.curToken.Type !== Tokens.SLASH) {
-                            this.nextToken()
+                        this.skipComments()
+                        if (
+                            (this.curToken.Type as string) === Tokens.LBRACE ||
+                            (this.curToken.Type as string) === Tokens.LBRACK ||
+                            (this.curToken.Type as string) === Tokens.LPAREN
+                        ) {
+                            const altVal = this.parseAssignmentValue()
+                            if (Array.isArray(altVal)) {
+                                memberTypes.push(...altVal)
+                            } else {
+                                memberTypes.push(altVal)
+                            }
+                        } else {
+                            let alt: PropertyType = this.parsePropertyType()
+                            if (this.isOperator()) {
+                                alt = { Type: alt, Operator: this.parseOperator() } as NativeTypeWithOperator
+                            } else if ((this.curToken.Type as string) !== Tokens.SLASH) {
+                                this.nextToken()
+                            }
+                            memberTypes.push(alt)
                         }
-                        memberTypes.push(alt)
                     }
 
-                    if (this.curToken.Type === Tokens.COMMA) {
+                    let hadComma = false
+                    if ((this.curToken.Type as string) === Tokens.COMMA) {
+                        hadComma = true
                         this.nextToken()
                     }
                     const trailingComment = this.parseComment()
@@ -493,7 +523,9 @@ export default class Parser {
                     } else {
                         valuesOrProperties.push(prop)
                     }
-                    isChoice = false
+                    if (hadComma) {
+                        isChoice = false
+                    }
                     continue
                 }
             } else {
@@ -886,11 +918,18 @@ export default class Parser {
                 type = this.curToken.Literal
                 break
             default: {
-                if (this.curToken.Type === Tokens.STRING || this.curToken.Type === Tokens.BYTES) {
+                if (this.curToken.Type === Tokens.STRING) {
                     type = {
                         Type: 'literal' as PropertyReferenceType,
                         Value: this.curToken.Literal,
                         Unwrapped: isUnwrapped
+                    }
+                } else if (this.curToken.Type === Tokens.BYTES) {
+                    type = {
+                        Type: 'literal' as PropertyReferenceType,
+                        Value: this.curToken.Literal,
+                        Unwrapped: isUnwrapped,
+                        IsBytes: true
                     }
                 } else if (BOOLEAN_LITERALS.includes(this.curToken.Literal)) {
                     type = {

@@ -753,6 +753,7 @@ function parseUnionType (t: PropertyType | Assignment, options: TransformSetting
         }
     throw new Error(`Unknown group type: ${JSON.stringify(t)}`)
     } else if (isLiteralWithValue(t)) {
+        if (t.IsBytes) return NATIVE_TYPES.bstr
         if (typeof t.Value === 'string') return b.tsLiteralType(b.stringLiteral(t.Value))
         if (typeof t.Value === 'number') return b.tsLiteralType(b.numericLiteral(t.Value))
         if (typeof t.Value === 'boolean') return b.tsLiteralType(b.booleanLiteral(t.Value))

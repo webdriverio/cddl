@@ -42,11 +42,35 @@ export function parseHexFloat (literal: string): number {
     const body = negative ? literal.slice(3) : literal.slice(2)
     const [mantissaPart, expPart] = body.split(/[pP]/)
     const [intPart, fracPart = ''] = mantissaPart.split('.')
-    const exp = parseInt(expPart, 10)
-    const mantissa = intPart.length + fracPart.length <= 13
-        ? parseInt(intPart + fracPart, 16) * (2 ** -(fracPart.length * 4))
-        : parseInt(intPart, 16) + [...fracPart].reduce((acc, d, idx) => acc + parseInt(d, 16) * (16 ** -(idx + 1)), 0)
-    const value = mantissa * (2 ** exp)
+    let binExp = parseInt(expPart, 10) - fracPart.length * 4
+    let digits = (intPart + fracPart).replace(/^0+/, '')
+    if (digits.length === 0) {
+        return negative ? -0 : 0
+    }
+    const trimmed = digits.replace(/0+$/, '')
+    binExp += (digits.length - trimmed.length) * 4
+    digits = trimmed
+
+    let value: number
+    if (digits.length <= 13) {
+        value = parseInt(digits, 16)
+    } else {
+        const head = digits.slice(0, 13)
+        const tail = digits.slice(13)
+        binExp += tail.length * 4
+        value = parseInt(head, 16) + [...tail].reduce((acc, d, idx) => acc + parseInt(d, 16) * (16 ** -(idx + 1)), 0)
+    }
+
+    // Scale in bounded power-of-two steps so representable results like 0x0.8p1024
+    // or 0x10p-1075 do not prematurely overflow/underflow when evaluating 2 ** exp.
+    while (binExp !== 0 && value !== 0 && Number.isFinite(value)) {
+        const step = binExp >= -1022 && binExp <= 1023
+            ? binExp
+            : binExp > 0 ? 512 : -512
+        value *= 2 ** step
+        binExp -= step
+    }
+
     return negative ? -value : value
 }
 
@@ -168,6 +192,7 @@ export function isFloatRange (range: any): boolean {
 export function isLiteralWithValue (t: any): t is {
     Type: 'literal'
     Value: unknown
+    IsBytes?: boolean
 } {
     return t && t.Type === 'literal' && 'Value' in t
 }
