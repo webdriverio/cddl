@@ -577,14 +577,6 @@ function resolveType (t: PropertyType, ctx: Context, options: ResolveTypeOptions
         return mapped
     }
 
-    if (isNativeTypeWithOperator(t) && NATIVE_TYPE_MAP[(t.Type as any).Type]) {
-        const mapped = NATIVE_TYPE_MAP[(t.Type as any).Type]
-        if (mapped === 'Any') {
-            ctx.typingImports.add('Any')
-        }
-        return mapped
-    }
-
     if (isPropertyReference(t) && (t as PropertyReference).Value === 'null' && !isLiteralWithValue(t)) {
         // a bare `null` reference is the null type; a quoted "null" is a string literal
         return 'None'
@@ -656,6 +648,9 @@ function resolveType (t: PropertyType, ctx: Context, options: ResolveTypeOptions
     }
 
     if (isLiteralWithValue(t)) {
+        if (t.IsBytes) {
+            return 'bytes'
+        }
         ctx.typingImports.add('Literal')
         if (typeof t.Value === 'string') {
             return `Literal["${t.Value}"]`
@@ -701,8 +696,18 @@ function resolveType (t: PropertyType, ctx: Context, options: ResolveTypeOptions
         return isFloatRange((t as PropertyReference).Value) ? 'float' : 'int'
     }
 
-    if (isNativeTypeWithOperator(t) && isNamedGroupReference(t.Type)) {
-        return formatTypeReference(pascalCase((t.Type as unknown as PropertyReference).Value as string), ctx, options)
+    if (isNativeTypeWithOperator(t)) {
+        if (Array.isArray(t.Type) && t.Type.length > 0) {
+            const members = t.Type.map((item) => resolveType(item, ctx, options))
+            if (members.length === 1) {
+                return members[0]
+            }
+            ctx.typingImports.add('Union')
+            return `Union[${members.join(', ')}]`
+        }
+        if (!Array.isArray(t.Type)) {
+            return resolveType(t.Type as PropertyType, ctx, options)
+        }
     }
 
     if (isPropertyReference(t)) {
@@ -916,10 +921,10 @@ function getTypeReferences (t: PropertyType): string[] {
     }
 
     if (isNativeTypeWithOperator(t)) {
-        if (isNamedGroupReference(t.Type)) {
-            return [pascalCase((t.Type as unknown as PropertyReference).Value as string)]
+        if (Array.isArray(t.Type)) {
+            return t.Type.flatMap((item) => getTypeReferences(item))
         }
-        return []
+        return getTypeReferences(t.Type as PropertyType)
     }
 
     if (isGroup(t) && !isNamedGroupReference(t) && (t as unknown as Group).Properties) {
@@ -967,8 +972,8 @@ function getMixinDependencies (type: Property['Type'], assignmentsByName: Map<st
             continue
         }
 
-        if (isNativeTypeWithOperator(value) && isNamedGroupReference(value.Type)) {
-            for (const dependency of getNamedMixinDependencies(pascalCase(value.Type.Value as string), assignmentsByName)) {
+        if (isNativeTypeWithOperator(value)) {
+            for (const dependency of getMixinDependencies(value.Type as Property['Type'], assignmentsByName)) {
                 deps.add(dependency)
             }
             continue
@@ -1028,8 +1033,8 @@ function getReferencedMixinName (propertyType: PropertyType): string | undefined
         return pascalCase(propertyType.Value as string)
     }
 
-    if (isNativeTypeWithOperator(propertyType) && isNamedGroupReference(propertyType.Type)) {
-        return pascalCase(propertyType.Type.Value as string)
+    if (isNativeTypeWithOperator(propertyType) && !Array.isArray(propertyType.Type)) {
+        return getReferencedMixinName(propertyType.Type as PropertyType)
     }
 
     return undefined

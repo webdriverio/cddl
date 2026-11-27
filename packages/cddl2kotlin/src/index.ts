@@ -327,8 +327,8 @@ function referencedGroupName (type: PropertyType): string | undefined {
     if (isNamedGroupReference(type)) {
         return pascalCase((type as unknown as PropertyReference).Value as string)
     }
-    if (isNativeTypeWithOperator(type) && isNamedGroupReference(type.Type)) {
-        return pascalCase((type.Type as unknown as PropertyReference).Value as string)
+    if (isNativeTypeWithOperator(type) && !Array.isArray(type.Type)) {
+        return referencedGroupName(type.Type as PropertyType)
     }
     return undefined
 }
@@ -418,6 +418,9 @@ function resolveType (t: PropertyType, ctx: Context): string {
     }
 
     if (isLiteralWithValue(t)) {
+        if (t.IsBytes) {
+            return 'ByteArray'
+        }
         if (typeof t.Value === 'string') {
             return 'String'
         }
@@ -449,8 +452,13 @@ function resolveType (t: PropertyType, ctx: Context): string {
         return isFloatRange((t as PropertyReference).Value) ? 'Double' : 'Long'
     }
 
-    if (isNativeTypeWithOperator(t) && isNamedGroupReference(t.Type)) {
-        return pascalCase((t.Type as unknown as PropertyReference).Value as string)
+    if (isNativeTypeWithOperator(t)) {
+        if (Array.isArray(t.Type) && t.Type.length > 0) {
+            return combineTypes(t.Type.map((item) => resolveType(item, ctx)))
+        }
+        if (!Array.isArray(t.Type)) {
+            return resolveType(t.Type as PropertyType, ctx)
+        }
     }
 
     if (isPropertyReference(t)) {

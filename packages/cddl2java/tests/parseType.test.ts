@@ -117,5 +117,38 @@ describe('parseType', () => {
             }]
             expect(parseType(cborseqSpecType)).toEqual({ type: 'byte[]', isLiteral: false })
         })
+
+        it('resolves byte-string literals and operator-wrapped choices, arrays, and nested operators', () => {
+            expect(parseType([{ Type: 'literal', Value: "h'0102'", Unwrapped: false, IsBytes: true }])).toEqual({
+                type: 'byte[]',
+                isLiteral: false
+            })
+            expect(parseType([{
+                Type: ['int', 'tstr'],
+                Operator: { Type: 'default', Value: { Type: 'literal', Value: 0, Unwrapped: false } }
+            }])).toEqual({ type: 'Object', isLiteral: false })
+            expect(parseType([{
+                Type: {
+                    Type: 'array',
+                    Name: '',
+                    Values: [{
+                        HasCut: false,
+                        Occurrence: { n: 1, m: 1 },
+                        Name: '',
+                        Type: [{ Type: 'group', Value: 'session.Subscription', Unwrapped: false }],
+                        Comments: []
+                    }],
+                    Comments: []
+                },
+                Operator: { Type: 'within', Value: { Type: 'group', Value: 'allowed', Unwrapped: false } }
+            }])).toEqual({ type: 'List<String>', isLiteral: false })
+            expect(parseType([{
+                Type: {
+                    Type: 'float',
+                    Operator: { Type: 'ge', Value: { Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true } }
+                },
+                Operator: { Type: 'default', Value: { Type: 'literal', Value: 1, Unwrapped: false, IsFloat: true } }
+            }])).toEqual({ type: 'Float', isLiteral: false })
+        })
     })
 })

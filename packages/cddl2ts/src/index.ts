@@ -159,7 +159,7 @@ function parseAssignment (assignment: Assignment, options: TransformSettings) {
         if (propType.length === 1 && propType[0].Type === 'range') {
             typeParameters = b.tsNumberKeyword()
         } else {
-            typeParameters = b.tsUnionType(propType.map((prop) => parseUnionType(prop, options)))
+            typeParameters = b.tsUnionType(flattenUnionMembers(propType.map((prop) => parseUnionType(prop, options))))
         }
 
         const expr = b.tsTypeAliasDeclaration(id, typeParameters)
@@ -521,11 +521,13 @@ function parseAssignment (assignment: Assignment, options: TransformSettings) {
 
         // Standard array
         const firstType = assignmentValues.Type
-        const obj = Array.isArray(firstType)
-            ? firstType.map((type) => parseUnionType(type, options))
-            : isCDDLArray(firstType)
-                ? firstType.Values.map((val: any) => parseUnionType(Array.isArray(val.Type) ? val.Type[0] : val.Type, options))
-                : [parseUnionType(firstType, options)]
+        const obj = flattenUnionMembers(
+            Array.isArray(firstType)
+                ? firstType.map((type) => parseUnionType(type, options))
+                : isCDDLArray(firstType)
+                    ? firstType.Values.map((val: any) => parseUnionType(Array.isArray(val.Type) ? val.Type[0] : val.Type, options))
+                    : [parseUnionType(firstType, options)]
+        )
 
         const value = b.tsArrayType(
             obj.length === 1
@@ -602,7 +604,7 @@ function parseObjectType (props: Property[], options: TransformSettings): Object
             throw new Error(`Couldn't parse property ${JSON.stringify(t)}`)
         })
 
-        const typeAnnotation = b.tsTypeAnnotation(b.tsUnionType(type))
+        const typeAnnotation = b.tsTypeAnnotation(b.tsUnionType(flattenUnionMembers(type)))
         const isOptional = prop.Occurrence.n === 0
         const propSignature = b.tsPropertySignature(id, typeAnnotation, isOptional)
         propSignature.comments = comments.length ? [b.commentBlock(`*\n *${comments.join('\n *')}\n `)] : []
@@ -664,6 +666,10 @@ function parseNativeTypeWithOperator (t: NativeTypeWithOperator): TSTypeKind | u
     return NATIVE_TYPES[t.Type]
 }
 
+function flattenUnionMembers (members: TSTypeKind[]): TSTypeKind[] {
+    return members.flatMap((member) => member.type === 'TSUnionType' ? member.types : [member])
+}
+
 function parseUnionType (t: PropertyType | Assignment, options: TransformSettings): TSTypeKind {
     if (typeof t === 'string') {
         if (!NATIVE_TYPES[t]) {
@@ -678,8 +684,6 @@ function parseUnionType (t: PropertyType | Assignment, options: TransformSetting
         return nativeType
     } else if ((t as any).Type && typeof (t as any).Type === 'string' && NATIVE_TYPES[(t as any).Type]) {
         return NATIVE_TYPES[(t as any).Type]
-    } else if (isNativeTypeWithOperator(t) && NATIVE_TYPES[(t.Type as any).Type]) {
-        return NATIVE_TYPES[(t.Type as any).Type]
     } else if (isPropertyReference(t) && t.Value === 'null' && !isLiteralWithValue(t)) {
         // a bare `null` reference is the null type; a quoted "null" is a string literal
         return b.tsNullKeyword()
@@ -761,15 +765,14 @@ function parseUnionType (t: PropertyType | Assignment, options: TransformSetting
         if (t.Value === null) return b.tsNullKeyword()
         throw new Error(`Unsupported literal type: ${JSON.stringify(t)}`)
     } else if (isCDDLArray(t)) {
-        const types = ((t as Array).Values[0] as Property).Type as PropertyType[]
-        const typedTypes = (Array.isArray(types) ? types : [types]).map((val) => {
-            if (typeof val === 'string' && NATIVE_TYPES[val]) {
-                return NATIVE_TYPES[val]
-            }
-            return b.tsTypeReference(
-                b.identifier(pascalCase((val as any).Value as string))
-            )
-        })
+        const firstVal = (t as Array).Values[0] as Property | undefined
+        if (!firstVal) {
+            return b.tsArrayType(NATIVE_TYPES.any)
+        }
+        const types = firstVal.Type as PropertyType | PropertyType[]
+        const typedTypes = flattenUnionMembers(
+            (Array.isArray(types) ? types : [types]).map((val) => parseUnionType(val, options))
+        )
 
         if (typedTypes.length > 1) {
             return b.tsArrayType(b.tsParenthesizedType(b.tsUnionType(typedTypes)))
@@ -781,12 +784,14 @@ function parseUnionType (t: PropertyType | Assignment, options: TransformSetting
         return b.tsArrayType(typedTypes[0])
     } else if (isRange(t)) {
         return b.tsNumberKeyword()
-    } else if (isNativeTypeWithOperator(t) && isNamedGroupReference(t.Type)) {
-        /**
-         * e.g. ?pointerType: input.PointerType .default "mouse"
-         */
-        const referenceValue = pascalCase(t.Type.Value)
-        return b.tsTypeReference(b.identifier(referenceValue))
+    } else if (isNativeTypeWithOperator(t)) {
+        if (Array.isArray(t.Type) && t.Type.length > 0) {
+            const members = flattenUnionMembers(t.Type.map((item) => parseUnionType(item, options)))
+            return members.length === 1 ? members[0] : b.tsUnionType(members)
+        }
+        if (!Array.isArray(t.Type)) {
+            return parseUnionType(t.Type as PropertyType, options)
+        }
     }
 
     throw new Error(`Unknown union type: ${JSON.stringify(t)}`)
