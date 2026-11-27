@@ -27,9 +27,9 @@ Where:
 
 ## Property Names
 
-Property names are simple strings that identify the property within a group or array. A property can also have an empty name (`""`), which is used for:
+Property names are strings that identify the property within a group or array, including barewords (`name: tstr`), text strings (`"key": tstr`), numeric or byte-string value keys (`0: int`, `h'0102': bstr`), and range keys (`* 3 .. 255 => int`, stored as `"3..255"`). A property can also have an empty name (`""`), which is used for:
 
-1. Unnamed elements in arrays
+1. Unnamed elements in arrays (including literal entries such as `[ 0, tstr ]`)
 2. Group composition (including one group within another)
 
 ## Occurrence Definition

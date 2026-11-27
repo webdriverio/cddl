@@ -15,6 +15,7 @@ export type PropertyReference = {
     Unwrapped: boolean
     Operator?: Operator
     IsFloat?: boolean
+    GenericArguments?: (PropertyType | PropertyType[])[]
 }
 ```
 
@@ -24,9 +25,10 @@ Where:
 - `Unwrapped`: A boolean indicating if this reference should be unwrapped (applicable for arrays and groups)
 - `Operator`: An optional operator that modifies the referenced value
 - `IsFloat`: Only set (to `true`) on a `literal` reference whose `Value` is a number written with a
-  decimal point, e.g. `1.0`. It exists to distinguish a whole-valued float from a plain integer -
+  decimal point, e.g. `1.0` (or a hex float such as `0x1.8p1`). It exists to distinguish a whole-valued float from a plain integer -
   both have a `Value` of `1`, which `Number.isInteger` alone can't tell apart. See
   [Ranges](./ranges.md#range-with-floating-point-values) for how this shows up on a range's `Min`/`Max`.
+- `GenericArguments`: Optional list of type arguments when referencing a generic rule (e.g. `pair<int>`)
 
 ## Reference Types
 

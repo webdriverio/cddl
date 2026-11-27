@@ -1,5 +1,5 @@
 import { Token, Tokens } from './tokens.js';
-import { isLetter, isAlphabeticCharacter, isDigit, hasSpecialNumberCharacter } from './utils.js'
+import { isLetter, isAlphabeticCharacter, isDigit, isHexDigit } from './utils.js'
 import { WHITESPACE_CHARACTERS } from './constants.js';
 
 export default class Lexer {
@@ -7,6 +7,7 @@ export default class Lexer {
     position: number = 0
     readPosition: number = 0
     ch: number = 0
+    hadLeadingWhitespace: boolean = false
 
     constructor (source: string) {
         this.input = source
@@ -123,6 +124,9 @@ export default class Lexer {
             case '"'.charCodeAt(0):
                 token = { Type: Tokens.STRING, Literal: this.readString() }
                 break
+            case "'".charCodeAt(0):
+                token = this.readBytes('')
+                break
             case ';'.charCodeAt(0):
                 token = { Type: Tokens.COMMENT, Literal: this.readComment() }
                 break
@@ -130,7 +134,20 @@ export default class Lexer {
                 token = { Type: Tokens.EOF, Literal: '' }
                 break
             default: {
-                if (isAlphabeticCharacter(Literal)) {
+                if ((Literal === 'h' || Literal === 'H') && this.input[this.readPosition] === "'") {
+                    this.readChar() // move to opening '
+                    const bytesToken = this.readBytes(Literal)
+                    this.readChar() // eat closing '
+                    return bytesToken
+                } else if (this.input.slice(this.position, this.position + 4).toLowerCase() === "b64'") {
+                    const prefix = this.input.slice(this.position, this.position + 3)
+                    this.readChar()
+                    this.readChar()
+                    this.readChar() // move to opening '
+                    const bytesToken = this.readBytes(prefix)
+                    this.readChar() // eat closing '
+                    return bytesToken
+                } else if (isAlphabeticCharacter(Literal)) {
                     return { Type: Tokens.IDENT, Literal: this.readIdentifier() }
                 } else if (
                     // positive number
@@ -138,11 +155,7 @@ export default class Lexer {
                     // negative number
                     (this.ch === Tokens.MINUS.charCodeAt(0) && isDigit(this.input[this.readPosition]))
                 ) {
-                    const numberOrFloat = this.readNumberOrFloat()
-                    return {
-                        Type: numberOrFloat.includes(Tokens.DOT) ? Tokens.FLOAT : Tokens.NUMBER,
-                        Literal: numberOrFloat
-                    }
+                    return this.readNumberOrFloat()
                 }
                 token = { Type: Tokens.ILLEGAL, Literal: '' }
             }
@@ -211,39 +224,130 @@ export default class Lexer {
         return result.trim()
     }
 
-    private readNumberOrFloat (): string {
-        const position = this.position
-        let foundSpecialCharacter = false
+    private readBytes (prefix: string): Token {
+        let result = ''
 
-        /**
-         * a number of float can contain
-         */
-        while (
-            // a number
-            isDigit(String.fromCharCode(this.ch)) ||
-            // a special character, e.g. ".", "x" and "b"
-            hasSpecialNumberCharacter(this.ch)
-        ) {
-            /**
-             * ensure we respect ranges, e.g. 0..10
-             * so break after the second dot and adjust read position
-             */
-            if (hasSpecialNumberCharacter(this.ch) && foundSpecialCharacter) {
-                this.position--
-                this.readPosition--
-                break
+        this.readChar() // eat opening '
+        while (this.ch && String.fromCharCode(this.ch) !== "'") {
+            if (String.fromCharCode(this.ch) === '\\') {
+                this.readChar()
+                if (this.ch) {
+                    result += String.fromCharCode(this.ch)
+                    this.readChar()
+                }
+                continue
             }
 
-            foundSpecialCharacter = hasSpecialNumberCharacter(this.ch)
-            this.readChar() // eat any character until a non digit or a 2nd dot
+            result += String.fromCharCode(this.ch)
+            this.readChar()
         }
 
-        return this.input.slice(position, this.position).trim()
+        if (String.fromCharCode(this.ch) !== "'") {
+            return { Type: Tokens.ILLEGAL, Literal: '' }
+        }
+
+        return { Type: Tokens.BYTES, Literal: `${prefix}'${result}'` }
+    }
+
+    private readNumberOrFloat (): Token {
+        const position = this.position
+
+        if (this.ch === Tokens.MINUS.charCodeAt(0)) {
+            this.readChar()
+        }
+
+        const nextChar = this.input[this.readPosition]
+        if (this.ch === '0'.charCodeAt(0) && (nextChar === 'x' || nextChar === 'X')) {
+            this.readChar() // eat 0
+            this.readChar() // eat x/X
+            while (isHexDigit(String.fromCharCode(this.ch))) {
+                this.readChar()
+            }
+
+            if (
+                this.ch === Tokens.DOT.charCodeAt(0) &&
+                this.input[this.readPosition] !== '.' &&
+                isHexDigit(this.input[this.readPosition])
+            ) {
+                this.readChar() // eat .
+                while (isHexDigit(String.fromCharCode(this.ch))) {
+                    this.readChar()
+                }
+            }
+
+            if (this.ch === 'p'.charCodeAt(0) || this.ch === 'P'.charCodeAt(0)) {
+                const afterP = this.input[this.readPosition]
+                const expStarts = isDigit(afterP) ||
+                    ((afterP === '+' || afterP === '-') && isDigit(this.input[this.readPosition + 1]))
+                if (expStarts) {
+                    this.readChar() // eat p/P
+                    if (this.ch === Tokens.PLUS.charCodeAt(0) || this.ch === Tokens.MINUS.charCodeAt(0)) {
+                        this.readChar()
+                    }
+                    while (isDigit(String.fromCharCode(this.ch))) {
+                        this.readChar()
+                    }
+                    return { Type: Tokens.FLOAT, Literal: this.input.slice(position, this.position) }
+                }
+            }
+
+            return { Type: Tokens.NUMBER, Literal: this.input.slice(position, this.position) }
+        }
+
+        if (this.ch === '0'.charCodeAt(0) && (nextChar === 'b' || nextChar === 'B')) {
+            this.readChar() // eat 0
+            this.readChar() // eat b/B
+            while (isDigit(String.fromCharCode(this.ch))) {
+                this.readChar()
+            }
+            return { Type: Tokens.NUMBER, Literal: this.input.slice(position, this.position) }
+        }
+
+        let isFloat = false
+        while (isDigit(String.fromCharCode(this.ch))) {
+            this.readChar()
+        }
+
+        // Stop before a `..` range operator instead of consuming the first dot.
+        if (
+            this.ch === Tokens.DOT.charCodeAt(0) &&
+            this.input[this.readPosition] !== '.' &&
+            isDigit(this.input[this.readPosition])
+        ) {
+            isFloat = true
+            this.readChar() // eat .
+            while (isDigit(String.fromCharCode(this.ch))) {
+                this.readChar()
+            }
+        }
+
+        if (this.ch === 'e'.charCodeAt(0) || this.ch === 'E'.charCodeAt(0)) {
+            const afterE = this.input[this.readPosition]
+            const expStarts = isDigit(afterE) ||
+                ((afterE === '+' || afterE === '-') && isDigit(this.input[this.readPosition + 1]))
+            if (expStarts) {
+                isFloat = true
+                this.readChar() // eat e/E
+                if (this.ch === Tokens.PLUS.charCodeAt(0) || this.ch === Tokens.MINUS.charCodeAt(0)) {
+                    this.readChar()
+                }
+                while (isDigit(String.fromCharCode(this.ch))) {
+                    this.readChar()
+                }
+            }
+        }
+
+        return {
+            Type: isFloat ? Tokens.FLOAT : Tokens.NUMBER,
+            Literal: this.input.slice(position, this.position)
+        }
     }
 
     private skipWhitespace () {
+        const start = this.position
         while (WHITESPACE_CHARACTERS.includes(String.fromCharCode(this.ch))) {
             this.readChar()
         }
+        this.hadLeadingWhitespace = this.position > start
     }
 }

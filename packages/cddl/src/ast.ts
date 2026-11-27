@@ -14,6 +14,7 @@ export type Group = {
     IsChoiceAddition: boolean
     Properties: (Property|Property[])[]
     Comments: Comment[]
+    GenericParameters?: string[]
 }
 
 /**
@@ -29,6 +30,7 @@ export type Array = {
     Name: string
     Values: (Property|Property[])[]
     Comments: Comment[]
+    GenericParameters?: string[]
 }
 
 /**
@@ -55,6 +57,7 @@ export type Variable = {
     PropertyType: PropertyType | PropertyType[]
     Operator?: Operator
     Comments: Comment[]
+    GenericParameters?: string[]
 }
 
 /**
@@ -171,6 +174,7 @@ export type PropertyReference = {
     // `true` when a numeric literal was written as a float (e.g. `1.0`), so a
     // whole-valued float range `(0.0..1.0)` stays distinct from `(0..1)`
     IsFloat?: boolean
+    GenericArguments?: (PropertyType | PropertyType[])[]
 }
 
 export interface NativeTypeWithOperator {

@@ -316,4 +316,195 @@ describe('parser', () => {
 
         vi.restoreAllMocks()
     })
+
+    it('parses numeric and byte-string literals as array entries (§3.4)', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue("block = [ 0, tstr, -1, 0x1.8p1, h'0102', 0 / 1, 0..10, * 0 ; trailing\n]\n")
+        const p = new Parser('foo.cddl')
+
+        const [arr] = p.parse() as CddlArray[]
+        expect(arr.Type).toBe('array')
+        expect(arr.Values).toEqual([
+            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: [{ Type: 'literal', Value: 0, Unwrapped: false }], Comments: [] },
+            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: 'tstr', Comments: [] },
+            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: [{ Type: 'literal', Value: -1, Unwrapped: false }], Comments: [] },
+            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: [{ Type: 'literal', Value: 3, Unwrapped: false, IsFloat: true }], Comments: [] },
+            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: [{ Type: 'literal', Value: "h'0102'", Unwrapped: false }], Comments: [] },
+            {
+                HasCut: false,
+                Occurrence: { n: 1, m: 1 },
+                Name: '',
+                Type: [
+                    { Type: 'literal', Value: 0, Unwrapped: false },
+                    { Type: 'literal', Value: 1, Unwrapped: false }
+                ],
+                Comments: []
+            },
+            {
+                HasCut: false,
+                Occurrence: { n: 1, m: 1 },
+                Name: '',
+                Type: [{
+                    Type: 'range',
+                    Value: {
+                        Inclusive: true,
+                        Min: { Type: 'literal', Value: 0, Unwrapped: false },
+                        Max: { Type: 'literal', Value: 10, Unwrapped: false }
+                    },
+                    Unwrapped: false
+                }],
+                Comments: []
+            },
+            { HasCut: false, Occurrence: { n: 0, m: Infinity }, Name: '', Type: [{ Type: 'literal', Value: 0, Unwrapped: false }], Comments: [{ Type: 'comment', Content: 'trailing', Leading: false }] }
+        ])
+
+        vi.restoreAllMocks()
+    })
+
+    it('parses numeric and byte-string values as map member keys (§3.5.1)', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue("m = { 0 : int, ? -1 : tstr, h'0102' : bstr, 2 => uint, 3 ^ => bool }\n")
+        const p = new Parser('foo.cddl')
+
+        const [group] = p.parse() as Group[]
+        expect(group.Properties).toEqual([
+            { HasCut: true, Occurrence: { n: 1, m: 1 }, Name: '0', Type: ['int'], Comments: [] },
+            { HasCut: true, Occurrence: { n: 0, m: 1 }, Name: '-1', Type: ['tstr'], Comments: [] },
+            { HasCut: true, Occurrence: { n: 1, m: 1 }, Name: "h'0102'", Type: ['bstr'], Comments: [] },
+            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '2', Type: ['uint'], Comments: [] },
+            { HasCut: true, Occurrence: { n: 1, m: 1 }, Name: '3', Type: ['bool'], Comments: [] }
+        ])
+
+        vi.restoreAllMocks()
+    })
+
+    it('parses inclusive, exclusive, and symbolic ranges as member keys (§3.5.1)', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue('m = { * 3 .. 255 => int, 0 ... 10 ^ => tstr, min .. max => any }\n')
+        const p = new Parser('foo.cddl')
+
+        const [group] = p.parse() as Group[]
+        expect(group.Properties).toEqual([
+            { HasCut: false, Occurrence: { n: 0, m: Infinity }, Name: '3..255', Type: ['int'], Comments: [] },
+            { HasCut: true, Occurrence: { n: 1, m: 1 }, Name: '0...10', Type: ['tstr'], Comments: [] },
+            { HasCut: false, Occurrence: { n: 1, m: 1 }, Name: 'min..max', Type: ['any'], Comments: [] }
+        ])
+
+        vi.restoreAllMocks()
+    })
+
+    it('parses generic rule definitions and instantiations (§3.10)', () => {
+        const src = [
+            'pair<t> = [t, t]',
+            'n = pair<int>',
+            'entry<k, v> = { key: k, value: v }',
+            'nested = entry<tstr, pair<int / tstr>>',
+            'inline-arg = pair<{ a: int } / [tstr]>',
+            'in-array = [ ~pair<int>, pair<tstr> ; item\n]',
+            'ext<t> /= t',
+        ].join('\n') + '\n'
+        vi.spyOn(fs, 'readFileSync').mockReturnValue(src)
+        const p = new Parser('foo.cddl')
+        const ast = p.parse() as any[]
+
+        expect(ast[0]).toMatchObject({ Type: 'array', Name: 'pair', GenericParameters: ['t'] })
+        expect(ast[1]).toEqual({
+            Type: 'variable',
+            Name: 'n',
+            IsChoiceAddition: false,
+            PropertyType: [{
+                Type: 'group',
+                Value: 'pair',
+                Unwrapped: false,
+                GenericArguments: ['int']
+            }],
+            Comments: []
+        })
+        expect(ast[2]).toMatchObject({ Type: 'group', Name: 'entry', GenericParameters: ['k', 'v'] })
+        expect(ast[3].PropertyType[0].GenericArguments).toEqual([
+            'tstr',
+            {
+                Type: 'group',
+                Value: 'pair',
+                Unwrapped: false,
+                GenericArguments: [['int', 'tstr']]
+            }
+        ])
+        expect(ast[4].PropertyType[0].GenericArguments[0]).toHaveLength(2)
+        expect(ast[5].Values[0].Type[0]).toEqual({
+            Type: 'group',
+            Value: 'pair',
+            Unwrapped: true,
+            GenericArguments: ['int']
+        })
+        expect(ast[6]).toMatchObject({ Type: 'variable', Name: 'ext', IsChoiceAddition: true, GenericParameters: ['t'] })
+
+        vi.restoreAllMocks()
+    })
+
+    it('parses array entries with operators, choices, and group choices', () => {
+        const src = [
+            'with-op = [ 0 .default 1, 0 / 1 .default 2 ]',
+            'with-choice = ( 0 // 1 )',
+        ].join('\n') + '\n'
+        vi.spyOn(fs, 'readFileSync').mockReturnValue(src)
+        const p = new Parser('foo.cddl')
+        const [withOp, withChoice] = p.parse() as any[]
+
+        expect(withOp.Values[0].Type[0]).toEqual({
+            Type: { Type: 'literal', Value: 0, Unwrapped: false },
+            Operator: { Type: 'default', Value: { Type: 'literal', Value: 1, Unwrapped: false } }
+        })
+        expect(withOp.Values[1].Type[1]).toEqual({
+            Type: { Type: 'literal', Value: 1, Unwrapped: false },
+            Operator: { Type: 'default', Value: { Type: 'literal', Value: 2, Unwrapped: false } }
+        })
+        expect(withChoice.Properties[0]).toHaveLength(2)
+
+        vi.restoreAllMocks()
+    })
+
+    it('throws clear errors on malformed generic parameter and argument lists', () => {
+        for (const bad of ['foo<1> = int\n', 'foo<t bar> = int\n', 'foo<t> bar\n', 'x = pair<int tstr>\n']) {
+            vi.spyOn(fs, 'readFileSync').mockReturnValue(bad)
+            const p = new Parser('foo.cddl')
+            expect(() => p.parse()).toThrow()
+            vi.restoreAllMocks()
+        }
+    })
+
+    it('parses hex float and byte string literals (§3.1, Appendix B)', () => {
+        vi.spyOn(fs, 'readFileSync').mockReturnValue("f = 0x1.8p1\nb = h'0102'\nb64 = b64'AQID'\nraw = 'abc'\n")
+        const p = new Parser('foo.cddl')
+
+        expect(p.parse()).toEqual([
+            {
+                Type: 'variable',
+                Name: 'f',
+                IsChoiceAddition: false,
+                PropertyType: [{ Type: 'literal', Value: 3, Unwrapped: false, IsFloat: true }],
+                Comments: []
+            },
+            {
+                Type: 'variable',
+                Name: 'b',
+                IsChoiceAddition: false,
+                PropertyType: [{ Type: 'literal', Value: "h'0102'", Unwrapped: false }],
+                Comments: []
+            },
+            {
+                Type: 'variable',
+                Name: 'b64',
+                IsChoiceAddition: false,
+                PropertyType: [{ Type: 'literal', Value: "b64'AQID'", Unwrapped: false }],
+                Comments: []
+            },
+            {
+                Type: 'variable',
+                Name: 'raw',
+                IsChoiceAddition: false,
+                PropertyType: [{ Type: 'literal', Value: "'abc'", Unwrapped: false }],
+                Comments: []
+            }
+        ])
+
+        vi.restoreAllMocks()
+    })
 })
