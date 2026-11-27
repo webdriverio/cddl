@@ -181,7 +181,7 @@ export type PropertyReference = {
 }
 
 export interface NativeTypeWithOperator {
-    Type: Type | PropertyReference
+    Type: Type | PropertyReference | Group | Array
     Operator?: Operator
 }
 

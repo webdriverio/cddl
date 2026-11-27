@@ -92,6 +92,18 @@ export default class Parser {
         return params
     }
 
+    private parseInlineAlternative (): PropertyType[] {
+        const val = this.parseAssignmentValue()
+        const operator = this.isOperator() ? this.parseOperator() : undefined
+        if (!operator) {
+            return Array.isArray(val) ? val : [val]
+        }
+        if (Array.isArray(val)) {
+            return [...val.slice(0, -1), { Type: val[val.length - 1], Operator: operator } as NativeTypeWithOperator]
+        }
+        return [{ Type: val as NativeTypeWithOperator['Type'], Operator: operator }]
+    }
+
     private parseGenericArguments (): (PropertyType | PropertyType[])[] {
         const args: (PropertyType | PropertyType[])[] = []
         this.nextToken() // eat <
@@ -105,12 +117,7 @@ export default class Parser {
                     this.curToken.Type === Tokens.LBRACK ||
                     this.curToken.Type === Tokens.LPAREN
                 ) {
-                    const val = this.parseAssignmentValue()
-                    if (Array.isArray(val)) {
-                        argTypes.push(...val)
-                    } else {
-                        argTypes.push(val)
-                    }
+                    argTypes.push(...this.parseInlineAlternative())
                 } else {
                     let item: PropertyType = this.parsePropertyType()
                     if (this.isOperator()) {
@@ -483,12 +490,7 @@ export default class Parser {
                             (this.curToken.Type as string) === Tokens.LBRACK ||
                             (this.curToken.Type as string) === Tokens.LPAREN
                         ) {
-                            const altVal = this.parseAssignmentValue()
-                            if (Array.isArray(altVal)) {
-                                memberTypes.push(...altVal)
-                            } else {
-                                memberTypes.push(altVal)
-                            }
+                            memberTypes.push(...this.parseInlineAlternative())
                         } else {
                             let alt: PropertyType = this.parsePropertyType()
                             if (this.isOperator()) {
