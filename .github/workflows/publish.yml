@@ -115,16 +115,27 @@ jobs:
     needs: prepare
     if: ${{ needs.prepare.outputs.releaseCddl == 'true' }}
     runs-on: ubuntu-latest
+    # Holds the release app key; its deployment policy only admits runs dispatched from main.
+    environment: release
     permissions:
       contents: write
       pull-requests: write
       id-token: write
     steps:
+      # main requires PRs; the release app is a ruleset bypass actor, so release-it can push the version commit.
+      - name: Create Release Token
+        id: app-token
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
       - name: Clone Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: 'main'
           fetch-depth: 0 # Required to fetch all tags for release-it
+          token: ${{ steps.app-token.outputs.token }}
       - name: Setup PNPM
         uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
       - name: Setup Node Version
@@ -162,16 +173,27 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.prepare.outputs.dependents) }}
     runs-on: ubuntu-latest
+    # Holds the release app key; its deployment policy only admits runs dispatched from main.
+    environment: release
     permissions:
       contents: write
       pull-requests: write
       id-token: write
     steps:
+      # main requires PRs; the release app is a ruleset bypass actor, so release-it can push the version commit.
+      - name: Create Release Token
+        id: app-token
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
       - name: Clone Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: 'main'
           fetch-depth: 0 # Required to fetch all tags for release-it
+          token: ${{ steps.app-token.outputs.token }}
       - name: Setup PNPM
         uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
       - name: Setup Node Version
