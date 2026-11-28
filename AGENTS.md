@@ -86,6 +86,11 @@ still counts, since `.release-it.base.ts` scopes every package's changelog to
 include it); picking one package explicitly always releases it regardless of
 whether it changed.
 
+`main` requires PRs, so the release jobs push the version commit and tag
+with a GitHub App token (`RELEASE_APP_CLIENT_ID` variable and
+`RELEASE_APP_PRIVATE_KEY` secret in the `release` environment). The app is
+a bypass actor on the "Main" ruleset; nothing else may push to `main`.
+
 ## Working agreement
 
 Commit messages, PR descriptions, code comments, and how to stage changes:
