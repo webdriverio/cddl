@@ -14,7 +14,8 @@ permissions:
 jobs:
   dependencies:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    # Not on GitHub Actions updates: they are not merged here, and their unreviewed action SHAs would run with the write token
+    if: github.actor == 'dependabot[bot]' && !startsWith(github.head_ref, 'dependabot/github_actions/')
 
     steps:
       - name: Fetch PR metadata
