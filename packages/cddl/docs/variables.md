@@ -14,6 +14,7 @@ export type Variable = {
     PropertyType: PropertyType | PropertyType[]
     Operator?: Operator
     Comments: Comment[]
+    GenericParameters?: string[]
 }
 ```
 
@@ -24,6 +25,7 @@ Where:
 - `PropertyType`: The type or array of types assigned to the variable
 - `Operator`: An optional operator that modifies the variable's type
 - `Comments`: An array of comments associated with the variable
+- `GenericParameters`: Optional list of generic parameter names when the rule is parameterized (e.g. `maybe<t> = t / nil`)
 
 ## Basic Variable Assignments
 

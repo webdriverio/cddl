@@ -13,6 +13,11 @@ export interface Operator {
     Type: OperatorType
     Value: PropertyType
 }
+
+export interface NativeTypeWithOperator {
+    Type: Type | PropertyReference | Group | Array | NativeTypeWithOperator | PropertyType[]
+    Operator?: Operator
+}
 ```
 
 Where:

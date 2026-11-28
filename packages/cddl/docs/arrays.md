@@ -12,6 +12,7 @@ export type Array = {
     Name: string
     Values: (Property|Property[])[]
     Comments: Comment[]
+    GenericParameters?: string[]
 }
 ```
 
@@ -20,6 +21,7 @@ Where:
 - `Name`: The name of the array
 - `Values`: An array of properties or property choice arrays that define the elements of the array
 - `Comments`: An array of comments associated with the array
+- `GenericParameters`: Optional list of generic parameter names when the rule is parameterized (e.g. `pair<t> = [t, t]`)
 
 ## Array Elements
 

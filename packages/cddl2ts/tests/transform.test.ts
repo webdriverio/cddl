@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import fs from 'node:fs'
+import { describe, it, expect, vi } from 'vitest'
 import { transform } from '../src/index.js'
-import type { Group, Property, Variable } from 'cddl'
+import { Parser, type Group, type Property, type Variable } from 'cddl'
 
 function variable(name: string, propertyType: Variable['PropertyType']): Variable {
     return {
@@ -97,5 +98,39 @@ describe('literal transformation direct', () => {
         expect(output).toContain('export interface NetworkGetDataResult {')
         expect(output).toContain('bytes: NetworkBytesValue;')
         expect(output).not.toContain('export type NetworkGetDataResult = Record')
+    })
+
+    it('should map byte-string literals to Uint8Array while keeping text literals as string types', () => {
+        const output = transform([
+            variable('byte-lit', { Type: 'literal', Value: "h'0102'", Unwrapped: false, IsBytes: true }),
+            variable('text-lit', { Type: 'literal', Value: "h'0102'", Unwrapped: false })
+        ])
+
+        expect(output).toContain('export type ByteLit = Uint8Array;')
+        expect(output).toContain('export type TextLit = "h\'0102\'";')
+    })
+
+    it('should transform constrained parenthesized choices, inline arrays/groups, and nested operators from parser output', () => {
+        const src = [
+            'allowed = [int]',
+            'choice-arr = [0 / (int / tstr) .default 0]',
+            'inline-arr = [0 / [int] .within allowed]',
+            'inline-group = [0 / { a: int } .within allowed]',
+            'nested-op = [0 / (float .ge 0.0) .default 1.0]',
+            'regexp-nested = [0 / (tstr .regexp "^a.+b$") .default "ab"]',
+        ].join('\n') + '\n'
+        const spy = vi.spyOn(fs, 'readFileSync').mockReturnValue(src)
+        try {
+            const ast = new Parser('constrained.cddl').parse()
+            const output = transform(ast)
+            expect(output).toContain('export type ChoiceArr = (0 | number | string)[];')
+            expect(output).toContain('export type InlineArr = (0 | number[])[];')
+            expect(output).toContain('export type InlineGroup = (0 | {')
+            expect(output).toContain('a: number;')
+            expect(output).toContain('export type NestedOp = (0 | number)[];')
+            expect(output).toContain('export type RegexpNested = (0 | `a${string}b`)[];')
+        } finally {
+            spy.mockRestore()
+        }
     })
 })

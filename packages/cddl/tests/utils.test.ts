@@ -19,6 +19,7 @@ import {
     isCDDLArray,
     isDigit,
     isGroup,
+    isHexDigit,
     isLetter,
     isFloatRange,
     isLiteralWithValue,
@@ -29,6 +30,7 @@ import {
     isRange,
     isUnNamedProperty,
     isVariable,
+    parseHexFloat,
     parseNumberValue,
     pascalCase
 } from '../src/utils.js'
@@ -96,6 +98,11 @@ describe('utils', () => {
             expect(isDigit(Tokens.NL)).toBe(false)
             expect(isDigit(Tokens.SPACE)).toBe(false)
 
+            expect(isHexDigit('9')).toBe(true)
+            expect(isHexDigit('a')).toBe(true)
+            expect(isHexDigit('F')).toBe(true)
+            expect(isHexDigit('g')).toBe(false)
+
             expect(hasSpecialNumberCharacter(Tokens.MINUS.charCodeAt(0))).toBe(true)
             expect(hasSpecialNumberCharacter(Tokens.DOT.charCodeAt(0))).toBe(true)
             expect(hasSpecialNumberCharacter('x'.charCodeAt(0))).toBe(true)
@@ -115,6 +122,17 @@ describe('utils', () => {
             expect(parseNumberValue(intToken)).toBe(42)
             expect(parseNumberValue(hexToken)).toBe('0x10')
             expect(parseNumberValue(binaryToken)).toBe('0b10')
+            expect(parseNumberValue({ Type: Tokens.FLOAT, Literal: '0x1.8p1' })).toBe(3)
+            expect(parseNumberValue({ Type: Tokens.FLOAT, Literal: '-0x1.8p-1' })).toBe(-0.75)
+            expect(parseNumberValue({ Type: Tokens.FLOAT, Literal: '0x1p0' })).toBe(1)
+            expect(parseNumberValue({ Type: Tokens.FLOAT, Literal: '1.5e-2' })).toBe(0.015)
+            expect(parseHexFloat('0x1.80000000000000p1')).toBe(3)
+            expect(parseHexFloat('0x1.8000000000001p1')).toBe(3 + 2 ** -51)
+            expect(parseHexFloat('0x0.8p1024')).toBe(2 ** 1023)
+            expect(parseHexFloat('0x10p-1075')).toBe(2 ** -1071)
+            expect(parseHexFloat('0x1p-1074')).toBe(Number.MIN_VALUE)
+            expect(parseHexFloat('0x0.0p0')).toBe(0)
+            expect(Object.is(parseHexFloat('-0x0p0'), -0)).toBe(true)
         })
     })
 

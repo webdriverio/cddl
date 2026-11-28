@@ -6,8 +6,8 @@ import { Token, Tokens } from './tokens.js';
 import { PREDEFINED_IDENTIFIER, BOOLEAN_LITERALS } from './constants.js'
 import { parseNumberValue } from './utils.js'
 import {
-    Type, PropertyName, PropertyType, PropertyReferenceType,
-    Variable, RangePropertyReference, Occurrence, Assignment,
+    Type, PropertyName, PropertyType, PropertyReference, PropertyReferenceType,
+    Variable, Range, RangePropertyReference, Occurrence, Assignment,
     Comment, Group, OperatorType, NativeTypeWithOperator, Operator
 } from './ast.js'
 
@@ -38,6 +38,9 @@ export default class Parser {
     curToken: Token = NIL_TOKEN;
     peekToken: Token = NIL_TOKEN;
     peekBelowToken: Token = NIL_TOKEN;
+    #curPrecededBySpace = false;
+    #peekPrecededBySpace = false;
+    #peekBelowPrecededBySpace = false;
 
     constructor (filePath: string) {
         this.#filePath = filePath
@@ -50,9 +53,109 @@ export default class Parser {
 
     private nextToken () {
         this.curToken = this.peekToken
+        this.#curPrecededBySpace = this.#peekPrecededBySpace
         this.peekToken = this.peekBelowToken
+        this.#peekPrecededBySpace = this.#peekBelowPrecededBySpace
         this.peekBelowToken = this.l.nextToken()
+        this.#peekBelowPrecededBySpace = this.l.hadLeadingWhitespace
         return true
+    }
+
+    private skipComments () {
+        while ((this.curToken.Type as string) === Tokens.COMMENT) {
+            this.parseComment()
+        }
+    }
+
+    private parseGenericParameters (): string[] {
+        const params: string[] = []
+        this.nextToken() // eat <
+        this.skipComments()
+        while ((this.curToken.Type as string) !== Tokens.GT) {
+            if ((this.curToken.Type as string) !== Tokens.IDENT) {
+                throw this.parserError(`Expected generic parameter identifier, received ${this.curToken.Type}(${this.curToken.Literal})`)
+            }
+            params.push(this.curToken.Literal)
+            this.nextToken()
+            this.skipComments()
+            const nextType: string = this.curToken.Type
+            if (nextType === Tokens.COMMA) {
+                this.nextToken()
+                this.skipComments()
+                continue
+            }
+            if (nextType !== Tokens.GT) {
+                throw this.parserError(`Expected "," or ">" in generic parameters, received ${this.curToken.Type}(${this.curToken.Literal})`)
+            }
+        }
+        this.nextToken() // eat >
+        return params
+    }
+
+    private parseInlineAlternative (): PropertyType[] {
+        const val = this.parseAssignmentValue()
+        const operator = this.isOperator() ? this.parseOperator() : undefined
+        if (!operator) {
+            return Array.isArray(val) ? val : [val]
+        }
+        const target = Array.isArray(val) && val.length === 1 ? val[0] : val
+        return [{ Type: target as NativeTypeWithOperator['Type'], Operator: operator }]
+    }
+
+    private parseGenericArguments (): (PropertyType | PropertyType[])[] {
+        const args: (PropertyType | PropertyType[])[] = []
+        this.nextToken() // eat <
+        this.skipComments()
+        while ((this.curToken.Type as string) !== Tokens.GT) {
+            const argTypes: PropertyType[] = []
+            while (true) {
+                this.skipComments()
+                if (
+                    this.curToken.Type === Tokens.LBRACE ||
+                    this.curToken.Type === Tokens.LBRACK ||
+                    this.curToken.Type === Tokens.LPAREN
+                ) {
+                    argTypes.push(...this.parseInlineAlternative())
+                } else {
+                    let item: PropertyType = this.parsePropertyType()
+                    if (this.isOperator()) {
+                        item = { Type: item, Operator: this.parseOperator() } as NativeTypeWithOperator
+                    } else if ((this.curToken.Type as string) !== Tokens.SLASH) {
+                        this.nextToken()
+                    }
+                    argTypes.push(item)
+                }
+                this.skipComments()
+                if ((this.curToken.Type as string) === Tokens.SLASH && this.peekToken.Type !== Tokens.SLASH) {
+                    this.nextToken() // eat /
+                    continue
+                }
+                break
+            }
+            args.push(argTypes.length === 1 ? argTypes[0] : argTypes)
+            this.skipComments()
+            if ((this.curToken.Type as string) === Tokens.COMMA) {
+                this.nextToken() // eat ,
+                this.skipComments()
+                continue
+            }
+            if ((this.curToken.Type as string) !== Tokens.GT) {
+                throw this.parserError(`Expected "," or ">" in generic arguments, received ${this.curToken.Type}(${this.curToken.Literal})`)
+            }
+        }
+        return args
+    }
+
+    private formatMemberKey (memberType: PropertyType, fallback: string): string {
+        if (typeof memberType === 'object' && 'Type' in memberType && memberType.Type === 'range') {
+            const range = memberType.Value as Range
+            const formatBound = (bound: unknown): string =>
+                typeof bound === 'object' && bound !== null && 'Value' in bound
+                    ? String((bound as { Value: unknown }).Value)
+                    : String(bound)
+            return `${formatBound(range.Min)}${range.Inclusive ? '..' : '...'}${formatBound(range.Max)}`
+        }
+        return fallback
     }
 
     private parseAssignments (): Assignment {
@@ -67,10 +170,14 @@ export default class Parser {
         /**
          * expect group identifier, e.g.
          * groupName =
+         * groupName<t> =
          * groupName /=
          * groupName //=
          */
-        if (this.curToken.Type !== Tokens.IDENT || !(this.peekToken.Type === Tokens.ASSIGN || this.peekToken.Type === Tokens.SLASH)) {
+        if (
+            this.curToken.Type !== Tokens.IDENT ||
+            !(this.peekToken.Type === Tokens.ASSIGN || this.peekToken.Type === Tokens.SLASH || this.peekToken.Type === Tokens.LT)
+        ) {
             throw this.parserError(`group identifier expected, received "${JSON.stringify(this.curToken)}"`)
         }
 
@@ -78,22 +185,32 @@ export default class Parser {
         const groupName = this.curToken.Literal
         this.nextToken() // eat group identifier
 
-        // @ts-ignore
-        if (this.curToken.Type === Tokens.SLASH) {
+        let genericParameters: string[] | undefined
+        if ((this.curToken.Type as string) === Tokens.LT) {
+            genericParameters = this.parseGenericParameters()
+        }
+
+        const opType: string = this.curToken.Type
+        if (opType !== Tokens.ASSIGN && opType !== Tokens.SLASH) {
+            throw this.parserError(`group identifier expected, received "${JSON.stringify(this.curToken)}"`)
+        }
+
+        if ((this.curToken.Type as string) === Tokens.SLASH) {
             isChoiceAddition = true
             this.nextToken() // eat `/`
         }
 
-        // @ts-ignore
-        if (this.curToken.Type === Tokens.SLASH) {
+        if ((this.curToken.Type as string) === Tokens.SLASH) {
             this.nextToken() // eat `/`
         }
 
         this.nextToken() // eat `=`
         const assignmentValue = this.parseAssignmentValue(groupName, isChoiceAddition) as Assignment
+        if (genericParameters && genericParameters.length > 0) {
+            assignmentValue.GenericParameters = genericParameters
+        }
 
-        // @ts-expect-error curToken can be changed by now but TS doesn't understand this
-        while (this.curToken.Type === Tokens.COMMENT) {
+        while ((this.curToken.Type as string) === Tokens.COMMENT) {
             const comment = this.parseComment()
             comment && comments.push(comment)
         }
@@ -187,7 +304,11 @@ export default class Parser {
         /**
          * parse operator assignments, e.g. `ip4 = (float .ge 0.0) .default 1.0`
          */
-        if (closingTokens.length === 1 && this.peekToken.Type === Tokens.DOT) {
+        if (
+            closingTokens.length === 1 &&
+            this.peekToken.Type === Tokens.DOT &&
+            (this.peekBelowToken.Type !== Tokens.DOT || closingTokens[0] === Tokens.RPAREN)
+        ) {
             const propertyType = this.parsePropertyType()
             const operator = this.isOperator() ? this.parseOperator() : undefined
             const prop: PropertyType = {
@@ -327,7 +448,89 @@ export default class Parser {
                 continue
             }
 
-            propertyName = this.parsePropertyName()
+            const isMemberValueStart =
+                this.curToken.Type === Tokens.NUMBER ||
+                this.curToken.Type === Tokens.FLOAT ||
+                this.curToken.Type === Tokens.BYTES ||
+                (this.curToken.Type === Tokens.IDENT && (
+                    this.peekToken.Type === Tokens.LT ||
+                    (this.peekToken.Type === Tokens.DOT && this.peekBelowToken.Type === Tokens.DOT)
+                ))
+
+            if (isMemberValueStart) {
+                const rawKeyLiteral = this.curToken.Literal
+                let memberType: PropertyType = this.parsePropertyType(isUnwrapped)
+                if (!this.isOperator()) {
+                    this.nextToken()
+                }
+
+                if (
+                    this.curToken.Type === Tokens.COLON ||
+                    this.curToken.Type === Tokens.CARET ||
+                    (this.curToken.Type === Tokens.ASSIGN && this.peekToken.Type === Tokens.GT)
+                ) {
+                    propertyName = this.formatMemberKey(memberType, rawKeyLiteral)
+                } else {
+                    const memberTypes: PropertyType[] = []
+                    if (this.isOperator()) {
+                        memberType = {
+                            Type: memberType,
+                            Operator: this.parseOperator()
+                        } as NativeTypeWithOperator
+                    }
+                    memberTypes.push(memberType)
+
+                    while (this.curToken.Type === Tokens.SLASH && this.peekToken.Type !== Tokens.SLASH) {
+                        this.nextToken()
+                        this.skipComments()
+                        if (
+                            (this.curToken.Type as string) === Tokens.LBRACE ||
+                            (this.curToken.Type as string) === Tokens.LBRACK ||
+                            (this.curToken.Type as string) === Tokens.LPAREN
+                        ) {
+                            memberTypes.push(...this.parseInlineAlternative())
+                        } else {
+                            let alt: PropertyType = this.parsePropertyType()
+                            if (this.isOperator()) {
+                                alt = { Type: alt, Operator: this.parseOperator() } as NativeTypeWithOperator
+                            } else if ((this.curToken.Type as string) !== Tokens.SLASH) {
+                                this.nextToken()
+                            }
+                            memberTypes.push(alt)
+                        }
+                    }
+
+                    let hadComma = false
+                    if ((this.curToken.Type as string) === Tokens.COMMA) {
+                        hadComma = true
+                        this.nextToken()
+                    }
+                    const trailingComment = this.parseComment()
+                    if (trailingComment) {
+                        comments.push(trailingComment)
+                    }
+
+                    const prop: Property = {
+                        HasCut: hasCut,
+                        Occurrence: occurrence,
+                        Name: '',
+                        Type: memberTypes,
+                        Comments: comments
+                    }
+
+                    if (isChoice) {
+                        (valuesOrProperties[valuesOrProperties.length - 1] as Property[]).push(prop)
+                    } else {
+                        valuesOrProperties.push(prop)
+                    }
+                    if (hadComma) {
+                        isChoice = false
+                    }
+                    continue
+                }
+            } else {
+                propertyName = this.parsePropertyName()
+            }
 
             /**
              * an unnamed member decorated with an operator, e.g. `[ bstr .size 3, bstr ]` -- there is no colon here, so this must be handled before the colon-expecting path below ever sees it
@@ -679,9 +882,9 @@ export default class Parser {
         throw this.parserError(`Expected property name, received ${this.curToken.Type}(${this.curToken.Literal}), ${this.peekToken.Type}(${this.peekToken.Literal})`)
     }
 
-    private parsePropertyType (): PropertyType {
+    private parsePropertyType (initialUnwrapped = false): PropertyType {
         let type: PropertyType | undefined = undefined
-        let isUnwrapped = false
+        let isUnwrapped = initialUnwrapped
         let isGroupedRange = false
 
         /**
@@ -721,6 +924,13 @@ export default class Parser {
                         Value: this.curToken.Literal,
                         Unwrapped: isUnwrapped
                     }
+                } else if (this.curToken.Type === Tokens.BYTES) {
+                    type = {
+                        Type: 'literal' as PropertyReferenceType,
+                        Value: this.curToken.Literal,
+                        Unwrapped: isUnwrapped,
+                        IsBytes: true
+                    }
                 } else if (BOOLEAN_LITERALS.includes(this.curToken.Literal)) {
                     type = {
                         Type: 'literal' as PropertyReferenceType,
@@ -734,11 +944,18 @@ export default class Parser {
                     }
                     type = val
                 } else if (this.curToken.Type === Tokens.IDENT) {
+                    const ident = this.curToken.Literal
+                    let genericArguments: (PropertyType | PropertyType[])[] | undefined
+                    if (this.peekToken.Type === Tokens.LT) {
+                        this.nextToken() // move to <
+                        genericArguments = this.parseGenericArguments()
+                    }
                     type = {
                         Type: 'group' as PropertyReferenceType,
-                        Value: this.curToken.Literal,
-                        Unwrapped: isUnwrapped
-                    }
+                        Value: ident,
+                        Unwrapped: isUnwrapped,
+                        ...(genericArguments ? { GenericArguments: genericArguments } : {})
+                    } as PropertyReference
                 } else if (this.curToken.Type === Tokens.NUMBER || this.curToken.Type === Tokens.FLOAT) {
                     type = {
                         Type: 'literal' as PropertyReferenceType,
@@ -977,9 +1194,15 @@ export default class Parser {
             let m = this.curToken.Type === Tokens.QUEST ? 1 : Infinity
 
             /**
-             * check if there is a max definition
+             * RFC 8610 Appendix B `occur = [uint] "*" [uint]`: only `*` takes an upper
+             * bound and it must be adjacent (no whitespace), so `* 3 .. 255 => int`
+             * does not consume `3` as an occurrence bound.
              */
-            if (this.peekToken.Type === Tokens.NUMBER) {
+            if (
+                this.curToken.Type === Tokens.ASTERISK &&
+                this.peekToken.Type === Tokens.NUMBER &&
+                !this.#peekPrecededBySpace
+            ) {
                 m = parseInt(this.peekToken.Literal, 10)
                 this.nextToken()
             }
@@ -994,7 +1217,8 @@ export default class Parser {
          */
         } else if (
             this.curToken.Type === Tokens.NUMBER &&
-            this.peekToken.Type === Tokens.ASTERISK
+            this.peekToken.Type === Tokens.ASTERISK &&
+            !this.#peekPrecededBySpace
         ) {
             const n = parseInt(this.curToken.Literal, 10)
             let m = Infinity
@@ -1004,7 +1228,7 @@ export default class Parser {
             /**
              * check if there is a max definition
              */
-            if (this.curToken.Type === Tokens.NUMBER) {
+            if (this.curToken.Type === Tokens.NUMBER && !this.#curPrecededBySpace) {
                 m = parseInt(this.curToken.Literal, 10)
                 this.nextToken()
             }

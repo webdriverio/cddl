@@ -536,6 +536,9 @@ export function parseType (specType: any): { type: string, isLiteral: boolean } 
                     }
                     /* c8 ignore next */ throw new Error(`Unknown type: ${JSON.stringify(specType[0].Value)}`)
                 } else if (objType === 'literal' && 'Value' in specType[0] && specType[0].Value !== undefined) {
+                    if (specType[0].IsBytes) {
+                        return { type: 'byte[]', isLiteral: false };
+                    }
                     return { type: specType[0].Value, isLiteral: true };
                 } else if (Array.isArray(specType[0].Values)) {
                     const propType = specType[0].Values[0] as Property
@@ -579,6 +582,14 @@ export function parseType (specType: any): { type: string, isLiteral: boolean } 
                 // not a structural type change - resolve the underlying type and ignore it,
                 // the same way the other generators already treat these operators.
                 if (typeof specType[0].Type === 'string') {
+                    return parseType([specType[0].Type]);
+                }
+
+                if (Array.isArray(specType[0].Type) && specType[0].Type.length > 0) {
+                    return parseType(specType[0].Type);
+                }
+
+                if (typeof specType[0].Type === 'object' && specType[0].Type !== null) {
                     return parseType([specType[0].Type]);
                 }
 

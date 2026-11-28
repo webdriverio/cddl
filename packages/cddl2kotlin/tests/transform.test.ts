@@ -1,7 +1,7 @@
 import url from 'node:url'
 import path from 'node:path'
 import { describe, it, expect } from 'vitest'
-import { parse } from 'cddl'
+import { parse, Type } from 'cddl'
 import { transform } from '../src/index.js'
 import type { Variable, Group, Array as CDDLArray } from 'cddl'
 import { normalizeSnapshotOutput } from './snapshot.js'
@@ -282,6 +282,62 @@ describe('transform', () => {
             }
             const output = transform([assignment])
             expect(output).toContain('typealias MyList = List<Int>')
+        })
+
+        it('should transform constrained choices, inline arrays, nested operators, and byte literals', () => {
+            const output = transform([
+                {
+                    Type: 'array',
+                    Name: 'choice-arr',
+                    Values: [{
+                        HasCut: false,
+                        Occurrence: { n: 1, m: 1 },
+                        Name: '',
+                        Type: [
+                            { Type: 'literal', Value: 0, Unwrapped: false },
+                            { Type: ['int', 'tstr'], Operator: { Type: 'default', Value: { Type: 'literal', Value: 0, Unwrapped: false } } }
+                        ],
+                        Comments: []
+                    }],
+                    Comments: []
+                },
+                {
+                    Type: 'variable',
+                    Name: 'inline-arr',
+                    IsChoiceAddition: false,
+                    PropertyType: {
+                        Type: {
+                            Type: 'array',
+                            Name: '',
+                            Values: [{ HasCut: false, Occurrence: { n: 1, m: 1 }, Name: '', Type: 'int', Comments: [] }],
+                            Comments: []
+                        },
+                        Operator: { Type: 'within', Value: { Type: 'group', Value: 'allowed', Unwrapped: false } }
+                    },
+                    Comments: []
+                },
+                {
+                    Type: 'variable',
+                    Name: 'nested-op',
+                    IsChoiceAddition: false,
+                    PropertyType: {
+                        Type: { Type: Type.FLOAT, Operator: { Type: 'ge', Value: { Type: 'literal', Value: 0, Unwrapped: false, IsFloat: true } } },
+                        Operator: { Type: 'default', Value: { Type: 'literal', Value: 1, Unwrapped: false, IsFloat: true } }
+                    },
+                    Comments: []
+                },
+                {
+                    Type: 'variable',
+                    Name: 'byte-lit',
+                    IsChoiceAddition: false,
+                    PropertyType: { Type: 'literal', Value: "h'0102'", Unwrapped: false, IsBytes: true },
+                    Comments: []
+                }
+            ])
+            expect(output).toContain('typealias ChoiceArr = List<Any?>')
+            expect(output).toContain('typealias InlineArr = List<Int>')
+            expect(output).toContain('typealias NestedOp = Double')
+            expect(output).toContain('typealias ByteLit = ByteArray')
         })
     })
 
