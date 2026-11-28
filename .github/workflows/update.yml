@@ -14,8 +14,13 @@ permissions:
 jobs:
   dependencies:
     runs-on: ubuntu-latest
-    # Not on GitHub Actions updates: they are not merged here, and their unreviewed action SHAs would run with the write token
-    if: github.actor == 'dependabot[bot]' && !startsWith(github.head_ref, 'dependabot/github_actions/')
+    # Dependabot opened the PR and triggered this run: a PR someone else pushed to needs a review.
+    # Not in forks. Not on GitHub Actions updates: they are not merged here, and their unreviewed action SHAs would run with the write token.
+    if: >-
+      github.repository == 'webdriverio/cddl' &&
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.actor == 'dependabot[bot]' &&
+      !startsWith(github.head_ref, 'dependabot/github_actions/')
 
     steps:
       - name: Fetch PR metadata
